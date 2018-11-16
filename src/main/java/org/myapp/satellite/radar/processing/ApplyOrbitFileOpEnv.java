@@ -45,31 +45,4 @@ public class ApplyOrbitFileOpEnv {
             System.out.println(e.getMessage());
         }
     }
-
-    public static class SubsetEnv {
-
-        public Product getTargetProduct(Product sourceProduct, HashMap parameters) {
-
-            /*GeoPos northWest = new GeoPos((double) parameters.get("topLeftLat"), (double) parameters.get("topLeftLon"));
-            GeoPos southEast = new GeoPos((double) parameters.get("bottomRightLat"), (double) parameters.get("bottomRightLon"));
-
-            PixelPos leftUp = new PixelPos();
-            product.getSceneGeoCoding().getPixelPos(northWest, leftUp);
-
-            PixelPos rightBottom = new PixelPos();
-            product.getSceneGeoCoding().getPixelPos(southEast, rightBottom);
-
-            subsetWidth = Math.abs((int) rightBottom.getX() - (int) leftUp.getX());
-            subsetHeight = Math.abs((int) rightBottom.getY() - (int) leftUp.getY());
-
-            subsetRegion = (int) leftUp.getX() + "," + (int) leftUp.getY() + "," + subsetWidth + "," + subsetHeight;
-            parameters.put("region", "");*/
-
-            OperatorSpi spi = new SubsetOp.Spi();
-            SubsetOp op = (SubsetOp) spi.createOperator();
-            op.setSourceProduct(sourceProduct);
-
-            return op.getTargetProduct();
-        }
-    }
 }

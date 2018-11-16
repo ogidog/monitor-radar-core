@@ -57,11 +57,9 @@ public class Stage1 {
 
                 if (targetProduct != null) {
                     writeOpEnv.write(outputDir + File.separator + "applyorbitfile", targetProduct);
-                    // writeOpEnv = null;
                 }
 
                 targetProduct.closeIO();
-                // targetProduct = null;
 
             } catch (Exception e) {
                 System.out.println(e.getMessage());
