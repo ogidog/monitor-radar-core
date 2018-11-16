@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.esa.s1tbx:s1tbx-op-sentinel1:7.0.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://F:/Maven/.m2/repository/org/esa/s1tbx/s1tbx-op-sentinel1/7.0.0-SNAPSHOT/s1tbx-op-sentinel1-7.0.0-20181115.171948-178.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://F:/Maven/.m2/repository/org/esa/s1tbx/s1tbx-op-sentinel1/7.0.0-SNAPSHOT/s1tbx-op-sentinel1-7.0.0-20181115.171948-178-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://F:/Maven/.m2/repository/org/esa/s1tbx/s1tbx-op-sentinel1/7.0.0-SNAPSHOT/s1tbx-op-sentinel1-7.0.0-20181115.171948-178-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

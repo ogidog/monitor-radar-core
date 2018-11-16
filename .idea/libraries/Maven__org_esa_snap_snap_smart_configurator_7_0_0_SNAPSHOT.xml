@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.esa.snap:snap-smart-configurator:7.0.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://F:/Maven/.m2/repository/org/esa/snap/snap-smart-configurator/7.0.0-SNAPSHOT/snap-smart-configurator-7.0.0-20181107.123309-70.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://F:/Maven/.m2/repository/org/esa/snap/snap-smart-configurator/7.0.0-SNAPSHOT/snap-smart-configurator-7.0.0-20181107.123309-70-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://F:/Maven/.m2/repository/org/esa/snap/snap-smart-configurator/7.0.0-SNAPSHOT/snap-smart-configurator-7.0.0-20181107.123309-70-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

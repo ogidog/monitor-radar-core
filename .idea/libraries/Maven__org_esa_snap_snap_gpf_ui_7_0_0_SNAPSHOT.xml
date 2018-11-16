@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.esa.snap:snap-gpf-ui:7.0.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://F:/Maven/.m2/repository/org/esa/snap/snap-gpf-ui/7.0.0-SNAPSHOT/snap-gpf-ui-7.0.0-20181109.123602-74.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://F:/Maven/.m2/repository/org/esa/snap/snap-gpf-ui/7.0.0-SNAPSHOT/snap-gpf-ui-7.0.0-20181109.123602-74-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://F:/Maven/.m2/repository/org/esa/snap/snap-gpf-ui/7.0.0-SNAPSHOT/snap-gpf-ui-7.0.0-20181109.123602-74-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

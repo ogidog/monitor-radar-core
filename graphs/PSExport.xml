@@ -1,0 +1,40 @@
+<graph id="Graph">
+  <version>1.0</version>
+  <node id="Read">
+    <operator>Read</operator>
+    <sources/>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>F:\intellij-idea-workspace\monitor-radar-core-v3\data\subset\4\subset_master_Stack_Deb.dim</file>
+    </parameters>
+  </node>
+  <node id="Read(2)">
+    <operator>Read</operator>
+    <sources/>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>F:\intellij-idea-workspace\monitor-radar-core-v3\data\topophaseremoval\4\subset_master_Stack_Deb_ifg_dinsar.dim</file>
+    </parameters>
+  </node>
+  <node id="StampsExport">
+    <operator>StampsExport</operator>
+    <sources>
+      <sourceProduct refid="Read"/>
+      <sourceProduct.1 refid="Read(2)"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <targetFolder>F:\intellij-idea-workspace\monitor-radar-core-v3\data\stampsexport</targetFolder>
+      <psiFormat>true</psiFormat>
+    </parameters>
+  </node>
+  <applicationData id="Presentation">
+    <Description/>
+    <node id="Read">
+            <displayPosition x="37.0" y="133.0"/>
+    </node>
+    <node id="StampsExport">
+      <displayPosition x="243.0" y="136.0"/>
+    </node>
+    <node id="Read(2)">
+      <displayPosition x="41.0" y="192.0"/>
+    </node>
+  </applicationData>
+</graph>
