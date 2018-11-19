@@ -4,14 +4,14 @@
     <operator>Read</operator>
     <sources/>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>F:\intellij-idea-workspace\monitor-radar-core-v3\data\subset\4\subset_master_Stack_Deb.dim</file>
+      <file>F:\intellij-idea-workspace\monitor-radar-core-v3\processing\subset\4\subset_master_Stack_Deb.dim</file>
     </parameters>
   </node>
   <node id="Read(2)">
     <operator>Read</operator>
     <sources/>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>F:\intellij-idea-workspace\monitor-radar-core-v3\data\topophaseremoval\4\subset_master_Stack_Deb_ifg_dinsar.dim</file>
+      <file>F:\intellij-idea-workspace\monitor-radar-core-v3\processing\topophaseremoval\4\subset_master_Stack_Deb_ifg_dinsar.dim</file>
     </parameters>
   </node>
   <node id="StampsExport">
@@ -21,7 +21,7 @@
       <sourceProduct.1 refid="Read(2)"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <targetFolder>F:\intellij-idea-workspace\monitor-radar-core-v3\data\stampsexport</targetFolder>
+      <targetFolder>F:\intellij-idea-workspace\monitor-radar-core-v3\processing\stampsexport</targetFolder>
       <psiFormat>true</psiFormat>
     </parameters>
   </node>

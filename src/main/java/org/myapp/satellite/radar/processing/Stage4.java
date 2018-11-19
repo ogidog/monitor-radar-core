@@ -15,10 +15,10 @@ public class Stage4 {
 
     public static void main(String[] args) {
 
-        String inputDir1 = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\data\\subset";
-        String inputDir2 = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\data\\topophaseremoval";
-        String outputDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\data\\stampsexport";
-        String graphsDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\data\\graphs";
+        String inputDir1 = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\processing\\subset";
+        String inputDir2 = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\processing\\topophaseremoval";
+        String outputDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\processing\\stampsexport";
+        String graphsDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\graphs";
 
         try {
 

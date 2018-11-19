@@ -15,9 +15,9 @@ public class Stage3 {
 
     public static void main(String[] args) {
 
-        String inputDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\data\\subset";
-        String outputDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\data\\topophaseremoval";
-        String graphsDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\data\\graphs";
+        String inputDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\processing\\subset";
+        String outputDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\processing\\topophaseremoval";
+        String graphsDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\graphs";
 
         try {
 

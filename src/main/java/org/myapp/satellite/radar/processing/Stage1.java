@@ -4,12 +4,17 @@ package org.myapp.satellite.radar.processing;
 import org.esa.snap.core.datamodel.Product;
 
 import java.io.File;
+import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.HashMap;
 
 
 public class Stage1 {
 
     public static void main(String[] args) {
+
+        String outputDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\processing";
+        String snapDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\.snap";
 
         String filesList = "Y:\\Satellites\\Sentinel-1A\\S1A_IW_SLC__1SDV_20161229T002757_20161229T002826_014587_017B50_58CD.zip,"
                 + "Y:\\Satellites\\Sentinel-1A\\S1A_IW_SLC__1SDV_20170122T002755_20170122T002824_014937_018613_A687.zip,"
@@ -38,9 +43,7 @@ public class Stage1 {
                 + "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20171007T002725_20171007T002754_007716_00DA0B_3579.zip,"
                 + "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20171019T002725_20171019T002755_007891_00DF03_0416.zip";
 
-        String outputDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\data";
-
-        HashMap parameters = getParameters();
+        HashMap parameters = getParameters(snapDir);
         String[] files = filesList.split(",");
 
         TOPSARSplitOpEnv topsarSplitOpEnv = new TOPSARSplitOpEnv();
@@ -67,11 +70,10 @@ public class Stage1 {
 
             applyOrbitFileOpEnv.Dispose();
             topsarSplitOpEnv.Dispose();
-
         }
     }
 
-    static HashMap getParameters() {
+    static HashMap getParameters(String snapDir) {
 
         // TODO: Загружать параметры из json-файла
 
@@ -81,7 +83,7 @@ public class Stage1 {
         parameters.put("selectedPolarisations", "VV");
 
         // ApplyOrbitFile
-        parameters.put("snap.userdir", new File("").getAbsolutePath() + File.separator + ".snap");
+        parameters.put("snap.userdir", snapDir);
         parameters.put("polyDegree", 3);
         parameters.put("continueOnFail", false);
 
@@ -96,7 +98,6 @@ public class Stage1 {
         parameters.put("bottomRightLon", 86.08502696051652);
         parameters.put("topLeftLat1", 55.60507332069096);
         parameters.put("topLeftLon1", 86.1867704184598);
-
 
         return parameters;
     }

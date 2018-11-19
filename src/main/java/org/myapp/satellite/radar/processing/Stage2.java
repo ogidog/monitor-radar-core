@@ -1,16 +1,13 @@
 package org.myapp.satellite.radar.processing;
 
-import com.bc.ceres.core.ProgressMonitor;
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
-import org.esa.snap.core.gpf.graph.GraphProcessor;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.Reader;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,9 +18,9 @@ public class Stage2 {
 
     public static void main(String[] args) {
 
-        String inputDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\data\\applyorbitfile";
-        String outputDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\data\\subset";
-        String graphsDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\data\\graphs";
+        String inputDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\processing\\applyorbitfile";
+        String outputDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\processing\\subset";
+        String graphsDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\graphs";
 
         int productPatchLength = 7;
 

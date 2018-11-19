@@ -90,24 +90,18 @@ public class TOPSARSplitOpEnv {
                     firstBurstIndex = burst;
                     lastBurstIndex = burst;
                     targetProduct.closeIO();
-                    // targetProduct = null;
                     op.dispose();
-                    // spi = null;
                     continue;
                 }
 
                 if (splitPolygon.intersects(subsetPolygon) && firstBurstIndex != -1) {
                     lastBurstIndex = burst;
                     targetProduct.closeIO();
-                    // targetProduct = null;
                     op.dispose();
-                    // spi = null;
                     continue;
                 }
 
                 op.dispose();
-                // op = null;
-                // spi = null;
             }
 
             if (firstBurstIndex != -1 && lastBurstIndex != -1) {
@@ -134,6 +128,103 @@ public class TOPSARSplitOpEnv {
         }
     }
 
+    public int[] getBurstsRange(String file, HashMap parameters) {
+
+        int[] burstRange = null;
+
+        try {
+
+            sourceProduct = ProductIO.readProduct(new File(file));
+            s1u = new Sentinel1Utils(sourceProduct);
+
+            GeoPos topLeftGeoPos = new GeoPos();
+            topLeftGeoPos.setLocation((double) parameters.get("topLeftLat"), (double) parameters.get("topLeftLon"));
+            PixelPos topLeftPixelPos = new PixelPos();
+            sourceProduct.getSceneGeoCoding().getPixelPos(topLeftGeoPos, topLeftPixelPos);
+
+            subSwathInfos = s1u.getSubSwath();
+            int numOfBurst = 0;
+            for (int i = 0; i < subSwathInfos.length; i++) {
+                if ((i + 1) * subSwathInfos[i].numOfSamples < topLeftPixelPos.x) {
+                    continue;
+                }
+                parameters.put("subswath", subSwathInfos[i].subSwathName);
+                numOfBurst = subSwathInfos[i].numOfBursts;
+                break;
+            }
+
+            GeometryFactory gf = new GeometryFactory();
+            Polygon subsetPolygon = gf.createPolygon(gf.createLinearRing(new Coordinate[]{
+                    new Coordinate((double) parameters.get("topLeftLat"), (double) parameters.get("topLeftLon")),
+                    new Coordinate((double) parameters.get("topRightLat"), (double) parameters.get("topRightLon")),
+                    new Coordinate((double) parameters.get("bottomLeftLat"), (double) parameters.get("bottomLeftLon")),
+                    new Coordinate((double) parameters.get("bottomRightLat"), (double) parameters.get("bottomRightLon")),
+                    new Coordinate((double) parameters.get("topLeftLat1"), (double) parameters.get("topLeftLon1"))
+            }), null);
+
+            int firstBurstIndex = -1, lastBurstIndex = -1;
+
+            Polygon splitPolygon;
+            for (int burst = 1; burst < numOfBurst + 1; burst++) {
+
+                spi = new TOPSARSplitOp.Spi();
+                op = (TOPSARSplitOp) spi.createOperator();
+                op.setSourceProduct(sourceProduct);
+
+                op.setParameter("selectedPolarisations", parameters.get("selectedPolarisations"));
+                op.setParameter("subswath", parameters.get("subswath"));
+                op.setParameter("firstBurstIndex", burst);
+                op.setParameter("lastBurstIndex", burst);
+
+                targetProduct = op.getTargetProduct();
+
+                splitPolygon = gf.createPolygon(gf.createLinearRing(new Coordinate[]{
+                        new Coordinate(targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeDouble("first_near_lat"),
+                                targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeDouble("first_near_long")),
+                        new Coordinate(targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeDouble("first_far_lat"),
+                                targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeDouble("first_far_long")),
+                        new Coordinate(targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeDouble("last_near_lat"),
+                                targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeDouble("last_near_long")
+                        ),
+                        new Coordinate(targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeDouble("last_far_lat"),
+                                targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeDouble("last_far_long")
+                        ),
+                        new Coordinate(targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeDouble("first_near_lat"),
+                                targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeDouble("first_near_long")
+                        )
+                }), null);
+
+                if (splitPolygon.intersects(subsetPolygon) && firstBurstIndex == -1) {
+                    firstBurstIndex = burst;
+                    lastBurstIndex = burst;
+                    targetProduct.closeIO();
+                    op.dispose();
+                    continue;
+                }
+
+                if (splitPolygon.intersects(subsetPolygon) && firstBurstIndex != -1) {
+                    lastBurstIndex = burst;
+                    targetProduct.closeIO();
+                    op.dispose();
+                    continue;
+                }
+
+                op.dispose();
+            }
+
+            if (firstBurstIndex != -1 && lastBurstIndex != -1) {
+                burstRange = new int[] {
+                    firstBurstIndex, lastBurstIndex
+                } ;
+            }
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return burstRange;
+    }
+
     public void Dispose() {
         try {
 
@@ -155,4 +246,5 @@ public class TOPSARSplitOpEnv {
             System.out.println(e.getMessage());
         }
     }
+
 }
