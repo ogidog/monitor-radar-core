@@ -2,6 +2,8 @@ package org.myapp.satellite.radar.processing;
 
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.io.File;
 import java.io.FileReader;
@@ -9,9 +11,7 @@ import java.io.FileWriter;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 import java.util.stream.IntStream;
 
 public class Stage2 {
@@ -21,10 +21,11 @@ public class Stage2 {
         String inputDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\processing\\applyorbitfile";
         String outputDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\processing\\subset";
         String graphsDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\graphs";
+        String configDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\config";
 
         int productPatchLength = 7;
 
-        HashMap parameters = getParameters();
+        HashMap parameters = getParameters(configDir);
 
         try {
 
@@ -43,7 +44,7 @@ public class Stage2 {
                         new File(outputDir + File.separator + (patchNum + 1)).mkdirs();
                     });
 
-            ArrayList<String> filesLists = new ArrayList();
+            ArrayList<String> filePatchesList = new ArrayList();
 
             if (sourceProducts.length >= 20) {
 
@@ -59,7 +60,7 @@ public class Stage2 {
                         System.arraycopy(Arrays.stream(sourceProducts).skip(productsProcessed).toArray(String[]::new), 0,
                                 productFilesList, 1, productsRemaining);
 
-                        filesLists.add(String.join(",", productFilesList));
+                        filePatchesList.add(String.join(",", productFilesList));
 
                         productsProcessed += productPatchLength;
                         productsRemaining = productsRemaining - productsProcessed;
@@ -71,7 +72,7 @@ public class Stage2 {
                         System.arraycopy(Arrays.stream(sourceProducts).skip(productsProcessed).limit(productPatchLength).toArray(String[]::new), 0,
                                 productFilesList, 1, productPatchLength);
 
-                        filesLists.add(String.join(",", productFilesList));
+                        filePatchesList.add(String.join(",", productFilesList));
 
                         productsProcessed += productPatchLength;
                         productsRemaining = sourceProducts.length - productsProcessed;
@@ -85,14 +86,16 @@ public class Stage2 {
 
             }
 
-            IntStream.range(0, filesLists.size()).parallel().forEach(index -> {
+            IntStream.range(0, filePatchesList.size()).parallel().forEach(index -> {
                 try {
 
                     Reader fileReader = new FileReader(graphsDir + File.separator + "Subset.xml");
                     Graph graph = GraphIO.read(fileReader);
                     fileReader.close();
 
-                    graph.getNode("ProductSet-Reader").getConfiguration().getChild("fileList").setValue(filesLists.get(index));
+                    set region
+
+                    graph.getNode("ProductSet-Reader").getConfiguration().getChild("fileList").setValue(filePatchesList.get(index));
                     graph.getNode("Write").getConfiguration().getChild("file").setValue(outputDir + File.separator + (index + 1) + File.separator + "subset_master_Stack_Deb.dim");
 
                     FileWriter fileWriter = new FileWriter(graphsDir + File.separator + "Subset" + (index + 1) + ".xml");
@@ -118,26 +121,34 @@ public class Stage2 {
         }
     }
 
-    static HashMap getParameters() {
+    static HashMap getParameters(String configDir) {
 
-        // TODO: Загружать параметры из json-файла
+        try {
 
-        HashMap parameters = new HashMap();
+            HashMap<String, HashMap> stageParameters = new HashMap<>();
 
-        // Subset
-        parameters.put("topLeftLat", 55.60507332069096);
-        parameters.put("topLeftLon", 86.1867704184598);
-        parameters.put("topRightLat", 55.6487070962106);
-        parameters.put("topRightLon", 86.18718760125022);
-        parameters.put("bottomLeftLat", 55.64874125567167);
-        parameters.put("bottomLeftLon", 86.08502696051652);
-        parameters.put("bottomRightLat", 55.60510658714328);
-        parameters.put("bottomRightLon", 86.08502696051652);
-        parameters.put("topLeftLat1", 55.60507332069096);
-        parameters.put("topLeftLon1", 86.1867704184598);
+            // BackGeocoding
+            JSONParser parser = new JSONParser();
+            FileReader fileReader = new FileReader(configDir + File.separator + "back_geocoding.json");
+            JSONObject jsonObject = (JSONObject) parser.parse(fileReader);
+            HashMap jsonParameters = (HashMap) jsonObject.get("parameters");
 
+            HashMap parameters = new HashMap();
+            Iterator it = jsonParameters.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry pair = (Map.Entry)it.next();
+                parameters.put(pair.getKey().toString(), ((HashMap) jsonParameters.get(pair.getKey().toString())).get("value"));
+            }
+            stageParameters.put("BackGeocoding", parameters);
 
-        return parameters;
+            fileReader.close();
+
+            return stageParameters;
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
     }
 
 }

@@ -7,6 +7,8 @@ import org.esa.snap.core.gpf.common.SubsetOp;
 import org.esa.snap.runtime.Config;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public class ApplyOrbitFileOpEnv {
 
@@ -15,18 +17,24 @@ public class ApplyOrbitFileOpEnv {
     OperatorSpi spi;
     ApplyOrbitFileOp op;
 
-    public ApplyOrbitFileOpEnv(HashMap parameters) {
-        Config.instance().preferences().put("snap.userdir", (String) parameters.get("snap.userdir"));
+    public ApplyOrbitFileOpEnv(String snapDir) {
+        Config.instance().preferences().put("snap.userdir", snapDir);
     }
 
-    public Product getTargetProduct(Product sourceProduct, HashMap parameters) {
+    public Product getTargetProduct(Product sourceProduct, HashMap stageParameters) {
+
+        HashMap applyOrbitParameters = (HashMap) stageParameters.get("ApplyOrbitFile");
 
         spi = new ApplyOrbitFileOp.Spi();
         op = (ApplyOrbitFileOp) spi.createOperator();
 
         op.setSourceProduct(sourceProduct);
-        op.setParameter("selectedPolarisations", parameters.get("polyDegree"));
-        op.setParameter("continueOnFail", parameters.get("continueOnFail"));
+
+        Iterator it = applyOrbitParameters.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            op.setParameter(pair.getKey().toString(), pair.getValue());
+        }
 
         targetProduct = op.getTargetProduct();
         return targetProduct;

@@ -5,13 +5,13 @@ public class Stage0 {
 
     public static void main(String[] args) {
 
-        String processingDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\processing";
+        String outputDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\processing";
 
-        new File(processingDir).mkdirs();
-        new File(processingDir + File.separator + "applyorbitfile").mkdirs();
-        new File(processingDir + File.separator + "stampsexport").mkdirs();
-        new File(processingDir + File.separator + "subset").mkdirs();
-        new File(processingDir + File.separator + "topophaseremoval").mkdirs();
+        new File(outputDir).mkdirs();
+        new File(outputDir + File.separator + "applyorbitfile").mkdirs();
+        new File(outputDir + File.separator + "stampsexport").mkdirs();
+        new File(outputDir + File.separator + "subset").mkdirs();
+        new File(outputDir + File.separator + "topophaseremoval").mkdirs();
 
     }
 }
