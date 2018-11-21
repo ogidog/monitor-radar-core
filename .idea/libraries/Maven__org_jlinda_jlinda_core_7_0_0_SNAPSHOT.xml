@@ -1,13 +1,13 @@
 <component name="libraryTable">
   <library name="Maven: org.jlinda:jlinda-core:7.0.0-SNAPSHOT">
     <CLASSES>
-      <root url="jar://F:/Maven/.m2/repository/org/jlinda/jlinda-core/7.0.0-SNAPSHOT/jlinda-core-7.0.0-20181119.220034-188.jar!/" />
+      <root url="jar://F:/Maven/.m2/repository/org/jlinda/jlinda-core/7.0.0-SNAPSHOT/jlinda-core-7.0.0-20181120.204451-189.jar!/" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://F:/Maven/.m2/repository/org/jlinda/jlinda-core/7.0.0-SNAPSHOT/jlinda-core-7.0.0-20181119.220034-188-javadoc.jar!/" />
+      <root url="jar://F:/Maven/.m2/repository/org/jlinda/jlinda-core/7.0.0-SNAPSHOT/jlinda-core-7.0.0-20181120.204451-189-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://F:/Maven/.m2/repository/org/jlinda/jlinda-core/7.0.0-SNAPSHOT/jlinda-core-7.0.0-20181119.220034-188-sources.jar!/" />
+      <root url="jar://F:/Maven/.m2/repository/org/jlinda/jlinda-core/7.0.0-SNAPSHOT/jlinda-core-7.0.0-20181120.204451-189-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

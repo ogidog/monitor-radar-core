@@ -6,6 +6,7 @@ import org.esa.snap.core.datamodel.Product;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.myapp.utils.ConsoleArgsReader;
 
 import java.io.File;
 import java.io.FileReader;
@@ -18,7 +19,7 @@ public class Stage1 {
 
     public static void main(String[] args) {
 
-        String outputDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\processing";
+        /* String outputDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\processing";
         String snapDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\.snap";
         String configDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\config";
 
@@ -47,7 +48,13 @@ public class Stage1 {
                 + "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20170913T002724_20170913T002754_007366_00CFF7_B786.zip,"
                 + "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20170925T002724_20170925T002754_007541_00D503_1DDA.zip,"
                 + "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20171007T002725_20171007T002754_007716_00DA0B_3579.zip,"
-                + "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20171019T002725_20171019T002755_007891_00DF03_0416.zip";
+                + "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20171019T002725_20171019T002755_007891_00DF03_0416.zip";*/
+
+        HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
+        String outputDir = consoleParameters.get("outputDir").toString();
+        String snapDir = consoleParameters.get("snapDir").toString();
+        String configDir = consoleParameters.get("configDir").toString();
+        String filesList = consoleParameters.get("filesList").toString();
 
         HashMap parameters = getParameters(configDir);
         String[] files = filesList.split(",");
@@ -58,8 +65,7 @@ public class Stage1 {
 
         Product targetProduct;
 
-        // for (int i = 0; i < files.length; i++) {
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < files.length; i++) {
             try {
 
                 targetProduct = topsarSplitOpEnv.getTargetProduct(files[i], parameters);

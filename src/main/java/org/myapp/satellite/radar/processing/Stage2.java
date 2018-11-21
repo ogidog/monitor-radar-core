@@ -23,9 +23,7 @@ public class Stage2 {
         String graphsDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\graphs";
         String configDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\config";
 
-        int productPatchLength = 7;
-
-        HashMap parameters = getParameters(configDir);
+        int filePatchesLength = 7;
 
         try {
 
@@ -39,21 +37,21 @@ public class Stage2 {
             String masterProductFile = sourceProducts[0];
             sourceProducts = Arrays.stream(sourceProducts).skip(1).toArray(String[]::new);
 
-            IntStream.range(0, sourceProducts.length % productPatchLength != 0 ? (sourceProducts.length / productPatchLength) + 1 : sourceProducts.length / productPatchLength)
+            IntStream.range(0, sourceProducts.length % filePatchesLength != 0 ? (sourceProducts.length / filePatchesLength) + 1 : sourceProducts.length / filePatchesLength)
                     .forEach(patchNum -> {
                         new File(outputDir + File.separator + (patchNum + 1)).mkdirs();
                     });
 
             ArrayList<String> filePatchesList = new ArrayList();
 
-            if (sourceProducts.length >= 20) {
+            if (sourceProducts.length >=  20) {
 
                 int productsRemaining = sourceProducts.length;
                 int productsProcessed = 0;
 
                 while (productsRemaining > 0) {
 
-                    if (productsRemaining < productPatchLength) {
+                    if (productsRemaining < filePatchesLength) {
 
                         String[] productFilesList = new String[productsRemaining + 1];
                         productFilesList[0] = masterProductFile;
@@ -62,46 +60,63 @@ public class Stage2 {
 
                         filePatchesList.add(String.join(",", productFilesList));
 
-                        productsProcessed += productPatchLength;
+                        productsProcessed += filePatchesLength;
                         productsRemaining = productsRemaining - productsProcessed;
 
                     } else {
 
-                        String[] productFilesList = new String[productPatchLength + 1];
+                        String[] productFilesList = new String[filePatchesLength+ 1];
                         productFilesList[0] = masterProductFile;
-                        System.arraycopy(Arrays.stream(sourceProducts).skip(productsProcessed).limit(productPatchLength).toArray(String[]::new), 0,
-                                productFilesList, 1, productPatchLength);
+                        System.arraycopy(Arrays.stream(sourceProducts).skip(productsProcessed).limit(filePatchesLength).toArray(String[]::new), 0,
+                                productFilesList, 1, filePatchesLength);
 
                         filePatchesList.add(String.join(",", productFilesList));
 
-                        productsProcessed += productPatchLength;
+                        productsProcessed += filePatchesLength;
                         productsRemaining = sourceProducts.length - productsProcessed;
                     }
                 }
 
             } else {
-
                 System.out.println("The minimum number of files should be 20.");
                 return;
 
             }
 
+            HashMap stageParameters = getParameters(configDir);
+
+            Reader fileReader = new FileReader(graphsDir + File.separator + "Subset.xml");
+            Graph graph = GraphIO.read(fileReader);
+            fileReader.close();
+
+            HashMap backGeocodingParameters = (HashMap) stageParameters.get("BackGeocoding");
+            Iterator it = backGeocodingParameters.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry pair = (Map.Entry) it.next();
+                graph.getNode("Back-Geocoding").getConfiguration().getChild(pair.getKey().toString()).setValue(pair.getValue().toString());
+            }
+            HashMap subsetParameters = (HashMap) stageParameters.get("Subset");
+            graph.getNode("Subset").getConfiguration().getChild("geoRegion").setValue("POLYGON ((" + subsetParameters.get("geoRegion").toString() + "))");
+
+            FileWriter fileWriter = new FileWriter(graphsDir + File.separator + "Subset.xml");
+            GraphIO.write(graph, fileWriter);
+            fileWriter.flush();
+            fileWriter.close();
+
             IntStream.range(0, filePatchesList.size()).parallel().forEach(index -> {
                 try {
 
-                    Reader fileReader = new FileReader(graphsDir + File.separator + "Subset.xml");
-                    Graph graph = GraphIO.read(fileReader);
-                    fileReader.close();
+                    FileReader fileReader1 = new FileReader(graphsDir + File.separator + "Subset.xml");
+                    Graph graph1 = GraphIO.read(fileReader1);
+                    fileReader1.close();
 
-                    set region
+                    graph1.getNode("ProductSet-Reader").getConfiguration().getChild("fileList").setValue(filePatchesList.get(index));
+                    graph1.getNode("Write").getConfiguration().getChild("file").setValue(outputDir + File.separator + (index + 1) + File.separator + "subset_master_Stack_Deb.dim");
 
-                    graph.getNode("ProductSet-Reader").getConfiguration().getChild("fileList").setValue(filePatchesList.get(index));
-                    graph.getNode("Write").getConfiguration().getChild("file").setValue(outputDir + File.separator + (index + 1) + File.separator + "subset_master_Stack_Deb.dim");
-
-                    FileWriter fileWriter = new FileWriter(graphsDir + File.separator + "Subset" + (index + 1) + ".xml");
-                    GraphIO.write(graph, fileWriter);
-                    fileWriter.flush();
-                    fileWriter.close();
+                    FileWriter fileWriter1 = new FileWriter(graphsDir + File.separator + "Subset" + (index + 1) + ".xml");
+                    GraphIO.write(graph1, fileWriter1);
+                    fileWriter1.flush();
+                    fileWriter1.close();
 
                     ProcessBuilder processBuilder = new ProcessBuilder(System.getenv("SNAP_HOME") + File.separator + "bin" + File.separator + "gpt.exe ",
                             graphsDir + File.separator + "Subset" + (index + 1) + ".xml").inheritIO();
@@ -136,11 +151,19 @@ public class Stage2 {
             HashMap parameters = new HashMap();
             Iterator it = jsonParameters.entrySet().iterator();
             while (it.hasNext()) {
-                Map.Entry pair = (Map.Entry)it.next();
+                Map.Entry pair = (Map.Entry) it.next();
                 parameters.put(pair.getKey().toString(), ((HashMap) jsonParameters.get(pair.getKey().toString())).get("value"));
             }
             stageParameters.put("BackGeocoding", parameters);
+            fileReader.close();
 
+            // Subset
+            parameters = new HashMap();
+            fileReader = new FileReader(configDir + File.separator + "subset.json");
+            jsonObject = (JSONObject) parser.parse(fileReader);
+            jsonParameters = (HashMap) jsonObject.get("parameters");
+            parameters.put("geoRegion", ((HashMap) jsonParameters.get("geoRegion")).get("value").toString());
+            stageParameters.put("Subset", parameters);
             fileReader.close();
 
             return stageParameters;
@@ -150,5 +173,4 @@ public class Stage2 {
             return null;
         }
     }
-
 }

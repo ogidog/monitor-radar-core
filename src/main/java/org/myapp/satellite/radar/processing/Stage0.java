@@ -1,11 +1,16 @@
 package org.myapp.satellite.radar.processing;
+
+import org.myapp.utils.ConsoleArgsReader;
+
 import java.io.File;
+import java.util.HashMap;
 
 public class Stage0 {
 
     public static void main(String[] args) {
 
-        String outputDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\processing";
+        HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
+        String outputDir = consoleParameters.get("outputDir").toString();
 
         new File(outputDir).mkdirs();
         new File(outputDir + File.separator + "applyorbitfile").mkdirs();
