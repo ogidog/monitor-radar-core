@@ -4,6 +4,7 @@ import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.myapp.utils.ConsoleArgsReader;
 
 import java.io.File;
 import java.io.FileReader;
@@ -18,10 +19,16 @@ public class Stage2 {
 
     public static void main(String[] args) {
 
-        String inputDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\processing\\applyorbitfile";
+        /*String inputDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\processing\\applyorbitfile";
         String outputDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\processing\\subset";
         String graphsDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\graphs";
-        String configDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\config";
+        String configDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\config";*/
+
+        HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
+        String inputDir = consoleParameters.get("inputDir").toString();
+        String outputDir = consoleParameters.get("outputDir").toString();
+        String graphsDir = consoleParameters.get("graphsDir").toString();
+        String configDir = consoleParameters.get("configDir").toString();
 
         int filePatchesLength = 7;
 

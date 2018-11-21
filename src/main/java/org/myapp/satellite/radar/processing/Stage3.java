@@ -25,7 +25,6 @@ public class Stage3 {
         String graphsDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\graphs";
         String configDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\config";
 
-
         try {
 
             String[] filePatchesDirs = Files.find(Paths.get(inputDir), 1, (path, attr) -> {
