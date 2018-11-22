@@ -2,6 +2,7 @@ package org.myapp.satellite.radar.processing;
 
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
+import org.myapp.utils.ConsoleArgsReader;
 
 import java.io.File;
 import java.io.FileReader;
@@ -9,16 +10,23 @@ import java.io.FileWriter;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.stream.IntStream;
 
 public class Stage4 {
 
     public static void main(String[] args) {
 
-        String inputDir1 = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\processing\\subset";
-        String inputDir2 = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\processing\\topophaseremoval";
-        String outputDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\processing\\stampsexport";
-        String graphsDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\graphs";
+        // String inputDir1 = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\processing\\subset";
+        // String inputDir2 = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\processing\\topophaseremoval";
+        // String outputDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\processing\\stampsexport";
+        // String graphsDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\graphs";
+
+        HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
+        String inputDir1 = consoleParameters.get("inputDir1").toString();
+        String inputDir2 = consoleParameters.get("inputDir2").toString();
+        String outputDir = consoleParameters.get("outputDir").toString();
+        String graphsDir = consoleParameters.get("graphsDir").toString();
 
         try {
 
