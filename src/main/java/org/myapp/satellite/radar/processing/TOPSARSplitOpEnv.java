@@ -127,7 +127,7 @@ public class TOPSARSplitOpEnv {
             }
 
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
             return null;
         }
     }
@@ -224,7 +224,7 @@ public class TOPSARSplitOpEnv {
             }
 
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
 
         return burstRange;
@@ -252,7 +252,7 @@ public class TOPSARSplitOpEnv {
             subSwathInfos = null;
 
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 

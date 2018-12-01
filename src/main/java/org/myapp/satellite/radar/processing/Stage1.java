@@ -57,6 +57,11 @@ public class Stage1 {
         String filesList = consoleParameters.get("filesList").toString();
 
         HashMap parameters = getParameters(configDir);
+        if (parameters == null){
+            System.out.println("Fail to read parameters.");
+            return;
+        };
+
         String[] files = filesList.split(",");
 
         TOPSARSplitOpEnv topsarSplitOpEnv = new TOPSARSplitOpEnv();
@@ -78,7 +83,7 @@ public class Stage1 {
                 targetProduct.closeIO();
 
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                e.printStackTrace();
             }
 
             applyOrbitFileOpEnv.Dispose();
@@ -88,8 +93,10 @@ public class Stage1 {
 
     static HashMap getParameters(String configDir) {
 
+        HashMap<String, HashMap> stageParameters = null;
+
         try {
-            HashMap<String, HashMap> stageParameters = new HashMap<>();
+            stageParameters = new HashMap<>();
 
             // TOPSARSplit
             JSONParser parser = new JSONParser();
@@ -148,12 +155,11 @@ public class Stage1 {
 
             fileReader.close();
 
-            return stageParameters;
-
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
+            e.printStackTrace();
         }
+
+        return stageParameters;
     }
 
 }

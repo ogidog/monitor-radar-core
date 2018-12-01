@@ -50,7 +50,7 @@ public class ApplyOrbitFileOpEnv {
             spi = null;
 
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 }

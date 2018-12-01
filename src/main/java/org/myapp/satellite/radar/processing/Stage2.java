@@ -2,6 +2,7 @@ package org.myapp.satellite.radar.processing;
 
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
+import org.esa.snap.runtime.Config;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.myapp.utils.ConsoleArgsReader;
@@ -29,6 +30,7 @@ public class Stage2 {
         String outputDir = consoleParameters.get("outputDir").toString();
         String graphsDir = consoleParameters.get("graphsDir").toString();
         String configDir = consoleParameters.get("configDir").toString();
+        String snapDir = consoleParameters.get("snapDir").toString();
 
         int filePatchesLength = 7;
 
@@ -51,44 +53,38 @@ public class Stage2 {
 
             ArrayList<String> filePatchesList = new ArrayList();
 
-            if (sourceProducts.length >=  20) {
+            int productsRemaining = sourceProducts.length;
+            int productsProcessed = 0;
 
-                int productsRemaining = sourceProducts.length;
-                int productsProcessed = 0;
+            while (productsRemaining > 0) {
 
-                while (productsRemaining > 0) {
+                if (productsRemaining < filePatchesLength) {
 
-                    if (productsRemaining < filePatchesLength) {
+                    String[] productFilesList = new String[productsRemaining + 1];
+                    productFilesList[0] = masterProductFile;
+                    System.arraycopy(Arrays.stream(sourceProducts).skip(productsProcessed).toArray(String[]::new), 0,
+                            productFilesList, 1, productsRemaining);
 
-                        String[] productFilesList = new String[productsRemaining + 1];
-                        productFilesList[0] = masterProductFile;
-                        System.arraycopy(Arrays.stream(sourceProducts).skip(productsProcessed).toArray(String[]::new), 0,
-                                productFilesList, 1, productsRemaining);
+                    filePatchesList.add(String.join(",", productFilesList));
 
-                        filePatchesList.add(String.join(",", productFilesList));
+                    productsProcessed += filePatchesLength;
+                    productsRemaining = productsRemaining - productsProcessed;
 
-                        productsProcessed += filePatchesLength;
-                        productsRemaining = productsRemaining - productsProcessed;
+                } else {
 
-                    } else {
+                    String[] productFilesList = new String[filePatchesLength + 1];
+                    productFilesList[0] = masterProductFile;
+                    System.arraycopy(Arrays.stream(sourceProducts).skip(productsProcessed).limit(filePatchesLength).toArray(String[]::new), 0,
+                            productFilesList, 1, filePatchesLength);
 
-                        String[] productFilesList = new String[filePatchesLength+ 1];
-                        productFilesList[0] = masterProductFile;
-                        System.arraycopy(Arrays.stream(sourceProducts).skip(productsProcessed).limit(filePatchesLength).toArray(String[]::new), 0,
-                                productFilesList, 1, filePatchesLength);
+                    filePatchesList.add(String.join(",", productFilesList));
 
-                        filePatchesList.add(String.join(",", productFilesList));
-
-                        productsProcessed += filePatchesLength;
-                        productsRemaining = sourceProducts.length - productsProcessed;
-                    }
+                    productsProcessed += filePatchesLength;
+                    productsRemaining = sourceProducts.length - productsProcessed;
                 }
-
-            } else {
-                System.out.println("The minimum number of files should be 20.");
-                return;
-
             }
+
+            String tmpDir = new File("").getAbsolutePath();
 
             HashMap stageParameters = getParameters(configDir);
 
@@ -105,38 +101,40 @@ public class Stage2 {
             HashMap subsetParameters = (HashMap) stageParameters.get("Subset");
             graph.getNode("Subset").getConfiguration().getChild("geoRegion").setValue("POLYGON ((" + subsetParameters.get("geoRegion").toString() + "))");
 
-            FileWriter fileWriter = new FileWriter(graphsDir + File.separator + "Subset.xml");
+            FileWriter fileWriter = new FileWriter(tmpDir + File.separator + "Subset.xml");
             GraphIO.write(graph, fileWriter);
             fileWriter.flush();
             fileWriter.close();
 
             IntStream.range(0, filePatchesList.size()).parallel().forEach(index -> {
                 try {
-
-                    FileReader fileReader1 = new FileReader(graphsDir + File.separator + "Subset.xml");
+                    FileReader fileReader1 = new FileReader(tmpDir + File.separator + "Subset.xml");
                     Graph graph1 = GraphIO.read(fileReader1);
                     fileReader1.close();
 
                     graph1.getNode("ProductSet-Reader").getConfiguration().getChild("fileList").setValue(filePatchesList.get(index));
                     graph1.getNode("Write").getConfiguration().getChild("file").setValue(outputDir + File.separator + (index + 1) + File.separator + "subset_master_Stack_Deb.dim");
 
-                    FileWriter fileWriter1 = new FileWriter(graphsDir + File.separator + "Subset" + (index + 1) + ".xml");
+                    FileWriter fileWriter1 = new FileWriter(tmpDir + File.separator + "Subset" + (index + 1) + ".xml");
                     GraphIO.write(graph1, fileWriter1);
                     fileWriter1.flush();
                     fileWriter1.close();
 
-                    ProcessBuilder processBuilder = new ProcessBuilder(System.getenv("SNAP_HOME") + File.separator + "bin" + File.separator + "gpt.exe ",
-                            graphsDir + File.separator + "Subset" + (index + 1) + ".xml").inheritIO();
+                    ProcessBuilder processBuilder = new ProcessBuilder(System.getenv("SNAP_HOME") + File.separator + "bin" + File.separator + "gpt" +
+                            (System.getProperty("os.name").toLowerCase().contains("windows") ? ".exe" : ""),
+                            tmpDir + File.separator + "Subset" + (index + 1) + ".xml", "-Dsnap.userdir=" + snapDir
+                    ).inheritIO();
                     Process p = processBuilder.start();
                     p.waitFor();
                     p.destroy();
 
-                    Files.deleteIfExists(Paths.get(graphsDir + File.separator + "Subset" + (index + 1) + ".xml"));
+                    Files.deleteIfExists(Paths.get(tmpDir + File.separator + "Subset" + (index + 1) + ".xml"));
 
                 } catch (Exception e) {
-                    System.out.println(e.getMessage());
+                    e.printStackTrace();
                 }
             });
+            Files.deleteIfExists(Paths.get(tmpDir + File.separator + "Subset.xml"));
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -176,7 +174,7 @@ public class Stage2 {
             return stageParameters;
 
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
             return null;
         }
     }

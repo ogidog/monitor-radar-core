@@ -89,14 +89,14 @@ public class Stage3 {
                     Files.deleteIfExists(Paths.get(graphsDir + File.separator + "TopoPhaseRemoval" + (index + 1) + ".xml"));
 
                 } catch (Exception e) {
-                    System.out.println(e.getMessage());
+                    e.printStackTrace();
                 }
             });
 
             return;
 
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 

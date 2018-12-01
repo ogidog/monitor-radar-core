@@ -21,7 +21,7 @@
       <sourceProduct.1 refid="Read(2)"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <targetFolder>F:\intellij-idea-workspace\monitor-radar-core-v3\processing\stampsexport</targetFolder>
+      <targetFolder>F:\\intellij-idea-workspace\\monitor-radar-core-v3\\processing\\stampsexport</targetFolder>
       <psiFormat>true</psiFormat>
     </parameters>
   </node>
