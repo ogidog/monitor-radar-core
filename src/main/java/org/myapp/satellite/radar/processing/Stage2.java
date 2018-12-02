@@ -134,6 +134,7 @@ public class Stage2 {
                     e.printStackTrace();
                 }
             });
+
             Files.deleteIfExists(Paths.get(tmpDir + File.separator + "Subset.xml"));
 
         } catch (Exception e) {

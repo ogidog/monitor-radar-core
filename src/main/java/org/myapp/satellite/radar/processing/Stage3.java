@@ -31,12 +31,15 @@ public class Stage3 {
         String outputDir = consoleParameters.get("outputDir").toString();
         String graphsDir = consoleParameters.get("graphsDir").toString();
         String configDir = consoleParameters.get("configDir").toString();
+        String snapDir = consoleParameters.get("snapDir").toString();
 
         try {
 
             String[] filePatchesDirs = Files.find(Paths.get(inputDir), 1, (path, attr) -> {
                 return Character.isDigit(path.toString().charAt(path.toString().length() - 1));
             }).map(path -> path.toString()).toArray(String[]::new);
+
+            String tmpDir = new File("").getAbsolutePath();
 
             HashMap stageParameters = getParameters(configDir);
 
@@ -57,7 +60,7 @@ public class Stage3 {
                 graph.getNode("TopoPhaseRemoval").getConfiguration().getChild(pair.getKey().toString()).setValue(pair.getValue().toString());
             }
 
-            FileWriter fileWriter = new FileWriter(graphsDir + File.separator + "TopoPhaseRemoval.xml");
+            FileWriter fileWriter = new FileWriter(tmpDir + File.separator + "TopoPhaseRemoval.xml");
             GraphIO.write(graph, fileWriter);
             fileWriter.flush();
             fileWriter.close();
@@ -67,33 +70,35 @@ public class Stage3 {
 
                 try {
 
-                    Reader fileReader1 = new FileReader(graphsDir + File.separator + "TopoPhaseRemoval.xml");
+                    Reader fileReader1 = new FileReader(tmpDir + File.separator + "TopoPhaseRemoval.xml");
                     Graph graph1 = GraphIO.read(fileReader1);
                     fileReader1.close();
 
                     graph1.getNode("Read").getConfiguration().getChild("file").setValue(filePatchesDirs[index] + File.separator + "subset_master_Stack_Deb.dim");
                     graph1.getNode("Write").getConfiguration().getChild("file").setValue(outputDir + File.separator + (index + 1) + File.separator + "subset_master_Stack_Deb_ifg_dinsar.dim");
 
-                    FileWriter fileWriter1 = new FileWriter(graphsDir + File.separator + "TopoPhaseRemoval" + (index + 1) + ".xml");
+                    FileWriter fileWriter1 = new FileWriter(tmpDir + File.separator + "TopoPhaseRemoval" + (index + 1) + ".xml");
                     GraphIO.write(graph1, fileWriter1);
                     fileWriter1.flush();
                     fileWriter1.close();
 
                     ProcessBuilder processBuilder =
-                            new ProcessBuilder(System.getenv("SNAP_HOME") + File.separator + "bin" + File.separator + "gpt.exe ",
-                                    graphsDir + File.separator + "TopoPhaseRemoval" + (index + 1) + ".xml").inheritIO();
+                            new ProcessBuilder(System.getenv("SNAP_HOME") + File.separator + "bin" + File.separator + "gpt" +
+                                    (System.getProperty("os.name").toLowerCase().contains("windows") ? ".exe" : ""),
+                                    tmpDir + File.separator + "TopoPhaseRemoval" + (index + 1) + ".xml", "-Dsnap.userdir=" + snapDir
+                            ).inheritIO();
                     Process p = processBuilder.start();
                     p.waitFor();
                     p.destroy();
 
-                    Files.deleteIfExists(Paths.get(graphsDir + File.separator + "TopoPhaseRemoval" + (index + 1) + ".xml"));
+                    Files.deleteIfExists(Paths.get(tmpDir + File.separator + "TopoPhaseRemoval" + (index + 1) + ".xml"));
 
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             });
 
-            return;
+            Files.deleteIfExists(Paths.get(tmpDir + File.separator + "TopoPhaseRemoval.xml"));
 
         } catch (Exception e) {
             e.printStackTrace();

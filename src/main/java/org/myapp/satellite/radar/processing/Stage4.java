@@ -27,6 +27,7 @@ public class Stage4 {
         String inputDir2 = consoleParameters.get("inputDir2").toString();
         String outputDir = consoleParameters.get("outputDir").toString();
         String graphsDir = consoleParameters.get("graphsDir").toString();
+        String snapDir = consoleParameters.get("snapDir").toString();
 
         try {
 
@@ -37,6 +38,8 @@ public class Stage4 {
             String[] sourceProductsDirs2 = Files.find(Paths.get(inputDir2), 1, (path, attr) -> {
                 return Character.isDigit(path.toString().charAt(path.toString().length() - 1));
             }).map(path -> path.toString()).toArray(String[]::new);
+
+            String tmpDir = new File("").getAbsolutePath();
 
             IntStream.range(0, sourceProductsDirs1.length).forEach(index -> {
 
@@ -50,17 +53,21 @@ public class Stage4 {
                     graph.getNode("Read(2)").getConfiguration().getChild("file").setValue(sourceProductsDirs2[index] + File.separator + "subset_master_Stack_Deb_ifg_dinsar.dim");
                     graph.getNode("StampsExport").getConfiguration().getChild("targetFolder").setValue(outputDir);
 
-                    FileWriter fileWriter = new FileWriter(graphsDir + File.separator + "PSExport.xml");
+                    FileWriter fileWriter = new FileWriter(tmpDir + File.separator + "PSExport.xml");
                     GraphIO.write(graph, fileWriter);
                     fileWriter.flush();
                     fileWriter.close();
 
                     ProcessBuilder processBuilder =
-                            new ProcessBuilder(System.getenv("SNAP_HOME") + File.separator + "bin" + File.separator + "gpt.exe ",
-                                    graphsDir + File.separator + "PSExport.xml").inheritIO();
+                            new ProcessBuilder(System.getenv("SNAP_HOME") + File.separator + "bin" + File.separator + "gpt" +
+                                    (System.getProperty("os.name").toLowerCase().contains("windows") ? ".exe" : ""),
+                                    tmpDir + File.separator + "PSExport.xml", "-Dsnap.userdir=" + snapDir
+                            ).inheritIO();
                     Process p = processBuilder.start();
                     p.waitFor();
                     p.destroy();
+
+                    Files.deleteIfExists(Paths.get(tmpDir + File.separator + "PSExport.xml"));
 
                 } catch (Exception e) {
                     e.printStackTrace();
