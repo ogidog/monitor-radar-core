@@ -33,11 +33,11 @@ public class Stage4 {
 
             String[] sourceProductsDirs1 = Files.find(Paths.get(inputDir1), 1, (path, attr) -> {
                 return Character.isDigit(path.toString().charAt(path.toString().length() - 1));
-            }).map(path -> path.toString()).toArray(String[]::new);
+            }).map(path -> path.toString()).sorted().toArray(String[]::new);
 
             String[] sourceProductsDirs2 = Files.find(Paths.get(inputDir2), 1, (path, attr) -> {
                 return Character.isDigit(path.toString().charAt(path.toString().length() - 1));
-            }).map(path -> path.toString()).toArray(String[]::new);
+            }).map(path -> path.toString()).sorted().toArray(String[]::new);
 
             String tmpDir = new File("").getAbsolutePath();
 
