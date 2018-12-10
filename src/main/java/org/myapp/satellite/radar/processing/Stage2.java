@@ -34,6 +34,8 @@ public class Stage2 {
 
         int filePatchesLength = 7;
 
+        Config.instance().preferences().put("snap.userdir", snapDir);
+
         try {
 
             String[] sourceProducts = Files.find(Paths.get(inputDir), 1, (path, attr) -> {
@@ -52,6 +54,9 @@ public class Stage2 {
                     });
 
             ArrayList<String> filePatchesList = new ArrayList();
+            // Creating images pair for initializing download process during BackGeocodingOp, if it will be required
+            filePatchesList.add(masterProductFile + "," + sourceProducts[0]);
+            sourceProducts = Arrays.stream(sourceProducts).skip(1).toArray(String[]::new);
 
             int productsRemaining = sourceProducts.length;
             int productsProcessed = 0;
@@ -106,7 +111,36 @@ public class Stage2 {
             fileWriter.flush();
             fileWriter.close();
 
-            IntStream.range(0, filePatchesList.size()).parallel().forEach(index -> {
+            IntStream.range(0, 1).forEach(index -> {
+                try {
+                    FileReader fileReader1 = new FileReader(tmpDir + File.separator + "Subset.xml");
+                    Graph graph1 = GraphIO.read(fileReader1);
+                    fileReader1.close();
+
+                    graph1.getNode("ProductSet-Reader").getConfiguration().getChild("fileList").setValue(filePatchesList.get(index));
+                    graph1.getNode("Write").getConfiguration().getChild("file").setValue(outputDir + File.separator + (index + 1) + File.separator + "subset_master_Stack_Deb.dim");
+
+                    FileWriter fileWriter1 = new FileWriter(tmpDir + File.separator + "Subset" + (index + 1) + ".xml");
+                    GraphIO.write(graph1, fileWriter1);
+                    fileWriter1.flush();
+                    fileWriter1.close();
+
+                    ProcessBuilder processBuilder = new ProcessBuilder(System.getenv("SNAP_HOME") + File.separator + "bin" + File.separator + "gpt" +
+                            (System.getProperty("os.name").toLowerCase().contains("windows") ? ".exe" : ""),
+                            tmpDir + File.separator + "Subset" + (index + 1) + ".xml", "-Dsnap.userdir=" + snapDir
+                    ).inheritIO();
+                    Process p = processBuilder.start();
+                    p.waitFor();
+                    p.destroy();
+
+                    Files.deleteIfExists(Paths.get(tmpDir + File.separator + "Subset" + (index + 1) + ".xml"));
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+
+            IntStream.range(1, filePatchesList.size()).parallel().forEach(index -> {
                 try {
                     FileReader fileReader1 = new FileReader(tmpDir + File.separator + "Subset.xml");
                     Graph graph1 = GraphIO.read(fileReader1);
