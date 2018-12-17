@@ -13,6 +13,18 @@ public class TestJarsPath {
             HashSet<String> classPath = new HashSet<>();
             HashSet<String> libNames = new HashSet<>();
 
+            String images = Files.find(Paths.get("Y:\\Satellites\\Sentinel-1A\\1"), 99,
+                    (path, attr) -> {
+                        if (path.toString().endsWith(".zip")) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }).map(path -> path.toString())
+                    .map(path->path.replace("Y:","/mnt/satimg").replace("\\","/"))
+                    .collect(Collectors.joining(","));
+
+
             Files.find(Paths.get("C:\\Program Files\\snap\\snap\\modules\\ext"), 99,
                     (path, attr) -> {
                         if (path.toString().endsWith(".jar")) {

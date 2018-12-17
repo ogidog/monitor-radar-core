@@ -44,7 +44,7 @@ public class Stage2 {
                 } else {
                     return false;
                 }
-            }).map(path -> path.toString()).toArray(String[]::new);
+            }).map(path -> path.toString()).sorted().toArray(String[]::new);
             String masterProductFile = sourceProducts[0];
             sourceProducts = Arrays.stream(sourceProducts).skip(1).toArray(String[]::new);
 
@@ -56,7 +56,7 @@ public class Stage2 {
             ArrayList<String> filePatchesList = new ArrayList();
             // Creating images pair for initializing download process during BackGeocodingOp, if it will be required
             filePatchesList.add(masterProductFile + "," + sourceProducts[0]);
-            sourceProducts = Arrays.stream(sourceProducts).skip(1).toArray(String[]::new);
+            sourceProducts = Arrays.stream(sourceProducts).skip(1).sorted().toArray(String[]::new);
 
             int productsRemaining = sourceProducts.length;
             int productsProcessed = 0;

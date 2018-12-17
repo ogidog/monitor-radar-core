@@ -37,7 +37,7 @@ public class Stage3 {
 
             String[] filePatchesDirs = Files.find(Paths.get(inputDir), 1, (path, attr) -> {
                 return Character.isDigit(path.toString().charAt(path.toString().length() - 1));
-            }).map(path -> path.toString()).toArray(String[]::new);
+            }).map(path -> path.toString()).sorted().toArray(String[]::new);
 
             String tmpDir = new File("").getAbsolutePath();
 
