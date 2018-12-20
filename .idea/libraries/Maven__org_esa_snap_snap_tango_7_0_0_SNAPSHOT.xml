@@ -1,13 +1,13 @@
 <component name="libraryTable">
   <library name="Maven: org.esa.snap:snap-tango:7.0.0-SNAPSHOT">
     <CLASSES>
-      <root url="jar://F:/Maven/.m2/repository/org/esa/snap/snap-tango/7.0.0-SNAPSHOT/snap-tango-7.0.0-20181109.123520-74.jar!/" />
+      <root url="jar://F:/Maven/.m2/repository/org/esa/snap/snap-tango/7.0.0-SNAPSHOT/snap-tango-7.0.0-20181218.174959-77.jar!/" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://F:/Maven/.m2/repository/org/esa/snap/snap-tango/7.0.0-SNAPSHOT/snap-tango-7.0.0-20181109.123520-74-javadoc.jar!/" />
+      <root url="jar://F:/Maven/.m2/repository/org/esa/snap/snap-tango/7.0.0-SNAPSHOT/snap-tango-7.0.0-20181218.174959-77-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://F:/Maven/.m2/repository/org/esa/snap/snap-tango/7.0.0-SNAPSHOT/snap-tango-7.0.0-20181109.123520-74-sources.jar!/" />
+      <root url="jar://F:/Maven/.m2/repository/org/esa/snap/snap-tango/7.0.0-SNAPSHOT/snap-tango-7.0.0-20181218.174959-77-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

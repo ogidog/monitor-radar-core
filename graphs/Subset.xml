@@ -41,7 +41,7 @@
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <sourceBands/>
       <region/>
-      <geoRegion>POLYGON ((86.186767578125 55.605072021484375,86.08502960205078 55.605072021484375,86.08502960205078 55.64874267578125,86.186767578125 55.64874267578125, 86.186767578125 55.605072021484375, 86.186767578125 55.605072021484375))</geoRegion>
+      <geoRegion></geoRegion>
       <subSamplingX>1</subSamplingX>
       <subSamplingY>1</subSamplingY>
       <fullSwath>false</fullSwath>

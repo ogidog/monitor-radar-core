@@ -32,7 +32,7 @@ public class Stage2 {
         String configDir = consoleParameters.get("configDir").toString();
         String snapDir = consoleParameters.get("snapDir").toString();
 
-        int filePatchesLength = 7;
+        int filePatchesLength = Integer.valueOf(consoleParameters.get("filePatchesLength").toString());
 
         Config.instance().preferences().put("snap.userdir", snapDir);
 
