@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 public class TestJarsPath {
 
     public static void main(String[] args) {
+
         System.getProperty("os.name");
         try {
             HashSet<String> classPath = new HashSet<>();
