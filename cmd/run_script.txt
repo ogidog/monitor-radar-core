@@ -12,8 +12,9 @@ python3 /mnt/hdfs/user/$1/monitor-radar-core/scripts/mat2py_conv.py $OUTPUT_DIR/
 sudo docker build -t stamps:3.0 .
 sudo docker run --privileged -v /mnt/hdfs:/mnt/hdfs -v /mnt/fast:/mnt/fast -it stamps:3.0 /bin/bash -l
 sudo docker system prune -a
-sudo docker rm $(sudo docker ps -aq)
-sudo docker rmi $(sudo docker images -aq)
+sudo docker stop $(sudo docker ps -aq) // stop all containers
+sudo docker rm $(sudo docker ps -aq) // remove all containers
+sudo docker rmi $(sudo docker images -aq) // remove all images
 
 sudo -u hdfs hdfs dfs -chmod -R 777 /user/monitor_radar_usr/monitor-radar-core/
 

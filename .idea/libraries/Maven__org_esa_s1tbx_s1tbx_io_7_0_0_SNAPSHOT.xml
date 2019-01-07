@@ -1,13 +1,13 @@
 <component name="libraryTable">
   <library name="Maven: org.esa.s1tbx:s1tbx-io:7.0.0-SNAPSHOT">
     <CLASSES>
-      <root url="jar://F:/Maven/.m2/repository/org/esa/s1tbx/s1tbx-io/7.0.0-SNAPSHOT/s1tbx-io-7.0.0-20181218.181007-204.jar!/" />
+      <root url="jar://F:/Maven/.m2/repository/org/esa/s1tbx/s1tbx-io/7.0.0-SNAPSHOT/s1tbx-io-7.0.0-20181231.183754-206.jar!/" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://F:/Maven/.m2/repository/org/esa/s1tbx/s1tbx-io/7.0.0-SNAPSHOT/s1tbx-io-7.0.0-20181218.181007-204-javadoc.jar!/" />
+      <root url="jar://F:/Maven/.m2/repository/org/esa/s1tbx/s1tbx-io/7.0.0-SNAPSHOT/s1tbx-io-7.0.0-20181231.183754-206-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://F:/Maven/.m2/repository/org/esa/s1tbx/s1tbx-io/7.0.0-SNAPSHOT/s1tbx-io-7.0.0-20181218.181007-204-sources.jar!/" />
+      <root url="jar://F:/Maven/.m2/repository/org/esa/s1tbx/s1tbx-io/7.0.0-SNAPSHOT/s1tbx-io-7.0.0-20181231.183754-206-sources.jar!/" />
     </SOURCES>
   </library>
 </component>
