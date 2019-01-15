@@ -41,7 +41,7 @@ public class DataManager {
         try {
 
             int currentYear = Year.now().getValue();
-            String httpQuery = OAHubURL + "search?rows=200&q="
+            String httpQuery = OAHubURL + "search?rows=100&q="
                     + URLEncoder.encode("footprint:\"Intersects(POLYGON((", "UTF-8") + URLEncoder.encode(parameters.get("roi").toString(),"UTF-8") + URLEncoder.encode(")))\"", "UTF-8")
                     + (parameters.get("producttype").equals("''") ? "" : URLEncoder.encode(" AND producttype:", "UTF-8") + parameters.get("producttype"))
                     + URLEncoder.encode(" AND ingestiondate:[", "UTF-8") + currentYear
@@ -92,7 +92,7 @@ public class DataManager {
             connection.close();
 
             String downloaderScriptContent = imageTitles.values().stream().map(value ->
-                    "wget --content-disposition --continue --user=ogidog --password=powerDVD --directory-prefix=/mnt/satimg/Satellites/Sentinel-1A \"https://scihub.copernicus.eu/dhus/odata/v1/Products('{" + value + "}')/\\$value\""
+                    "wget --content-disposition --continue --user=ogidog --password=powerDVD --directory-prefix=/mnt/satimg/Satellites/Sentinel-1A \"https://scihub.copernicus.eu/dhus/odata/v1/Products('" + value + "')/\\$value\""
             ).collect(Collectors.joining("\n")).toString();
             downloaderScriptContent = downloaderScriptContent + "\nwait\n";
 

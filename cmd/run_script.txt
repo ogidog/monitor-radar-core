@@ -53,8 +53,13 @@ stamps_run "proc" /mnt/fast/dockers/monitor-radar-core/monitor_radar_usr/process
 stamps_run "patch" /mnt/fast/dockers/monitor-radar-core/monitor_radar_usr/processing/1544008887623 /mnt/hdfs/user/monitor_radar_usr/monitor-radar-core/results/1544008887623 3 4
 
 stamps_run "result" /mnt/fast/dockers/monitor-radar-core/monitor_radar_usr/processing/1544008887623 /mnt/hdfs/user/monitor_radar_usr/monitor-radar-core/results/1544008887623
+
+stamps_run download relativeorbitnumber="''" sensoroperationalmode=IW producttype=SLC "roi=84.52998795213192 54.65138129891938, 85.4203990394665 53.7511761784223, 86.65906665087286 52.62795102669355, 87.97510662516017 52.09048592333664, 88.82106812011401 52.14372209108452, 88.86635841126693 52.1837190890267, 89.15165814256267 52.37972109021305, 89.25516760367282 52.84500423605002, 89.29772616290136 53.45901508111474, 89.34729633078236 54.21676506189529, 88.82675347772887 54.61907058531327, 89.54098233075624 55.77741355333997, 88.60798919443489 56.90274705069148, 84.16563424557138 56.46039206304616, 84.52998795213192 54.65138129891938"
+
 ------------------------------------------------------------------------------------------------------------
 
 
 
 java -cp "monitor-radar-core-3.0.jar;F:\Maven\.m2\repository\com\googlecode\json-simple\json-simple\1.1.1\*;C:\Program Files\snap\snap\modules\*;C:\Program Files\snap\s1tbx\modules\*" org.myapp.satellite.radar.processing.Stage1 outputDir="F:\\intellij-idea-workspace\\monitor-radar-core\\processing" snapDir="F:\\intellij-idea-workspace\\monitor-radar-core\\.snap" configDir="F:\\intellij-idea-workspace\\monitor-radar-core\\config" filesList="Y:\\Satellites\\Sentinel-1A\\S1A_IW_SLC__1SDV_20161229T002757_20161229T002826_014587_017B50_58CD.zip,Y:\\Satellites\\Sentinel-1A\\S1A_IW_SLC__1SDV_20170122T002755_20170122T002824_014937_018613_A687.zip"
+
+
