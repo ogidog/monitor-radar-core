@@ -92,12 +92,12 @@ public class DataManager {
             connection.close();
 
             String downloaderScriptContent = imageTitles.values().stream().map(value ->
-                    "wget --content-disposition --continue --user=ogidog --password=powerDVD --directory-prefix=/mnt/satimg/Satellites/Sentinel-1A \"https://scihub.copernicus.eu/dhus/odata/v1/Products('" + value + "')/\\$value\""
+                    "wget --content-disposition --continue --quiet --output-file=/dev/null --user=ogidog --password=powerDVD --directory-prefix=/mnt/satimg/Satellites/Sentinel-1A \"https://scihub.copernicus.eu/dhus/odata/v1/Products('" + value + "')/\\$value\""
             ).collect(Collectors.joining("\n")).toString();
             downloaderScriptContent = downloaderScriptContent + "\nwait\n";
 
             String imageFilePaths = imageTitles.keySet().stream().map(key -> "/mnt/satimg/Satellites/Sentinel-1A/" + key + ".zip").collect(Collectors.joining(",")).toString();
-            downloaderScriptContent = downloaderScriptContent + "java -cp $CLASSPATH org.myapp.satellite.radar.manager.DBManager addNewImageToDB " + imageFilePaths + " > /dev/null\n";
+            downloaderScriptContent = downloaderScriptContent + "java -Djava.library.path=$JAVA_LIBRARY_PATH -cp $CLASSPATH org.myapp.satellite.radar.manager.DBManager addNewImageToDB " + imageFilePaths + " > /dev/null\n";
 
             File file = new File("downloader_script");
             FileWriter fw = new FileWriter(file.getAbsoluteFile());
