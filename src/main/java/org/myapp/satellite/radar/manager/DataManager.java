@@ -13,30 +13,42 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.time.Year;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.stream.Collectors;
+
+import org.myapp.utils.ConsoleArgsReader;
 
 public class DataManager {
 
     static String OAHubURL = "https://ogidog:powerDVD@scihub.copernicus.eu/dhus/";
     static private String dbms = "10.101.80.252";
 
+    /*
+    relativeorbitnumber:165
+    sensoroperationalmode:IW
+    producttype:SLC
+    footprint:"Intersects(POLYGON((84.52998795213192 54.65138129891938, 85.4203990394665 53.7511761784223, 86.65906665087286 52.62795102669355, 87.97510662516017 52.09048592333664, 88.82106812011401 52.14372209108452, 88.86635841126693 52.1837190890267, 89.15165814256267 52.37972109021305, 89.25516760367282 52.84500423605002, 89.29772616290136 53.45901508111474, 89.34729633078236 54.21676506189529, 88.82675347772887 54.61907058531327, 89.54098233075624 55.77741355333997, 88.60798919443489 56.90274705069148, 84.16563424557138 56.46039206304616, 84.52998795213192 54.65138129891938)))"
+    */
+
     public static void main(String[] args) {
-        createDownloaderScript();
+
+        HashMap parameters = ConsoleArgsReader.readConsoleArgs(args);
+        createDownloaderScript(parameters);
     }
 
-    private static void createDownloaderScript() {
+    private static void createDownloaderScript(HashMap parameters) {
         try {
 
             int currentYear = Year.now().getValue();
-            String httpQuery = OAHubURL + "search?rows=100&q="
-                    + URLEncoder.encode("footprint:\"Intersects(POLYGON((84.52998795213192 54.65138129891938, 85.4203990394665 53.7511761784223, 86.65906665087286 52.62795102669355, 87.97510662516017 52.09048592333664, 88.82106812011401 52.14372209108452, 88.86635841126693 52.1837190890267, 89.15165814256267 52.37972109021305, 89.25516760367282 52.84500423605002, 89.29772616290136 53.45901508111474, 89.34729633078236 54.21676506189529, 88.82675347772887 54.61907058531327, 89.54098233075624 55.77741355333997, 88.60798919443489 56.90274705069148, 84.16563424557138 56.46039206304616, 84.52998795213192 54.65138129891938)))\" AND producttype:SLC AND ingestiondate:[", "UTF-8")
-                    + currentYear
-                    + URLEncoder.encode("-01-01T00:00:00.000Z TO ", "UTF-8")
-                    + currentYear
-                    + URLEncoder.encode("-12-31T00:00:00.000Z] AND relativeorbitnumber:165 AND sensoroperationalmode:IW", "UTF-8")
+            String httpQuery = OAHubURL + "search?rows=200&q="
+                    + URLEncoder.encode("footprint:\"Intersects(POLYGON((", "UTF-8") + URLEncoder.encode(parameters.get("roi").toString(),"UTF-8") + URLEncoder.encode(")))\"", "UTF-8")
+                    + (parameters.get("producttype").equals("''") ? "" : URLEncoder.encode(" AND producttype:", "UTF-8") + parameters.get("producttype"))
+                    + URLEncoder.encode(" AND ingestiondate:[", "UTF-8") + currentYear
+                    + URLEncoder.encode("-01-01T00:00:00.000Z TO ", "UTF-8") + currentYear
+                    + URLEncoder.encode("-12-31T00:00:00.000Z]", "UTF-8")
+                    + (parameters.get("relativeorbitnumber").equals("''") ? "" : URLEncoder.encode(" AND relativeorbitnumber:", "UTF-8") + parameters.get("relativeorbitnumber"))
+                    + (parameters.get("sensoroperationalmode").equals("''") ? "" : URLEncoder.encode(" AND sensoroperationalmode:", "UTF-8") + parameters.get("sensoroperationalmode"))
                     + "&format=json";
 
 
