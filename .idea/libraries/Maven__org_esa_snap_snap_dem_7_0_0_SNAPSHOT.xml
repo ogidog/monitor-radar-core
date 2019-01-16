@@ -1,13 +1,13 @@
 <component name="libraryTable">
   <library name="Maven: org.esa.snap:snap-dem:7.0.0-SNAPSHOT">
     <CLASSES>
-      <root url="jar://F:/Maven/.m2/repository/org/esa/snap/snap-dem/7.0.0-SNAPSHOT/snap-dem-7.0.0-20181229.214503-76.jar!/" />
+      <root url="jar://F:/Maven/.m2/repository/org/esa/snap/snap-dem/7.0.0-SNAPSHOT/snap-dem-7.0.0-20190115.120348-77.jar!/" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://F:/Maven/.m2/repository/org/esa/snap/snap-dem/7.0.0-SNAPSHOT/snap-dem-7.0.0-20181229.214503-76-javadoc.jar!/" />
+      <root url="jar://F:/Maven/.m2/repository/org/esa/snap/snap-dem/7.0.0-SNAPSHOT/snap-dem-7.0.0-20190115.120348-77-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://F:/Maven/.m2/repository/org/esa/snap/snap-dem/7.0.0-SNAPSHOT/snap-dem-7.0.0-20181229.214503-76-sources.jar!/" />
+      <root url="jar://F:/Maven/.m2/repository/org/esa/snap/snap-dem/7.0.0-SNAPSHOT/snap-dem-7.0.0-20190115.120348-77-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

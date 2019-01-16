@@ -1,13 +1,13 @@
 <component name="libraryTable">
   <library name="Maven: org.esa.snap:snap-envisat-reader:7.0.0-SNAPSHOT">
     <CLASSES>
-      <root url="jar://F:/Maven/.m2/repository/org/esa/snap/snap-envisat-reader/7.0.0-SNAPSHOT/snap-envisat-reader-7.0.0-20181229.214111-77.jar!/" />
+      <root url="jar://F:/Maven/.m2/repository/org/esa/snap/snap-envisat-reader/7.0.0-SNAPSHOT/snap-envisat-reader-7.0.0-20190115.120028-78.jar!/" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://F:/Maven/.m2/repository/org/esa/snap/snap-envisat-reader/7.0.0-SNAPSHOT/snap-envisat-reader-7.0.0-20181229.214111-77-javadoc.jar!/" />
+      <root url="jar://F:/Maven/.m2/repository/org/esa/snap/snap-envisat-reader/7.0.0-SNAPSHOT/snap-envisat-reader-7.0.0-20190115.120028-78-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://F:/Maven/.m2/repository/org/esa/snap/snap-envisat-reader/7.0.0-SNAPSHOT/snap-envisat-reader-7.0.0-20181229.214111-77-sources.jar!/" />
+      <root url="jar://F:/Maven/.m2/repository/org/esa/snap/snap-envisat-reader/7.0.0-SNAPSHOT/snap-envisat-reader-7.0.0-20190115.120028-78-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

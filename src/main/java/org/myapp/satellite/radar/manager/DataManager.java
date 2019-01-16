@@ -90,9 +90,8 @@ public class DataManager {
             }
 
             connection.close();
-
             String downloaderScriptContent = imageTitles.values().stream().map(value ->
-                    "wget --content-disposition --continue --quiet --output-file=/dev/null --user=ogidog --password=powerDVD --directory-prefix=/mnt/satimg/Satellites/Sentinel-1A \"https://scihub.copernicus.eu/dhus/odata/v1/Products('" + value + "')/\\$value\""
+                    "wget --no-http-keep-alive --no-verbose --output-file=/mnt/satimg/Satellites/Sentinel-1A/downloading.log --continue --content-disposition --user=ogidog --password=powerDVD --directory-prefix=/mnt/satimg/Satellites/Sentinel-1A/ \"https://scihub.copernicus.eu/dhus/odata/v1/Products('" + value + "')/\\$value\""
             ).collect(Collectors.joining("\n")).toString();
             downloaderScriptContent = downloaderScriptContent + "\nwait\n";
 
