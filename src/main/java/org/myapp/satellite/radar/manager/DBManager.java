@@ -26,43 +26,50 @@ public class DBManager {
 
     private static void addNewImageToDB(String imageFilePaths) {
 
+        Connection connection = null;
         try {
-
             Class.forName("org.postgresql.Driver");
-            Connection connection = DriverManager
+            connection = DriverManager
                     .getConnection(
                             "jdbc:postgresql://" + dbms + ":5432/satimgdb",
                             "satimg_adm", "rfnfkjucybvrjd");
-
             connection.setAutoCommit(false);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-            Arrays.stream(imageFilePaths.split(",")).forEach(imageFilePath -> {
+        if (connection != null) {
+
+            for (String imageFilePath : imageFilePaths.split(",")) {
+
                 HashMap productMetadata = getMetadata(imageFilePath);
+                if (productMetadata != null) {
+                    String sql = "INSERT INTO remote_sensing_data (name, mission, product_type, geom, file_path, polarizations, orbit_cycle, rel_orbit, abs_orbit) " +
+                            "VALUES (" +
+                            "'" + productMetadata.get("name") + "'," +
+                            "'" + productMetadata.get("mission") + "'," +
+                            "'" + productMetadata.get("product_type") + "'," +
+                            productMetadata.get("geom") + ',' +
+                            "'" + imageFilePath + "'," +
+                            "'" + productMetadata.get("polarization") + "'," +
+                            productMetadata.get("orbit_cycle") + "," +
+                            productMetadata.get("rel_orbit") + "," +
+                            productMetadata.get("abs_orbit") +
+                            ")";
 
-                String sql = "INSERT INTO remote_sensing_data (name, mission, product_type, geom, file_path, polarizations, orbit_cycle, rel_orbit, abs_orbit) " +
-                        "VALUES (" +
-                        "'" + productMetadata.get("name") + "'," +
-                        "'" + productMetadata.get("mission") + "'," +
-                        "'" + productMetadata.get("product_type") + "'," +
-                        productMetadata.get("geom") + ',' +
-                        "'" + imageFilePath + "'," +
-                        "'" + productMetadata.get("polarization") + "'," +
-                        productMetadata.get("orbit_cycle") + "," +
-                        productMetadata.get("rel_orbit") + "," +
-                        productMetadata.get("abs_orbit") +
-                        ")";
-
-                try {
-                    Statement statement = connection.createStatement();
-                    statement.executeUpdate(sql);
-                    connection.commit();
-                } catch (SQLException e) {
-                    e.printStackTrace();
+                    try {
+                        Statement statement = connection.createStatement();
+                        statement.executeUpdate(sql);
+                        connection.commit();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
                 }
-            });
+            }
+        }
 
+        try {
             connection.close();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
