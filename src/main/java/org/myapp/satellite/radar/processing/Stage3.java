@@ -65,7 +65,7 @@ public class Stage3 {
             fileWriter.flush();
             fileWriter.close();
 
-            IntStream.range(0, filePatchesDirs.length).parallel().forEach(index -> {
+            IntStream.range(0, filePatchesDirs.length).forEach(index -> {
                 new File(outputDir + File.separator + (index + 1)).mkdirs();
 
                 try {

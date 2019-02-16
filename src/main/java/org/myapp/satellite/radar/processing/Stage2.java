@@ -20,10 +20,104 @@ public class Stage2 {
 
     public static void main(String[] args) {
 
-        /*String inputDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\processing\\applyorbitfile";
-        String outputDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\processing\\subset";
-        String graphsDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\graphs";
-        String configDir = "F:\\intellij-idea-workspace\\monitor-radar-core-v3\\config";*/
+        HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
+        String inputDir = consoleParameters.get("inputDir").toString();
+        String outputDir = consoleParameters.get("outputDir").toString();
+        String graphsDir = consoleParameters.get("graphsDir").toString();
+        String configDir = consoleParameters.get("configDir").toString();
+        String snapDir = consoleParameters.get("snapDir").toString();
+
+        String masterName = "S1A_IW_SLC__1SDV_20161229T002757_20161229T002826_014587_017B50_58CD";
+        int numOfProcesses = 2;
+
+        Config.instance().preferences().put("snap.userdir", snapDir);
+
+        try {
+
+            String[] sourceProducts = Files.find(Paths.get(inputDir), 1, (path, attr) -> {
+                if (path.toString().endsWith(".dim")) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }).map(path -> path.toString()).toArray(String[]::new);
+            String masterProductFile = Arrays.stream(sourceProducts).filter(name -> name.contains(masterName)).findFirst().get();
+
+            sourceProducts = Arrays.stream(sourceProducts).skip(1).toArray(String[]::new);
+
+            IntStream.range(0, sourceProducts.length)
+                    .forEach(pairNum -> {
+                        new File(outputDir + File.separator + pairNum).mkdirs();
+                    });
+
+            String tmpDir = new File("").getAbsolutePath();
+
+            HashMap stageParameters = getParameters(configDir);
+
+            Reader fileReader = new FileReader(graphsDir + File.separator + "Subset.xml");
+            Graph graph = GraphIO.read(fileReader);
+            fileReader.close();
+
+            HashMap backGeocodingParameters = (HashMap) stageParameters.get("BackGeocoding");
+            Iterator it = backGeocodingParameters.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry pair = (Map.Entry) it.next();
+                graph.getNode("Back-Geocoding").getConfiguration().getChild(pair.getKey().toString()).setValue(pair.getValue().toString());
+            }
+            HashMap subsetParameters = (HashMap) stageParameters.get("Subset");
+            graph.getNode("Subset").getConfiguration().getChild("geoRegion").setValue("POLYGON ((" + subsetParameters.get("geoRegion").toString() + "))");
+
+            FileWriter fileWriter = new FileWriter(tmpDir + File.separator + "Subset.xml");
+            GraphIO.write(graph, fileWriter);
+            fileWriter.flush();
+            fileWriter.close();
+
+            for (int index = 0; index < sourceProducts.length; index += numOfProcesses) {
+                String[] slaveProductFiles = Arrays.stream(sourceProducts).skip(index).limit(numOfProcesses).toArray(String[]::new);
+                runGraphParallel(masterProductFile, slaveProductFiles, tmpDir, outputDir, snapDir, index);
+            }
+
+            Files.deleteIfExists(Paths.get(tmpDir + File.separator + "Subset.xml"));
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    static void runGraphParallel(String masterProductFile, String[] slaveProductFiles, String tmpDir, String outputDir, String snapDir, int sourceProductIndex) {
+
+        IntStream.range(0, slaveProductFiles.length).parallel().forEach(index -> {
+            try {
+
+                FileReader fileReader1 = new FileReader(tmpDir + File.separator + "Subset.xml");
+                Graph graph1 = GraphIO.read(fileReader1);
+                fileReader1.close();
+
+                graph1.getNode("ProductSet-Reader").getConfiguration().getChild("fileList").setValue(masterProductFile + ',' + slaveProductFiles[index]);
+                graph1.getNode("Write").getConfiguration().getChild("file").setValue(outputDir + File.separator + (sourceProductIndex + index) + File.separator + "subset_master_Stack_Deb.dim");
+
+                FileWriter fileWriter1 = new FileWriter(tmpDir + File.separator + "Subset" + (index) + ".xml");
+                GraphIO.write(graph1, fileWriter1);
+                fileWriter1.flush();
+                fileWriter1.close();
+
+                ProcessBuilder processBuilder = new ProcessBuilder(System.getenv("SNAP_HOME") + File.separator + "bin" + File.separator + "gpt" +
+                        (System.getProperty("os.name").toLowerCase().contains("windows") ? ".exe" : ""),
+                        tmpDir + File.separator + "Subset" + (index) + ".xml", "-Dsnap.userdir=" + snapDir
+                ).inheritIO();
+                Process p = processBuilder.start();
+                p.waitFor();
+                p.destroy();
+
+                Files.deleteIfExists(Paths.get(tmpDir + File.separator + "Subset" + (index) + ".xml"));
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public static void _main(String[] args) {
 
         HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
         String inputDir = consoleParameters.get("inputDir").toString();
@@ -33,6 +127,8 @@ public class Stage2 {
         String snapDir = consoleParameters.get("snapDir").toString();
 
         int filePatchesLength = Integer.valueOf(consoleParameters.get("filePatchesLength").toString());
+
+        int numOfProcesses = 2;
 
         Config.instance().preferences().put("snap.userdir", snapDir);
 
@@ -54,7 +150,6 @@ public class Stage2 {
                     });
 
             ArrayList<String> filePatchesList = new ArrayList();
-            // Creating images pair for initializing download process during BackGeocodingOp, if it will be required
             filePatchesList.add(masterProductFile + "," + sourceProducts[0]);
             sourceProducts = Arrays.stream(sourceProducts).skip(1).sorted().toArray(String[]::new);
 
@@ -140,7 +235,7 @@ public class Stage2 {
                 }
             });
 
-            IntStream.range(1, filePatchesList.size()).parallel().forEach(index -> {
+            IntStream.range(1, filePatchesList.size()).forEach(index -> {
                 try {
                     FileReader fileReader1 = new FileReader(tmpDir + File.separator + "Subset.xml");
                     Graph graph1 = GraphIO.read(fileReader1);

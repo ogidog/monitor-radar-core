@@ -8,8 +8,11 @@ import java.sql.DriverManager;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 public class DBManager {
@@ -44,7 +47,7 @@ public class DBManager {
 
                 HashMap productMetadata = getMetadata(imageFilePath);
                 if (productMetadata != null) {
-                    String sql = "INSERT INTO remote_sensing_data (name, mission, product_type, geom, file_path, polarizations, orbit_cycle, rel_orbit, abs_orbit) " +
+                    String sql = "INSERT INTO remote_sensing_data (name, mission, product_type, geom, file_path, polarizations, orbit_cycle, rel_orbit, abs_orbit, proc_time) " +
                             "VALUES (" +
                             "'" + productMetadata.get("name") + "'," +
                             "'" + productMetadata.get("mission") + "'," +
@@ -54,7 +57,8 @@ public class DBManager {
                             "'" + productMetadata.get("polarization") + "'," +
                             productMetadata.get("orbit_cycle") + "," +
                             productMetadata.get("rel_orbit") + "," +
-                            productMetadata.get("abs_orbit") +
+                            productMetadata.get("abs_orbit") + "," +
+                            "'" + productMetadata.get("proc_time") + "'" +
                             ")";
 
                     try {
@@ -95,6 +99,11 @@ public class DBManager {
             metadata.put("orbit_cycle", rootMetadataElement.getElement("Abstracted_Metadata").getAttributeString("orbit_cycle"));
             metadata.put("rel_orbit", rootMetadataElement.getElement("Abstracted_Metadata").getAttributeString("REL_ORBIT"));
             metadata.put("abs_orbit", rootMetadataElement.getElement("Abstracted_Metadata").getAttributeString("ABS_ORBIT"));
+
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+            Date date = simpleDateFormat.parse(rootMetadataElement.getElement("Abstracted_Metadata").getAttributeString("PROC_TIME").split(" ")[0]);
+            simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+            metadata.put("proc_time", simpleDateFormat.format(date));
 
             Double firstNearLat = rootMetadataElement.getElement("Abstracted_Metadata").getAttribute("first_near_lat").getData().getElemDouble();
             Double firstNearLong = rootMetadataElement.getElement("Abstracted_Metadata").getAttribute("first_near_long").getData().getElemDouble();

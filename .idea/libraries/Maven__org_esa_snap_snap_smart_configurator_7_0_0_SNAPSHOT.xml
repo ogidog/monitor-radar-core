@@ -1,13 +1,13 @@
 <component name="libraryTable">
   <library name="Maven: org.esa.snap:snap-smart-configurator:7.0.0-SNAPSHOT">
     <CLASSES>
-      <root url="jar://F:/Maven/.m2/repository/org/esa/snap/snap-smart-configurator/7.0.0-SNAPSHOT/snap-smart-configurator-7.0.0-20190115.120916-75.jar!/" />
+      <root url="jar://F:/Maven/.m2/repository/org/esa/snap/snap-smart-configurator/7.0.0-SNAPSHOT/snap-smart-configurator-7.0.0-20190212.110046-82.jar!/" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://F:/Maven/.m2/repository/org/esa/snap/snap-smart-configurator/7.0.0-SNAPSHOT/snap-smart-configurator-7.0.0-20190115.120916-75-javadoc.jar!/" />
+      <root url="jar://F:/Maven/.m2/repository/org/esa/snap/snap-smart-configurator/7.0.0-SNAPSHOT/snap-smart-configurator-7.0.0-20190212.110046-82-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://F:/Maven/.m2/repository/org/esa/snap/snap-smart-configurator/7.0.0-SNAPSHOT/snap-smart-configurator-7.0.0-20190115.120916-75-sources.jar!/" />
+      <root url="jar://F:/Maven/.m2/repository/org/esa/snap/snap-smart-configurator/7.0.0-SNAPSHOT/snap-smart-configurator-7.0.0-20190212.110046-82-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

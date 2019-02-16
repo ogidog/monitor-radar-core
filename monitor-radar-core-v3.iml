@@ -16,6 +16,9 @@
     <orderEntry type="library" name="Maven: commons-io:commons-io:2.4" level="project" />
     <orderEntry type="library" name="Maven: org.esa.s1tbx:s1tbx-io-ephemeris:7.0.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: org.jsoup:jsoup:1.8.3" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpclient:4.5" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpcore:4.4.1" level="project" />
+    <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.9" level="project" />
     <orderEntry type="library" name="Maven: org.jlinda:jlinda-core:7.0.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: org.jblas:jblas:1.2.4" level="project" />
     <orderEntry type="library" name="Maven: edu.emory.mathcs:jtransforms:2.3" level="project" />
@@ -209,7 +212,6 @@
     <orderEntry type="library" name="Maven: org.geotools:gt-cql:17.1" level="project" />
     <orderEntry type="library" name="Maven: org.geotools:gt-wms:17.1" level="project" />
     <orderEntry type="library" name="Maven: commons-httpclient:commons-httpclient:3.1" level="project" />
-    <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.2" level="project" />
     <orderEntry type="library" name="Maven: org.geotools:gt-xml:17.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.xml:xml-commons-resolver:1.2" level="project" />
     <orderEntry type="library" name="Maven: org.geotools:gt-render:17.1" level="project" />

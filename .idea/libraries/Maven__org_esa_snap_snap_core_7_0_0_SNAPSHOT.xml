@@ -1,13 +1,13 @@
 <component name="libraryTable">
   <library name="Maven: org.esa.snap:snap-core:7.0.0-SNAPSHOT">
     <CLASSES>
-      <root url="jar://F:/Maven/.m2/repository/org/esa/snap/snap-core/7.0.0-SNAPSHOT/snap-core-7.0.0-20190115.115433-83.jar!/" />
+      <root url="jar://F:/Maven/.m2/repository/org/esa/snap/snap-core/7.0.0-SNAPSHOT/snap-core-7.0.0-20190212.104912-91.jar!/" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://F:/Maven/.m2/repository/org/esa/snap/snap-core/7.0.0-SNAPSHOT/snap-core-7.0.0-20190115.115433-83-javadoc.jar!/" />
+      <root url="jar://F:/Maven/.m2/repository/org/esa/snap/snap-core/7.0.0-SNAPSHOT/snap-core-7.0.0-20190212.104912-91-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://F:/Maven/.m2/repository/org/esa/snap/snap-core/7.0.0-SNAPSHOT/snap-core-7.0.0-20190115.115433-83-sources.jar!/" />
+      <root url="jar://F:/Maven/.m2/repository/org/esa/snap/snap-core/7.0.0-SNAPSHOT/snap-core-7.0.0-20190212.104912-91-sources.jar!/" />
     </SOURCES>
   </library>
 </component>
