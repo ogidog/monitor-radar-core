@@ -20,6 +20,12 @@ public class Stage2 {
 
     public static void main(String[] args) {
 
+        /*inputDir="F:\\intellij-idea-workspace\\monitor-radar-core-v3\\processing\\applyorbitfile"
+        outputDir="F:\\intellij-idea-workspace\\monitor-radar-core-v3\\processing\\subset"
+        graphsDir="F:\\intellij-idea-workspace\\monitor-radar-core-v3\\graphs"
+        configDir="F:\\intellij-idea-workspace\\monitor-radar-core-v3\\config"
+        snapDir="F:\intellij-idea-workspace\monitor-radar-core-v3\.snap" masterName="S1A_IW_SLC__1SDV_20161229T002757_20161229T002826_014587_017B50_58CD"*/
+
         HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
         String inputDir = consoleParameters.get("inputDir").toString();
         String outputDir = consoleParameters.get("outputDir").toString();
@@ -27,7 +33,7 @@ public class Stage2 {
         String configDir = consoleParameters.get("configDir").toString();
         String snapDir = consoleParameters.get("snapDir").toString();
 
-        String masterName = "S1A_IW_SLC__1SDV_20161229T002757_20161229T002826_014587_017B50_58CD";
+        String masterName = consoleParameters.get("masterName").toString();
         int numOfProcesses = 2;
 
         Config.instance().preferences().put("snap.userdir", snapDir);
