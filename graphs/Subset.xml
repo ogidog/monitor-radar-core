@@ -1,16 +1,9 @@
 <graph id="Graph">
   <version>1.0</version>
-  <node id="ProductSet-Reader">
-    <operator>ProductSet-Reader</operator>
-    <sources/>
-    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <fileList></fileList>
-    </parameters>
-  </node>
   <node id="Back-Geocoding">
     <operator>Back-Geocoding</operator>
     <sources>
-      <sourceProduct.31 refid="ProductSet-Reader"/>
+      <sourceProduct.2 refid="ProductSet-Reader"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <demName>SRTM 3Sec</demName>
@@ -41,7 +34,7 @@
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <sourceBands/>
       <region>0,0,25076,1510</region>
-      <geoRegion>POLYGON ((86.19184112548828 54.52214431762695, 86.45772552490234 54.52214431762695, 86.45772552490234 54.62705993652344, 86.19184112548828 54.62705993652344, 86.19184112548828 54.52214431762695, 86.19184112548828 54.52214431762695))</geoRegion>
+      <geoRegion>POLYGON ((86.15035247802734 54.592594146728516, 86.78775024414062 54.592594146728516, 86.78775024414062 54.717430114746094, 86.15035247802734 54.717430114746094, 86.15035247802734 54.592594146728516, 86.15035247802734 54.592594146728516))</geoRegion>
       <subSamplingX>1</subSamplingX>
       <subSamplingY>1</subSamplingY>
       <fullSwath>false</fullSwath>
@@ -57,6 +50,13 @@
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <file>D:\snap-workspace\polysaevo\subset\New Folder\subset_master_Stack_Deb.dim</file>
       <formatName>BEAM-DIMAP</formatName>
+    </parameters>
+  </node>
+  <node id="ProductSet-Reader">
+    <operator>ProductSet-Reader</operator>
+    <sources/>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <fileList>F:\Temp\applyorbitfiles\S1A_IW_SLC__1SDV_20170122T002755_20170122T002824_014937_018613_A687_Orb.dim,F:\Temp\applyorbitfiles\S1B_IW_SLC__1SDV_20170128T002712_20170128T002742_004041_006FC5_0AD8_Orb.dim</fileList>
     </parameters>
   </node>
   <applicationData id="Presentation">
