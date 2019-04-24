@@ -1,9 +1,7 @@
 
-85.92267121522936 55.57338785385323,86.29903154742317 55.53762565163481,86.33910910879604 55.67132996143621,85.96200971393949 55.70664674332989,85.92267121522936 55.57338785385323,85.92267121522936 55.57338785385323
+http://aux.sentinel1.eo.esa.int/
+http://step.esa.int/
 
-for f in $OUTPUT_DIR/stampsexport/ps_plot_*.mat; do
-  python3 /home/cluser/monitor-radar-core/scripts/mat2py_conv.py $OUTPUT_DIR/stampsexport/ps2.mat $f html
-done
 
 mount -t cifs -o username=popovse,password=kubank12RX1,rw,exec,uid=popovse,forceuid,gid=popovse,forcegid,file_mode=0777,dir_mode=0777,nosetuids,noperm,noacl,iocharset=utf8,vers=1.0 //10.101.95.242/satimg /mnt/satimg
 

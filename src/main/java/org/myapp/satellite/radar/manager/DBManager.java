@@ -22,12 +22,14 @@ public class DBManager {
     public static void main(String[] args) {
 
         if (args[0].equals("addNewImageToDB")) {
-            String imageFilePaths = args[1];
-            addNewImageToDB(imageFilePaths);
+            String imageNames = args[1];
+            String imageRealDir = args[2];
+            String imageDirInDBRecord = args[3];
+            addNewImageToDB(imageNames, imageRealDir, imageDirInDBRecord);
         }
     }
 
-    private static void addNewImageToDB(String imageFilePaths) {
+    private static void addNewImageToDB(String imageNames, String imageRealDir, String imageDirInDBRecord) {
 
         Connection connection = null;
         try {
@@ -43,9 +45,9 @@ public class DBManager {
 
         if (connection != null) {
 
-            for (String imageFilePath : imageFilePaths.split(",")) {
+            for (String imageName : imageNames.split(",")) {
 
-                HashMap productMetadata = getMetadata(imageFilePath);
+                HashMap productMetadata = getMetadata(imageRealDir + imageName);
                 if (productMetadata != null) {
                     String sql = "INSERT INTO remote_sensing_data (name, mission, product_type, geom, file_path, polarizations, orbit_cycle, rel_orbit, abs_orbit, proc_time) " +
                             "VALUES (" +
@@ -53,7 +55,7 @@ public class DBManager {
                             "'" + productMetadata.get("mission") + "'," +
                             "'" + productMetadata.get("product_type") + "'," +
                             productMetadata.get("geom") + ',' +
-                            "'" + imageFilePath + "'," +
+                            "'" + imageDirInDBRecord + imageName + "'," +
                             "'" + productMetadata.get("polarization") + "'," +
                             productMetadata.get("orbit_cycle") + "," +
                             productMetadata.get("rel_orbit") + "," +
@@ -67,6 +69,11 @@ public class DBManager {
                         connection.commit();
                     } catch (SQLException e) {
                         e.printStackTrace();
+                        try {
+                            connection.rollback();
+                        }catch (Exception e1){
+                            e1.printStackTrace();
+                        }
                     }
                 }
             }
@@ -125,6 +132,7 @@ public class DBManager {
                     + firstNearLong + " " + firstNearLat
                     + "))', 4326)";
             metadata.put("geom", geom);
+            product.closeIO();
 
             return metadata;
 

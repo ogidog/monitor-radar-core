@@ -1,3 +1,5 @@
+import org.myapp.satellite.radar.manager.DBManager;
+
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.stream.Collectors;
@@ -5,17 +7,22 @@ import java.util.stream.Collectors;
 public class TestAddNewImagesToDB {
 
     public static void main(String[] args) {
+        String imagePath = "Y:\\Sentinel-1A\\Kuzbass\\";
+        String filter = "_1SDV_2018";
+
         try {
-            String images = Files.find(Paths.get("Y:\\Satellites\\Sentinel-1A\\1"), 99,
+            String images = Files.find(Paths.get(imagePath), 99,
                     (path, attr) -> {
-                        if (path.toString().endsWith(".zip")) {
+                        if (path.toString().endsWith(".zip") && path.toString().contains(filter)) {
                             return true;
                         } else {
                             return false;
                         }
-                    }).map(path -> path.toString())
-                    .map(path -> path.replace("Y:", "/mnt/satimg").replace("\\", "/"))
+                    }).map(path -> path.getFileName().toString())
                     .collect(Collectors.joining(","));
+
+            DBManager.main(new String[]{"addNewImageToDB", images, imagePath, "/mnt/satimg/Satellites/Sentinel-1A/" });
+
         } catch (Exception e) {
             System.out.println(e);
         }
