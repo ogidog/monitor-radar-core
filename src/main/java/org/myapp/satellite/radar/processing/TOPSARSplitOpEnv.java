@@ -40,14 +40,6 @@ public class TOPSARSplitOpEnv {
 
             subSwathInfos = s1u.getSubSwath();
             int numOfBurst = 0;
-            for (int i = 0; i < subSwathInfos.length; i++) {
-                if ((i + 1) * subSwathInfos[i].numOfSamples < topLeftPixelPos.x) {
-                    continue;
-                }
-                topSarSplitParameters.put("subswath", subSwathInfos[i].subSwathName);
-                numOfBurst = subSwathInfos[i].numOfBursts;
-                break;
-            }
 
             GeometryFactory gf = new GeometryFactory();
             Polygon subsetPolygon = gf.createPolygon(gf.createLinearRing(new Coordinate[]{
@@ -58,73 +50,96 @@ public class TOPSARSplitOpEnv {
                     new Coordinate((double) subsetParameters.get("topLeftLat1"), (double) subsetParameters.get("topLeftLon1"))
             }), null);
 
-            int firstBurstIndex = -1, lastBurstIndex = -1;
-
-            Polygon splitPolygon;
-            for (int burst = 1; burst < numOfBurst + 1; burst++) {
-
-                spi = new TOPSARSplitOp.Spi();
-                op = (TOPSARSplitOp) spi.createOperator();
-                op.setSourceProduct(sourceProduct);
-
-                op.setParameter("selectedPolarisations", topSarSplitParameters.get("selectedPolarisations"));
-                op.setParameter("subswath", topSarSplitParameters.get("subswath"));
-                op.setParameter("firstBurstIndex", burst);
-                op.setParameter("lastBurstIndex", burst);
-
-                targetProduct = op.getTargetProduct();
-
-                splitPolygon = gf.createPolygon(gf.createLinearRing(new Coordinate[]{
-                        new Coordinate(targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeDouble("first_near_lat"),
-                                targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeDouble("first_near_long")),
-                        new Coordinate(targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeDouble("first_far_lat"),
-                                targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeDouble("first_far_long")),
-                        new Coordinate(targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeDouble("last_near_lat"),
-                                targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeDouble("last_near_long")
-                        ),
-                        new Coordinate(targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeDouble("last_far_lat"),
-                                targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeDouble("last_far_long")
-                        ),
-                        new Coordinate(targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeDouble("first_near_lat"),
-                                targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeDouble("first_near_long")
-                        )
-                }), null);
-
-                if (splitPolygon.intersects(subsetPolygon) && firstBurstIndex == -1) {
-                    firstBurstIndex = burst;
-                    lastBurstIndex = burst;
-                    targetProduct.closeIO();
-                    op.dispose();
+            for (int i = 0; i < subSwathInfos.length; i++) {
+                /*if ((i + 1) * subSwathInfos[i].numOfSamples < topLeftPixelPos.x) {
                     continue;
+                }*/
+                topSarSplitParameters.put("subswath", subSwathInfos[i].subSwathName);
+                numOfBurst = subSwathInfos[i].numOfBursts;
+                //break;
+                //}
+
+                //topSarSplitParameters.put("subswath", "IW1");
+
+                /*GeometryFactory gf = new GeometryFactory();
+                Polygon subsetPolygon = gf.createPolygon(gf.createLinearRing(new Coordinate[]{
+                        new Coordinate((double) subsetParameters.get("topLeftLat"), (double) subsetParameters.get("topLeftLon")),
+                        new Coordinate((double) subsetParameters.get("topRightLat"), (double) subsetParameters.get("topRightLon")),
+                        new Coordinate((double) subsetParameters.get("bottomLeftLat"), (double) subsetParameters.get("bottomLeftLon")),
+                        new Coordinate((double) subsetParameters.get("bottomRightLat"), (double) subsetParameters.get("bottomRightLon")),
+                        new Coordinate((double) subsetParameters.get("topLeftLat1"), (double) subsetParameters.get("topLeftLon1"))
+                }), null);*/
+
+                int firstBurstIndex = -1, lastBurstIndex = -1;
+
+                Polygon splitPolygon;
+                for (int burst = 1; burst < numOfBurst + 1; burst++) {
+
+                    spi = new TOPSARSplitOp.Spi();
+                    op = (TOPSARSplitOp) spi.createOperator();
+                    op.setSourceProduct(sourceProduct);
+
+                    op.setParameter("selectedPolarisations", topSarSplitParameters.get("selectedPolarisations"));
+                    op.setParameter("subswath", topSarSplitParameters.get("subswath"));
+                    op.setParameter("firstBurstIndex", burst);
+                    op.setParameter("lastBurstIndex", burst);
+
+                    targetProduct = op.getTargetProduct();
+
+                    splitPolygon = gf.createPolygon(gf.createLinearRing(new Coordinate[]{
+                            new Coordinate(targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeDouble("first_near_lat"),
+                                    targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeDouble("first_near_long")),
+                            new Coordinate(targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeDouble("first_far_lat"),
+                                    targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeDouble("first_far_long")),
+                            new Coordinate(targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeDouble("last_near_lat"),
+                                    targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeDouble("last_near_long")
+                            ),
+                            new Coordinate(targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeDouble("last_far_lat"),
+                                    targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeDouble("last_far_long")
+                            ),
+                            new Coordinate(targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeDouble("first_near_lat"),
+                                    targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeDouble("first_near_long")
+                            )
+                    }), null);
+
+                    if (splitPolygon.intersects(subsetPolygon) && firstBurstIndex == -1) {
+                        firstBurstIndex = burst;
+                        lastBurstIndex = burst;
+                        targetProduct.closeIO();
+                        op.dispose();
+                        continue;
+                    }
+
+                    if (splitPolygon.intersects(subsetPolygon) && firstBurstIndex != -1) {
+                        lastBurstIndex = burst;
+                        targetProduct.closeIO();
+                        op.dispose();
+                        continue;
+                    }
+
+                    op.dispose();
                 }
 
-                if (splitPolygon.intersects(subsetPolygon) && firstBurstIndex != -1) {
-                    lastBurstIndex = burst;
-                    targetProduct.closeIO();
-                    op.dispose();
-                    continue;
+                if (firstBurstIndex != -1 && lastBurstIndex != -1) {
+
+                    spi = new TOPSARSplitOp.Spi();
+                    op = (TOPSARSplitOp) spi.createOperator();
+                    op.setSourceProduct(sourceProduct);
+
+                    op.setParameter("selectedPolarisations", topSarSplitParameters.get("selectedPolarisations"));
+                    op.setParameter("subswath", topSarSplitParameters.get("subswath"));
+                    op.setParameter("firstBurstIndex", firstBurstIndex);
+                    op.setParameter("lastBurstIndex", lastBurstIndex);
+
+                    targetProduct = op.getTargetProduct();
+                    return targetProduct;
+
                 }
-
-                op.dispose();
+                //else {
+                //    return null;
+                //}
             }
-
-            if (firstBurstIndex != -1 && lastBurstIndex != -1) {
-
-                spi = new TOPSARSplitOp.Spi();
-                op = (TOPSARSplitOp) spi.createOperator();
-                op.setSourceProduct(sourceProduct);
-
-                op.setParameter("selectedPolarisations", topSarSplitParameters.get("selectedPolarisations"));
-                op.setParameter("subswath", topSarSplitParameters.get("subswath"));
-                op.setParameter("firstBurstIndex", firstBurstIndex);
-                op.setParameter("lastBurstIndex", lastBurstIndex);
-
-                targetProduct = op.getTargetProduct();
-                return targetProduct;
-
-            } else {
-                return null;
-            }
+            return null;
 
         } catch (Exception e) {
             e.printStackTrace();

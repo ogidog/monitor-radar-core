@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 public class TestAddNewImagesToDB {
 
     public static void main(String[] args) {
-        String imagePath = "Y:\\Sentinel-1A\\Kuzbass\\";
+        String imagePath = "Y:\\Sentinel-1A\\Kuzbass\\165\\";
         String filter = "_1SDV_2018";
 
         try {
