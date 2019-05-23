@@ -1,6 +1,7 @@
 package org.myapp.satellite.radar.processing;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Polygon;
 import org.esa.s1tbx.commons.Sentinel1Utils;
@@ -33,10 +34,10 @@ public class TOPSARSplitOpEnv {
             sourceProduct = ProductIO.readProduct(new File(file));
             s1u = new Sentinel1Utils(sourceProduct);
 
-            GeoPos topLeftGeoPos = new GeoPos();
+            /*GeoPos topLeftGeoPos = new GeoPos();
             topLeftGeoPos.setLocation((double) subsetParameters.get("topLeftLat"), (double) subsetParameters.get("topLeftLon"));
             PixelPos topLeftPixelPos = new PixelPos();
-            sourceProduct.getSceneGeoCoding().getPixelPos(topLeftGeoPos, topLeftPixelPos);
+            sourceProduct.getSceneGeoCoding().getPixelPos(topLeftGeoPos, topLeftPixelPos);*/
 
             subSwathInfos = s1u.getSubSwath();
             int numOfBurst = 0;
@@ -72,7 +73,7 @@ public class TOPSARSplitOpEnv {
 
                 int firstBurstIndex = -1, lastBurstIndex = -1;
 
-                Polygon splitPolygon;
+                Geometry splitPolygon;
                 for (int burst = 1; burst < numOfBurst + 1; burst++) {
 
                     spi = new TOPSARSplitOp.Spi();
@@ -85,7 +86,6 @@ public class TOPSARSplitOpEnv {
                     op.setParameter("lastBurstIndex", burst);
 
                     targetProduct = op.getTargetProduct();
-
                     splitPolygon = gf.createPolygon(gf.createLinearRing(new Coordinate[]{
                             new Coordinate(targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeDouble("first_near_lat"),
                                     targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeDouble("first_near_long")),
@@ -100,7 +100,7 @@ public class TOPSARSplitOpEnv {
                             new Coordinate(targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeDouble("first_near_lat"),
                                     targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeDouble("first_near_long")
                             )
-                    }), null);
+                    }), null).convexHull();
 
                     if (splitPolygon.intersects(subsetPolygon) && firstBurstIndex == -1) {
                         firstBurstIndex = burst;
