@@ -54,6 +54,10 @@ public class Stage1 {
                 topsarSplitModifiedParameters.put("lastBurstIndex", topsarSplitOpEnv.getLastBurstIndex());
                 saveParameters(configDir, "s1_tops_split", topsarSplitModifiedParameters);
 
+                HashMap subsetModifiedParameters = new HashMap();
+                subsetModifiedParameters.put("geoRegion", topsarSplitOpEnv.getIntersectionGeoRegion());
+                saveParameters(configDir, "subset", subsetModifiedParameters);
+
                 targetProduct = applyOrbitFileOpEnv.getTargetProduct(targetProduct, parameters);
 
                 if (targetProduct != null) {
@@ -132,15 +136,14 @@ public class Stage1 {
             JSONObject jsonObject = (JSONObject) jsonParser.parse(fileReader);
             fileReader.close();
 
-            if (configName == "s1_tops_split") {
-                HashMap jsonParameters = (HashMap) jsonObject.get("parameters");
-                modifiedParameters.forEach((k, v) -> {
-                    ((HashMap) jsonParameters.get(k)).put("value", v);
-                });
-                fileWriter = new FileWriter(configDir + File.separator + configName + ".json");
-                fileWriter.write(jsonObject.toJSONString());
-                fileWriter.close();
-            }
+            HashMap jsonParameters = (HashMap) jsonObject.get("parameters");
+            modifiedParameters.forEach((k, v) -> {
+                ((HashMap) jsonParameters.get(k)).put("value", v);
+            });
+            fileWriter = new FileWriter(configDir + File.separator + configName + ".json");
+            fileWriter.write(jsonObject.toJSONString());
+            fileWriter.close();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
