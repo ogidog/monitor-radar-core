@@ -14,6 +14,8 @@ public class Stage0 {
 
         new File(outputDir).mkdirs();
         new File(outputDir + File.separator + "applyorbitfile").mkdirs();
+        new File(outputDir + File.separator + "backgeocoding").mkdirs();
+        new File(outputDir + File.separator + "esd").mkdirs();
 
     }
 }
