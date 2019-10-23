@@ -1,0 +1,27 @@
+{
+  "label": "General",
+  "name": "common",
+  "description": "Common properties of the task",
+  "parameters": {
+    "method": {
+      "index": 0,
+      "name": "method",
+      "label": "Method",
+      "type": "inputTypes.select",
+      "value": "PS",
+      "defaultvalue": "PS",
+      "options": [
+        "PS:Persistent Scatterers (PS)",
+        "SBAS:Small BAseline Subset (SBAS)"
+      ]
+    },
+    "description": {
+      "index": 1,
+      "name": "description",
+      "label": "Description",
+      "type": "inputTypes.text",
+      "value": "Расчет смещений Полысаево, Ленинск-Кузнецкий и др.",
+      "defaultvalue": "Velocity displacements"
+    }
+  }
+}
