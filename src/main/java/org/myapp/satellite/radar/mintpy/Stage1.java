@@ -16,9 +16,9 @@ public class Stage1 {
 
     public static void main(String[] args) {
 
-        /*String outputDir = "I:\\Temp\\mintpy\\prep\\";
+        /*String workingDir = "I:\\Temp\\mintpy\\prep\\";
         String snapDir = "F:\\\\intellij-idea-workspace\\\\monitor-radar-core-v3\\\\.snap";
-        String configDir = "I:\\Temp\\mintpy\\prep\\config";
+        String resultDir = "I:\\Temp\\mintpy\\prep\\";
 
         String filesList = "F:\\Temp\\mintpy\\data\\S1B_IW_SLC__1SDV_20180405T002722_20180405T002752_010341_012D2E_4CAC.zip,"
                 + "F:\\Temp\\mintpy\\data\\S1B_IW_SLC__1SDV_20180616T002726_20180616T002756_011391_014EB9_39F6.zip,"
@@ -26,10 +26,12 @@ public class Stage1 {
                 + "F:\\Temp\\mintpy\\data\\S1B_IW_SLC__1SDV_20190211T002728_20190211T002758_014891_01BCBF_EF14.zip";*/
 
         HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
-        String outputDir = consoleParameters.get("outputDir").toString();
+        String workingDir = consoleParameters.get("workingDir").toString();
         String snapDir = consoleParameters.get("snapDir").toString();
-        String configDir = consoleParameters.get("configDir").toString();
+        String resultDir = consoleParameters.get("resultDir").toString();
         String filesList = consoleParameters.get("filesList").toString();
+
+        String configDir = resultDir + File.separator + "config";
 
         HashMap parameters = getParameters(configDir);
         if (parameters == null) {
@@ -61,7 +63,7 @@ public class Stage1 {
                 targetProduct = applyOrbitFileOpEnv.getTargetProduct(targetProduct, parameters);
 
                 if (targetProduct != null) {
-                    writeOpEnv.write(outputDir + File.separator + "applyorbitfile", targetProduct);
+                    writeOpEnv.write(workingDir + File.separator + "applyorbitfile", targetProduct);
                 }
 
                 targetProduct.closeIO();

@@ -10,10 +10,10 @@ public class WriteOpEnv {
 
     WriteOp writeOp;
 
-    boolean write(String outputDir, Product targetProduct) {
+    boolean write(String workingDir, Product targetProduct) {
 
         try {
-            File ouptutFile = new File(outputDir, targetProduct.getName());
+            File ouptutFile = new File(workingDir, targetProduct.getName());
             writeOp = new WriteOp(targetProduct, ouptutFile, "BEAM-DIMAP");
             writeOp.writeProduct(ProgressMonitor.NULL);
 

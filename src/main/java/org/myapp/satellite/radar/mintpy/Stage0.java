@@ -10,12 +10,12 @@ public class Stage0 {
     public static void main(String[] args) {
 
         HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
-        String outputDir = consoleParameters.get("outputDir").toString();
+        String workingDir = consoleParameters.get("workingDir").toString();
 
-        new File(outputDir).mkdirs();
-        new File(outputDir + File.separator + "applyorbitfile").mkdirs();
-        new File(outputDir + File.separator + "backgeocoding").mkdirs();
-        new File(outputDir + File.separator + "esd").mkdirs();
+        new File(workingDir).mkdirs();
+        new File(workingDir + File.separator + "applyorbitfile").mkdirs();
+        new File(workingDir + File.separator + "backgeocoding").mkdirs();
+        new File(workingDir + File.separator + "esd").mkdirs();
 
     }
 }
