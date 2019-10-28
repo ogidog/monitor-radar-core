@@ -9,6 +9,10 @@ import org.myapp.utils.ConsoleArgsReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Comparator;
 import java.util.HashMap;
 
 
@@ -40,6 +44,15 @@ public class Stage1 {
         }
 
         String[] files = filesList.split(",");
+
+        try {
+            Files.walk(Paths.get(workingDir + File.separator + "applyorbitfile"))
+                    .sorted(Comparator.reverseOrder())
+                    .map(Path::toFile)
+                    .forEach(File::delete);
+            new File(workingDir + File.separator + "applyorbitfile").mkdirs();
+        } catch (Exception e) {
+        }
 
         TOPSARSplitOpEnv topsarSplitOpEnv = new TOPSARSplitOpEnv();
         ApplyOrbitFileOpEnv applyOrbitFileOpEnv = new ApplyOrbitFileOpEnv(snapDir);
