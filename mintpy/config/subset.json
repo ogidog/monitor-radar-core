@@ -1,0 +1,15 @@
+{
+  "name": "subset",
+  "description": "Create a spatial and\/or spectral subset of a data product.",
+  "label": "Subset",
+  "parameters": {
+    "geoRegion": {
+      "name": "geoRegion",
+      "index": 0,
+      "defaultvalue": "",
+      "label": "Specify a geographic region on the map",
+      "type": "inputTypes.map",
+      "value": "87.80579573157252 55.747240163056524,88.42103010657252 55.747240163056524,88.42103010657252 55.377578427013695,88.27820784094752 55.19614430030771,87.69043928626002 55.18673720916373,87.80579573157252 55.747240163056524,87.80579573157252 55.747240163056524"
+    }
+  }
+}
