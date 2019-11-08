@@ -14,6 +14,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 public class Stage1 {
@@ -102,10 +104,12 @@ public class Stage1 {
             FileReader fileReader = new FileReader(configDir + File.separator + "s1_tops_split.json");
             JSONObject jsonObject = (JSONObject) parser.parse(fileReader);
             HashMap jsonParameters = (HashMap) jsonObject.get("parameters");
+            HashMap<String, HashMap> jsonParameters1 = (HashMap) jsonObject.get("parameters");
 
-            HashMap parameters = new HashMap();
-            parameters.put("selectedPolarisations", ((HashMap) jsonParameters.get("selectedPolarisations")).get("value"));
-            stageParameters.put("TOPSARSplit", parameters);
+            stageParameters.put("TOPSARSplit",
+                    (HashMap) jsonParameters1.entrySet().stream
+                            ().collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue().get("value")))
+            );
 
             fileReader.close();
 
@@ -114,7 +118,7 @@ public class Stage1 {
             jsonObject = (JSONObject) parser.parse(fileReader);
             jsonParameters = (HashMap) jsonObject.get("parameters");
 
-            parameters = new HashMap();
+            HashMap parameters = new HashMap();
             parameters.put("polyDegree", Integer.valueOf(((HashMap) jsonParameters.get("polyDegree")).get("value").toString()));
             parameters.put("continueOnFail", Boolean.valueOf(((HashMap) jsonParameters.get("continueOnFail")).get("value").toString()));
             parameters.put("orbitType", ((HashMap) jsonParameters.get("orbitType")).get("value"));

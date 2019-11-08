@@ -1,1 +1,89 @@
-{"name":"s1_tops_split","description":"The method provides a convenient way to split each subswath with selected bursts into a separate product.","label":"S1 TOPS Split","parameters":{"selectedPolarisations":{"name":"selectedPolarisations","options":["VV","HV"],"index":0,"defaultvalue":"VV","label":"Polarisations","type":"inputTypes.select","value":"VV"},"filesList":{"name":"filesList","options":[""],"index":1,"defaultvalue":"","label":"DataSet","type":"inputTypes.select","value":"\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20180405T002722_20180405T002752_010341_012D2E_4CAC.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20180417T002722_20180417T002752_010516_0132C3_A59B.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20180429T002723_20180429T002753_010691_01385F_CCBB.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20180511T002724_20180511T002753_010866_013E05_36C0.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20180523T002724_20180523T002754_011041_0143B3_09A3.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20180604T002725_20180604T002755_011216_01495F_8B1E.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20180616T002726_20180616T002756_011391_014EB9_39F6.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20180628T002726_20180628T002756_011566_01542A_002A.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20180710T002727_20180710T002757_011741_015999_580C.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20180722T002728_20180722T002758_011916_015EF3_AA2E.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20180803T002729_20180803T002759_012091_016438_F06B.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20180815T002729_20180815T002759_012266_0169A1_1E21.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20180827T002730_20180827T002800_012441_016F0F_7233.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20180908T002731_20180908T002800_012616_017476_2BFC.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20180920T002731_20180920T002801_012791_0179CD_D5A9.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20181002T002731_20181002T002801_012966_017F2B_152B.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20181014T002732_20181014T002801_013141_018480_94F7.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20181026T002732_20181026T002801_013316_0189E9_9725.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20181107T002731_20181107T002801_013491_018F6A_C2DA.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20181119T002731_20181119T002801_013666_0194EC_6916.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20181201T002731_20181201T002801_013841_019A85_C084.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20181213T002730_20181213T002800_014016_01A031_B6C1.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20181225T002730_20181225T002800_014191_01A5FF_E74E.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20190106T002729_20190106T002759_014366_01ABBB_3DE0.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20190118T002729_20190118T002759_014541_01B15F_2552.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20190130T002729_20190130T002759_014716_01B6FF_32CF.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20190211T002728_20190211T002758_014891_01BCBF_EF14.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20190223T002728_20190223T002758_015066_01C279_1629.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20190307T002728_20190307T002758_015241_01C842_51EA.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20190319T002728_20190319T002758_015416_01CDED_4F45.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20190331T002729_20190331T002758_015591_01D3A4_F37A.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20190412T002729_20190412T002759_015766_01D977_02DF.zip"},"firstBurstIndex":{"name":"firstBurstIndex","index":3,"defaultvalue":"-1","label":"First Burst Index","type":"inputTypes.text","value":"10"},"masterName":{"name":"masterName","options":[""],"index":2,"defaultvalue":"","label":"Select master","type":"inputTypes.select","value":"S1B_IW_SLC__1SDV_20180405T002722_20180405T002752_010341_012D2E_4CAC"},"lastBurstIndex":{"name":"lastBurstIndex","index":4,"defaultvalue":"-1","label":"Last Burst Index","type":"inputTypes.text","value":"10"}}}
+{
+  "name": "s1_tops_split",
+  "description": "The method provides a convenient way to split each subswath with selected bursts into a separate product.",
+  "label": "S1 TOPS Split",
+  "parameters": {
+    "selectedPolarisations": {
+      "name": "selectedPolarisations",
+      "options": [
+        "VV",
+        "HV"
+      ],
+      "index": 0,
+      "defaultvalue": "VV",
+      "label": "Polarisations",
+      "type": "inputTypes.select",
+      "value": "VV"
+    },
+    "filesList": {
+      "name": "filesList",
+      "options": [
+        ""
+      ],
+      "index": 1,
+      "defaultvalue": "",
+      "label": "DataSet",
+      "type": "inputTypes.select",
+      "value": "\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20180405T002722_20180405T002752_010341_012D2E_4CAC.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20180417T002722_20180417T002752_010516_0132C3_A59B.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20180429T002723_20180429T002753_010691_01385F_CCBB.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20180511T002724_20180511T002753_010866_013E05_36C0.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20180523T002724_20180523T002754_011041_0143B3_09A3.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20180604T002725_20180604T002755_011216_01495F_8B1E.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20180616T002726_20180616T002756_011391_014EB9_39F6.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20180628T002726_20180628T002756_011566_01542A_002A.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20180710T002727_20180710T002757_011741_015999_580C.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20180722T002728_20180722T002758_011916_015EF3_AA2E.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20180803T002729_20180803T002759_012091_016438_F06B.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20180815T002729_20180815T002759_012266_0169A1_1E21.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20180827T002730_20180827T002800_012441_016F0F_7233.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20180908T002731_20180908T002800_012616_017476_2BFC.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20180920T002731_20180920T002801_012791_0179CD_D5A9.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20181002T002731_20181002T002801_012966_017F2B_152B.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20181014T002732_20181014T002801_013141_018480_94F7.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20181026T002732_20181026T002801_013316_0189E9_9725.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20181107T002731_20181107T002801_013491_018F6A_C2DA.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20181119T002731_20181119T002801_013666_0194EC_6916.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20181201T002731_20181201T002801_013841_019A85_C084.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20181213T002730_20181213T002800_014016_01A031_B6C1.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20181225T002730_20181225T002800_014191_01A5FF_E74E.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20190106T002729_20190106T002759_014366_01ABBB_3DE0.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20190118T002729_20190118T002759_014541_01B15F_2552.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20190130T002729_20190130T002759_014716_01B6FF_32CF.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20190211T002728_20190211T002758_014891_01BCBF_EF14.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20190223T002728_20190223T002758_015066_01C279_1629.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20190307T002728_20190307T002758_015241_01C842_51EA.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20190319T002728_20190319T002758_015416_01CDED_4F45.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20190331T002729_20190331T002758_015591_01D3A4_F37A.zip,\/mnt\/satimg\/Satellites\/Sentinel-1A\/S1B_IW_SLC__1SDV_20190412T002729_20190412T002759_015766_01D977_02DF.zip"
+    },
+    "firstBurstIndex": {
+      "name": "firstBurstIndex",
+      "index": 3,
+      "defaultvalue": "-1",
+      "label": "First Burst Index",
+      "type": "inputTypes.text",
+      "value": "10"
+    },
+    "masterName": {
+      "name": "masterName",
+      "options": [
+        ""
+      ],
+      "index": 2,
+      "defaultvalue": "",
+      "label": "Select master",
+      "type": "inputTypes.select",
+      "value": "S1B_IW_SLC__1SDV_20180405T002722_20180405T002752_010341_012D2E_4CAC"
+    },
+    "lastBurstIndex": {
+      "name": "lastBurstIndex",
+      "index": 4,
+      "defaultvalue": "-1",
+      "label": "Last Burst Index",
+      "type": "inputTypes.text",
+      "value": "10"
+    },
+    "databaseIp": {
+      "name": "databaseIp",
+      "index": 5,
+      "defaultvalue": "10.101.80.252",
+      "label": "Database IP",
+      "type": "inputTypes.text",
+      "value": "10.101.80.252"
+    },
+    "databaseLogin": {
+      "name": "databaseLogin",
+      "index": 6,
+      "defaultvalue": "satimg_adm",
+      "label": "Database Login",
+      "type": "inputTypes.text",
+      "value": "satimg_adm"
+    },
+    "databasePasswd": {
+      "name": "databasePasswd",
+      "index": 7,
+      "defaultvalue": "rfnfkjucybvrjd",
+      "label": "Database Password",
+      "type": "inputTypes.text",
+      "value": "rfnfkjucybvrjd"
+    },
+    "databaseName": {
+      "name": "databaseName",
+      "index": 8,
+      "defaultvalue": "satimgdb",
+      "label": "Database Name",
+      "type": "inputTypes.text",
+      "value": "satimgdb"
+    }
+  }
+}

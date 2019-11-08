@@ -37,18 +37,17 @@ public class TOPSARSplitOpEnv {
 
         try {
 
-            String dbms = "172.16.1.4"; // "10.101.80.252";
+            subsetParameters = (HashMap) stageParameters.get("Subset");
+            topSarSplitParameters = (HashMap) stageParameters.get("TOPSARSplit");
+
+            String dbms = topSarSplitParameters.get("databaseIp").toString(); // "172.16.1.4"; // "10.101.80.252";
 
             Class.forName("org.postgresql.Driver");
             connection = DriverManager
                     .getConnection(
-                            "jdbc:postgresql://" + dbms + ":5432/satimgdb",
-                            "satimg_adm", "rfnfkjucybvrjd");
+                            "jdbc:postgresql://" + dbms + ":5432/" + topSarSplitParameters.get("databaseName").toString(),
+                            topSarSplitParameters.get("databaseLogin").toString(), topSarSplitParameters.get("databasePasswd").toString());
             connection.setAutoCommit(false);
-
-
-            subsetParameters = (HashMap) stageParameters.get("Subset");
-            topSarSplitParameters = (HashMap) stageParameters.get("TOPSARSplit");
 
             sourceProduct = ProductIO.readProduct(new File(file));
             s1u = new Sentinel1Utils(sourceProduct);

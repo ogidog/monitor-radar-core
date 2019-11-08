@@ -233,10 +233,6 @@
 
     <repositories>
         <repository>
-            <id>central</id>
-            <url>http://repo1.maven.org/maven2/</url>
-        </repository>
-        <repository>
             <id>snap-repo-public</id>
             <name>Public Maven Repository for SNAP</name>
             <url>https://snap-build-server.tilaa.cloud/nexus/repository/snap-maven-public/</url>
@@ -248,6 +244,10 @@
                 <enabled>true</enabled>
                 <checksumPolicy>warn</checksumPolicy>
             </snapshots>
+        </repository>
+        <repository>
+            <id>central</id>
+            <url>http://repo1.maven.org/maven2/</url>
         </repository>
     </repositories>
 
