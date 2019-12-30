@@ -1,4 +1,5 @@
 import org.esa.s1tbx.sentinel1.gpf.TOPSARSplitOp;
+import org.esa.s1tbx.sentinel1.gpf.BackGeocodingOp;
 import org.esa.s1tbx.sar.gpf.orbits.ApplyOrbitFileOp;
 import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.datamodel.Product;
@@ -9,10 +10,11 @@ import java.io.File;
 public class TestForArticle {
 
     public static void main(String args[]) {
-        String s1aImg1Path = "/mnt/hdfs/s1adata/" +
-                "S1B_IW_SLC__1SDV_20191225T003559_20191225T003626_019514_024DF4_9F74.zip";
-
         try {
+
+            String s1aImg1Path = "/mnt/hdfs/s1adata/" +
+                    "S1B_IW_SLC__1SDV_20191225T003559_20191225T003626_019514_024DF4_9F74.zip";
+
             Product sourceProduct1 = ProductIO.readProduct(new File(s1aImg1Path));
 
             Operator op1 = (TOPSARSplitOp) (new TOPSARSplitOp.Spi().createOperator());
@@ -22,12 +24,29 @@ public class TestForArticle {
                 op1.setParameter("subswath", "IW");
                 op1.setParameter("firstBurstIndex", 1);
                 op1.setParameter("lastBurstIndex", 2);
-                op1.setSourceProduct(sourceProduct1);
             }
             Product targetProduct1 = op1.getTargetProduct();
             Operator op11 = (ApplyOrbitFileOp) (new ApplyOrbitFileOp.Spi().createOperator());
             op11.setSourceProduct(targetProduct1);
             Product targetProduct11 = op1.getTargetProduct();
+
+            {
+                Operator op2 = (TOPSARSplitOp) (new TOPSARSplitOp.Spi().createOperator());
+                Product targetProduct2 = op2.getTargetProduct();
+                Operator op22 = (ApplyOrbitFileOp) (new ApplyOrbitFileOp.Spi().createOperator());
+                op22.setSourceProduct(targetProduct1);
+                Product targetProduct22 = op1.getTargetProduct();
+            }
+
+            {
+                Operator op3 = (BackGeocodingOp) (new BackGeocodingOp.Spi().createOperator());
+                op3.setSourceProducts(new Product[]{targetProduct11, targetProduct11});
+                {
+                    op3.setParameter("demName", "SRTM 3Sec");
+                    op3.setParameter("demResamplingMethod", "BICUBIC_INTERPOLATION");
+                    op3.setParameter("resamplingType", "BISINC_5_POINT_INTERPOLATION");
+                }
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
