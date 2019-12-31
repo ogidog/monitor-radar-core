@@ -46,6 +46,7 @@ public class TestForArticle {
                     op3.setParameter("demResamplingMethod", "BICUBIC_INTERPOLATION");
                     op3.setParameter("resamplingType", "BISINC_5_POINT_INTERPOLATION");
                 }
+                Product targetProduct3 = op3.getTargetProduct();
             }
 
         } catch (Exception e) {
