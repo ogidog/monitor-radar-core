@@ -1,3 +1,7 @@
+import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.api.java.function.Function;
+import org.apache.spark.broadcast.Broadcast;
 import org.esa.s1tbx.sentinel1.gpf.TOPSARSplitOp;
 import org.esa.s1tbx.sentinel1.gpf.BackGeocodingOp;
 import org.esa.s1tbx.sar.gpf.orbits.ApplyOrbitFileOp;
@@ -6,14 +10,18 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.Operator;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class TestForArticle {
 
     public static void main(String args[]) {
         try {
-
             String s1aImg1Path = "/mnt/hdfs/s1adata/" +
-                    "S1B_IW_SLC__1SDV_20191225T003559_20191225T003626_019514_024DF4_9F74.zip";
+                    "S1B_IW_SLC__1SDV_20180405T002722_20180405T002752_010341_012D2E_4CAC.zip.zip";
 
             Product sourceProduct1 = ProductIO.readProduct(new File(s1aImg1Path));
 
@@ -47,23 +55,42 @@ public class TestForArticle {
                     op3.setParameter("resamplingType", "BISINC_5_POINT_INTERPOLATION");
                 }
                 Product targetProduct3 = op3.getTargetProduct();
+
+                ProductIO.writeProduct(targetProduct3,
+                        "/mnt/hdfs/output/20180405_20190412_Orb_Stack_DInSAR.dim",
+                        "BEAM-DIMAP");
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        {
+            String[] s1aImgPaths = new String[]{
+                    "/mnt/hdfs/s1adata/S1B_IW_SLC__1SDV_20180405T002722_20180405T002752_010341_012D2E_4CAC.zip",
+                    "/mnt/hdfs/s1adata/S1B_IW_SLC__1SDV_20180417T002722_20180417T002752_010516_0132C3_A59B.zip",
+                    // ....
+                    "/mnt/hdfs/s1adata/S1B_IW_SLC__1SDV_20190412T002729_20190412T002759_015766_01D977_02DF.zip"
+            };
+            SparkConf sparkConf = new SparkConf();
+            JavaSparkContext sc = new JavaSparkContext(sparkConf);
+            List<Boolean> topsSplitResults = sc.parallelize(Arrays.asList(s1aImgPaths), 32)
+                    .map(new topsSplitFunction())
+                    .collect();
+        }
+    }
+
+    static class topsSplitFunction implements Function<String, Boolean> {
+
+        public topsSplitFunction() {
+        }
+
+        @Override
+        public Boolean call(String pathtoS1AImage) {
+            boolean result = true;
+            return result;
+        }
+
     }
 }
 
-/*
-            Product sourceProduct2 = ProductIO.readProduct(new File(s1aImg1Path));
-                  // master
-        String s1aImg1Path = "/mnt/hdfs/s1adata/S1B_IW_SLC__1SDV_20191225T003559_20191225T003626_019514_024DF4_9F74.zip";
-        // slave
-        String s1aImg2Path = "/mnt/hdfs/s1adata/S1B_IW_SLC__1SDV_20191222T001206_20191222T001233_019470_024C76_8911.zip";
-
-            Operator op2 = (TOPSARSplitOp)(new TOPSARSplitOp.Spi().createOperator());
-            // ... настройка параметров оператора
-            op2.setSourceProduct(sourceProduct2);
-            Product targetProduct2 = op2.getTargetProduct();
-*/
