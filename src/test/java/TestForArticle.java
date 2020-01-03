@@ -75,22 +75,45 @@ public class TestForArticle {
             SparkConf sparkConf = new SparkConf();
             JavaSparkContext sc = new JavaSparkContext(sparkConf);
             List<Boolean> topsSplitResults = sc.parallelize(Arrays.asList(s1aImgPaths), 32)
-                    .map(new topsSplitFunction())
+                    .map(new TOPSSplitFunction("/mnt/hdfs/proc/tops/"))
                     .collect();
         }
     }
 
-    static class topsSplitFunction implements Function<String, Boolean> {
+    static class TOPSSplitFunction implements Function<String, Boolean> {
+        private String pathToSaveResult;
+        private String savedFileName;
 
-        public topsSplitFunction() {
+        TOPSSplitFunction(String pathToSaveResult) {
+            this.pathToSaveResult = pathToSaveResult;
         }
 
         @Override
-        public Boolean call(String pathtoS1AImage) {
-            boolean result = true;
-            return result;
-        }
+        public Boolean call(String pathToS1AImage) {
+            boolean result = false;
+            // Формируем имя файла результата из переменной pathToS1AImage
+            {
+                savedFileName = savedFileName + "dim";
+                System.out.println(savedFileName);
+            }
+            try {
+                Product sourceProduct1 = ProductIO.readProduct(new File(pathToS1AImage));
 
+                Operator op1 = (TOPSARSplitOp) (new TOPSARSplitOp.Spi().createOperator());
+                {
+                    op1.setParameter("selectedPolarisations", "VV");
+                    op1.setParameter("subswath", "IW");
+                    op1.setParameter("firstBurstIndex", 1);
+                    op1.setParameter("lastBurstIndex", 2);
+                }
+                Product targetProduct1 = op1.getTargetProduct();
+                ProductIO.writeProduct(targetProduct1, this.pathToSaveResult + savedFileName,
+                        "BEAM-DIMAP");
+                return true;
+            } catch (Exception ex) {
+                return false;
+            }
+        }
     }
 }
 
