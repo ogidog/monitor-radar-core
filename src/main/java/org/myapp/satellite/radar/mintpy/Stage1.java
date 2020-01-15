@@ -93,32 +93,32 @@ public class Stage1 {
 
             applyOrbitFileOpEnv.Dispose();
             topsarSplitOpEnv.Dispose();
+        }
 
-            // Выбор оптимального master-снимка
-            // TODO: В будущем заменить эту процедуру на формирование интерферометрических пар, как описано в статье "Optimal selection and application analysis of multi-temporal differential interferogram series in StaMPS-based SBAS InSAR"
-            Product[] products = Arrays.stream(files).map(file -> {
-                try {
-                    return ProductIO.readProduct(file);
-                } catch (Exception e) {
-                    return null;
-                }
-            }).toArray(Product[]::new);
+        // Выбор оптимального master-снимка
+        // TODO: В будущем заменить эту процедуру на формирование интерферометрических пар, как описано в статье "Optimal selection and application analysis of multi-temporal differential interferogram series in StaMPS-based SBAS InSAR"
+        Product[] products = Arrays.stream(files).map(file -> {
             try {
-                String masterName = InSARStackOverview.findOptimalMasterProduct(products).getName();
-                HashMap topsarSplitModifiedParameters = new HashMap();
-                topsarSplitModifiedParameters.put("masterName", masterName);
-                saveParameters(configDir, "s1_tops_split", topsarSplitModifiedParameters);
+                return ProductIO.readProduct(file);
             } catch (Exception e) {
+                return null;
+            }
+        }).toArray(Product[]::new);
+        try {
+            String masterName = InSARStackOverview.findOptimalMasterProduct(products).getName();
+            HashMap topsarSplitModifiedParameters = new HashMap();
+            topsarSplitModifiedParameters.put("masterName", masterName);
+            saveParameters(configDir, "s1_tops_split", topsarSplitModifiedParameters);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Arrays.stream(products).forEach(product->{
+            try {
+                product.closeIO();
+            } catch (IOException e) {
                 e.printStackTrace();
             }
-            Arrays.stream(products).forEach(product->{
-                try {
-                    product.closeIO();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
-        }
+        });
     }
 
     static HashMap getParameters(String configDir) {
