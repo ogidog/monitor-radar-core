@@ -1,6 +1,8 @@
 
 package org.myapp.satellite.radar.mintpy;
 
+import org.esa.s1tbx.insar.gpf.InSARStackOverview;
+import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.datamodel.Product;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -9,9 +11,11 @@ import org.myapp.utils.ConsoleArgsReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -89,6 +93,31 @@ public class Stage1 {
 
             applyOrbitFileOpEnv.Dispose();
             topsarSplitOpEnv.Dispose();
+
+            // Выбор оптимального master-снимка
+            // TODO: В будущем заменить эту процедуру на формирование интерферометрических пар, как описано в статье "Optimal selection and application analysis of multi-temporal differential interferogram series in StaMPS-based SBAS InSAR"
+            Product[] products = Arrays.stream(files).map(file -> {
+                try {
+                    return ProductIO.readProduct(file);
+                } catch (Exception e) {
+                    return null;
+                }
+            }).toArray(Product[]::new);
+            try {
+                String masterName = InSARStackOverview.findOptimalMasterProduct(products).getName();
+                HashMap topsarSplitModifiedParameters = new HashMap();
+                topsarSplitModifiedParameters.put("masterName", masterName);
+                saveParameters(configDir, "s1_tops_split", topsarSplitModifiedParameters);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            Arrays.stream(products).forEach(product->{
+                try {
+                    product.closeIO();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
         }
     }
 
