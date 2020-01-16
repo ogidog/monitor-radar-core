@@ -58,6 +58,7 @@ public class Stage1 {
                     .forEach(File::delete);
             new File(workingDir + File.separator + "applyorbitfile").mkdirs();
         } catch (Exception e) {
+            System.out.println(e);
         }
 
         TOPSARSplitOpEnv topsarSplitOpEnv = new TOPSARSplitOpEnv();
@@ -70,14 +71,14 @@ public class Stage1 {
             try {
 
                 targetProduct = topsarSplitOpEnv.getTargetProduct(files[i], parameters);
-                HashMap topsarSplitModifiedParameters = new HashMap();
+                /*HashMap topsarSplitModifiedParameters = new HashMap();
                 topsarSplitModifiedParameters.put("firstBurstIndex", topsarSplitOpEnv.getFirstBurstIndex());
                 topsarSplitModifiedParameters.put("lastBurstIndex", topsarSplitOpEnv.getLastBurstIndex());
-                saveParameters(configDir, "s1_tops_split", topsarSplitModifiedParameters);
+                saveParameters(configDir, "s1_tops_split", topsarSplitModifiedParameters);*/
 
-                HashMap subsetModifiedParameters = new HashMap();
+                /*HashMap subsetModifiedParameters = new HashMap();
                 subsetModifiedParameters.put("geoRegion", topsarSplitOpEnv.getIntersectionGeoRegion());
-                saveParameters(configDir, "subset", subsetModifiedParameters);
+                saveParameters(configDir, "subset", subsetModifiedParameters);*/
 
                 targetProduct = applyOrbitFileOpEnv.getTargetProduct(targetProduct, parameters);
 
@@ -88,15 +89,24 @@ public class Stage1 {
                 targetProduct.closeIO();
 
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println(e);
             }
 
             applyOrbitFileOpEnv.Dispose();
             topsarSplitOpEnv.Dispose();
         }
 
+        HashMap subsetModifiedParameters = new HashMap();
+        subsetModifiedParameters.put("geoRegion", topsarSplitOpEnv.getIntersectionGeoRegion());
+        saveParameters(configDir, "subset", subsetModifiedParameters);
+
+        HashMap topsarSplitModifiedParameters = new HashMap();
+        topsarSplitModifiedParameters.put("firstBurstIndex", topsarSplitOpEnv.getFirstBurstIndex());
+        topsarSplitModifiedParameters.put("lastBurstIndex", topsarSplitOpEnv.getLastBurstIndex());
+
         // Выбор оптимального master-снимка
         // TODO: В будущем заменить эту процедуру на формирование интерферометрических пар, как описано в статье "Optimal selection and application analysis of multi-temporal differential interferogram series in StaMPS-based SBAS InSAR"
+        String masterName = "";
         Product[] products = Arrays.stream(files).map(file -> {
             try {
                 return ProductIO.readProduct(file);
@@ -105,20 +115,20 @@ public class Stage1 {
             }
         }).toArray(Product[]::new);
         try {
-            String masterName = InSARStackOverview.findOptimalMasterProduct(products).getName();
-            HashMap topsarSplitModifiedParameters = new HashMap();
-            topsarSplitModifiedParameters.put("masterName", masterName);
-            saveParameters(configDir, "s1_tops_split", topsarSplitModifiedParameters);
+            masterName = InSARStackOverview.findOptimalMasterProduct(products).getName();
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e);
         }
-        Arrays.stream(products).forEach(product->{
+        Arrays.stream(products).forEach(product -> {
             try {
                 product.closeIO();
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println(e);
             }
         });
+        topsarSplitModifiedParameters.put("masterName", masterName);
+
+        saveParameters(configDir, "s1_tops_split", topsarSplitModifiedParameters);
     }
 
     static HashMap getParameters(String configDir) {
@@ -193,7 +203,7 @@ public class Stage1 {
             fileWriter.close();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e);
         }
 
     }
