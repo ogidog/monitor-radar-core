@@ -1,4 +1,4 @@
-package org.myapp.utils;
+package org.myapp.satellite.radar.mintpy;
 
 /*  Class is used for composing interferometric pairs
     according baseline and timestamp parameters
@@ -11,8 +11,9 @@ import org.esa.snap.core.datamodel.Product;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 
-public class ImagesPairsComposing {
+public class TimeseriesGraph {
 
     public static void main(String[] args) {
 
@@ -56,10 +57,40 @@ public class ImagesPairsComposing {
             }
         }).toArray(Product[]::new);
 
+        HashMap<String,String> pairs = new HashMap<>();
+
         try {
             InSARStackOverview.IfgStack[] stackOverview = InSARStackOverview.calculateInSAROverview(products);
+            Arrays.stream(stackOverview).forEach((stack) -> {
+                Arrays.stream(stack.getMasterSlave()).skip(1).forEach(pair -> {
+                    double bNorm = pair.getPerpendicularBaseline();
+                    double bTemp = pair.getTemporalBaseline();
+                    double dopplerDiff = pair.getDopplerDifference();
+                double bNormFrac, bTempFrac, dopplerDiffFrac = 0.0, gammaMin = 0.85, gamma;
+                bNormFrac = bNorm / 121 <= 1.0 ? bNorm / 1100 : 1;
+                bTempFrac = bTemp / 120 <= 1.0 ? bTemp / 600 : 1;
+                dopplerDiffFrac = dopplerDiff / 325 <= 1.0 ? dopplerDiff / 325 : 1;
+                gamma = (1 - bNormFrac) * (1 - bTempFrac) * (1 - dopplerDiffFrac);
+                // if (gamma > gammaMin) {
+                    if (Math.abs(bNorm) <= 121 && Math.abs(bTemp) <= 120) {
+                    if(!pairs.containsKey(pair.getSlaveMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString()
+                            + " - " + pair.getMasterMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString())) {
+                        pairs.put(pair.getMasterMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString()
+                                + " - " + pair.getSlaveMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString(), pair.getMasterMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString()
+                                + " - " + pair.getSlaveMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString());
+                    }
+
+                    System.out.println(pair.getMasterMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString()
+                                + " - " + pair.getSlaveMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString()
+                                + " - B_norm: " + pair.getPerpendicularBaseline() + ", B_temp: " + pair.getTemporalBaseline() + ", Doppler: " + pair.getDopplerDifference() + ", 2pi Amb: " + pair.getHeightAmb());
+                    }
+                });
+                System.out.println("\n\n");
+            });
+
             Product master = InSARStackOverview.findOptimalMasterProduct(products);
             System.out.println(stackOverview[0].getMasterSlave()[1].getDopplerDifference());
+
         } catch (Exception e) {
             e.printStackTrace();
         }
