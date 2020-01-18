@@ -3,7 +3,7 @@
 spark-submit \
   --class edu.myapp.radar.processing.TOPSSplit \
   --master yarn \
-  --deploy-mode client \
+  --deploy-mode cluster \
   --conf spark.executor.instances=4 \
   --conf spark.task.cpus=1 \
   --conf spark.executor.cores=8 \
@@ -12,6 +12,8 @@ spark-submit \
   --conf spark.driver.extraClassPath="/mnt/hdfs/user/jars/spark_api/*: ...",
   --conf spark.executor.extraClassPath="/mnt/hdfs/user/jars/spark_api/*:/..." \
   ... # другие опции
-  radar.processing.jar \
-  .. # application-arguments
+  "application-jar"  # например, radar.processing.jar
+  "application-arguments" # например список путей к файлам снимков
+
+
 
