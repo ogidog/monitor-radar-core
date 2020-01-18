@@ -117,7 +117,7 @@ public class TimeseriesGraph {
                         continue;
                     }
                     //if (gamma > gammaMin) {
-                    if (Math.abs(bNorm) <= 121 && Math.abs(bTemp) <= 120 && Math.abs(heightAmbiguity)<300) {
+                    if (Math.abs(bNorm) <= 121 && Math.abs(bTemp) <= 120 && Math.abs(heightAmbiguity) < 300) {
                         counter++;
                         System.out.println(pair.getMasterMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString()
                                 + " - " + pair.getSlaveMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString()
