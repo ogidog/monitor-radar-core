@@ -9,7 +9,7 @@
       "label": "Method",
       "type": "inputTypes.select",
       "value": "PS",
-      "defaultvalue": "PS",
+      "defaultvalue": "SBAS",
       "options": [
         "PS:Persistent Scatterers (PS)",
         "SBAS:Small BAseline Subset (SBAS)"
@@ -20,7 +20,7 @@
       "name": "description",
       "label": "Description",
       "type": "inputTypes.text",
-      "value": "Расчет смещений Полысаево, Ленинск-Кузнецкий и др.",
+      "value": "Расчет смещений Кемерово, 2018 г.",
       "defaultvalue": "Velocity displacements"
     }
   }

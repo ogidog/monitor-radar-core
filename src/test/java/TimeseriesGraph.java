@@ -1,5 +1,3 @@
-package org.myapp.satellite.radar.mintpy;
-
 /*  Class is used for composing interferometric pairs
     according baseline and timestamp parameters
     for a coregistration procedure in the SBAS method.
@@ -10,6 +8,7 @@ import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.datamodel.Product;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -91,8 +90,7 @@ public class TimeseriesGraph {
             }
         }).toArray(Product[]::new);
 
-        // HashMap<String, String> pairs = new HashMap<>();
-
+        String pairsStr = "";
         try {
             InSARStackOverview.IfgPair[] pairs = null;
             InSARStackOverview.IfgPair pair = null;
@@ -118,26 +116,27 @@ public class TimeseriesGraph {
                     }
                     //if (gamma > gammaMin) {
                     if (Math.abs(bNorm) <= 121 && Math.abs(bTemp) <= 120 && Math.abs(heightAmbiguity) < 300) {
-                        counter++;
-                        System.out.println(pair.getMasterMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString()
+                        //counter++;
+                        /*System.out.println(pair.getMasterMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString()
                                 + " - " + pair.getSlaveMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString()
                                 + " - B_norm: " + pair.getPerpendicularBaseline() + ", B_temp: " + pair.getTemporalBaseline() + ","
-                                + " Doppler: " + pair.getDopplerDifference() + ", 2pi Amb: " + pair.getHeightAmb());
+                                + " Doppler: " + pair.getDopplerDifference() + ", 2pi Amb: " + pair.getHeightAmb());*/
+                        pairsStr = pairsStr
+                                + pair.getMasterMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString() + ","
+                                + pair.getSlaveMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString() + ";";
                     }
                 }
-                System.out.println("\n");
+                //System.out.println("\n");
             }
+            //System.out.println("Total pairs: " + counter);
+            pairsStr = pairsStr.substring(0, pairsStr.length() - 1);
 
-            System.out.println("Total pairs: " + counter);
+            PrintWriter out = new PrintWriter("pairs.txt");
+            out.println(pairsStr);
 
-            /*
-            Product master = InSARStackOverview.findOptimalMasterProduct(products);
-            System.out.println(stackOverview[0].getMasterSlave()[1].getDopplerDifference());
-            */
 
-        } catch (
-                Exception e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            System.out.println(e);
         }
     }
 

@@ -8,10 +8,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.myapp.utils.ConsoleArgsReader;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -25,15 +22,6 @@ import java.util.stream.Collectors;
 public class Stage1 {
 
     public static void main(String[] args) {
-
-        /*String workingDir = "I:\\Temp\\mintpy\\prep\\";
-        String snapDir = "F:\\\\intellij-idea-workspace\\\\monitor-radar-core-v3\\\\.snap";
-        String resultDir = "I:\\Temp\\mintpy\\prep\\";
-
-        String filesList = "F:\\Temp\\mintpy\\data\\S1B_IW_SLC__1SDV_20180405T002722_20180405T002752_010341_012D2E_4CAC.zip,"
-                + "F:\\Temp\\mintpy\\data\\S1B_IW_SLC__1SDV_20180616T002726_20180616T002756_011391_014EB9_39F6.zip,"
-                + "F:\\Temp\\mintpy\\data\\S1B_IW_SLC__1SDV_20181014T002732_20181014T002801_013141_018480_94F7.zip,"
-                + "F:\\Temp\\mintpy\\data\\S1B_IW_SLC__1SDV_20190211T002728_20190211T002758_014891_01BCBF_EF14.zip";*/
 
         HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
         String workingDir = consoleParameters.get("workingDir").toString();
@@ -71,14 +59,6 @@ public class Stage1 {
             try {
 
                 targetProduct = topsarSplitOpEnv.getTargetProduct(files[i], parameters);
-                /*HashMap topsarSplitModifiedParameters = new HashMap();
-                topsarSplitModifiedParameters.put("firstBurstIndex", topsarSplitOpEnv.getFirstBurstIndex());
-                topsarSplitModifiedParameters.put("lastBurstIndex", topsarSplitOpEnv.getLastBurstIndex());
-                saveParameters(configDir, "s1_tops_split", topsarSplitModifiedParameters);*/
-
-                /*HashMap subsetModifiedParameters = new HashMap();
-                subsetModifiedParameters.put("geoRegion", topsarSplitOpEnv.getIntersectionGeoRegion());
-                saveParameters(configDir, "subset", subsetModifiedParameters);*/
 
                 targetProduct = applyOrbitFileOpEnv.getTargetProduct(targetProduct, parameters);
 
@@ -103,32 +83,10 @@ public class Stage1 {
         HashMap topsarSplitModifiedParameters = new HashMap();
         topsarSplitModifiedParameters.put("firstBurstIndex", topsarSplitOpEnv.getFirstBurstIndex());
         topsarSplitModifiedParameters.put("lastBurstIndex", topsarSplitOpEnv.getLastBurstIndex());
-
-        // Выбор оптимального master-снимка
-        // TODO: В будущем заменить эту процедуру на формирование интерферометрических пар, как описано в статье "Optimal selection and application analysis of multi-temporal differential interferogram series in StaMPS-based SBAS InSAR"
-        String masterName = "";
-        Product[] products = Arrays.stream(files).map(file -> {
-            try {
-                return ProductIO.readProduct(file);
-            } catch (Exception e) {
-                return null;
-            }
-        }).toArray(Product[]::new);
-        try {
-            masterName = InSARStackOverview.findOptimalMasterProduct(products).getName();
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-        Arrays.stream(products).forEach(product -> {
-            try {
-                product.closeIO();
-            } catch (IOException e) {
-                System.out.println(e);
-            }
-        });
-        topsarSplitModifiedParameters.put("masterName", masterName);
-
+        //topsarSplitModifiedParameters.put("masterName", getOptimalMaster(files));
         saveParameters(configDir, "s1_tops_split", topsarSplitModifiedParameters);
+
+        composingIntfPairs(files);
     }
 
     static HashMap getParameters(String configDir) {
@@ -206,5 +164,76 @@ public class Stage1 {
             System.out.println(e);
         }
 
+    }
+
+    static void composingIntfPairs(String[] files) {
+
+        Product[] products = Arrays.stream(files).map(file -> {
+            try {
+                return ProductIO.readProduct(file);
+            } catch (Exception e) {
+                return null;
+            }
+        }).toArray(Product[]::new);
+
+        String pairsStr = "";
+        try {
+            InSARStackOverview.IfgPair[] pairs;
+            InSARStackOverview.IfgPair pair ;
+            InSARStackOverview.IfgStack[] stackOverview = InSARStackOverview.calculateInSAROverview(products);
+
+            for (int i = 0; i < stackOverview.length; i++) {
+                pairs = stackOverview[i].getMasterSlave();
+                for (int j = i; j < pairs.length; j++) {
+                    pair = pairs[j];
+                    double bNorm = pair.getPerpendicularBaseline();
+                    double bTemp = pair.getTemporalBaseline();
+                    double dopplerDiff = pair.getDopplerDifference();
+                    double heightAmbiguity = pair.getHeightAmb();
+
+                    if (pair.getMasterMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString().equals(
+                            pair.getSlaveMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString())) {
+                        continue;
+                    }
+                    if (Math.abs(bNorm) <= 121 && Math.abs(bTemp) <= 120 && Math.abs(heightAmbiguity) < 300) {
+                        pairsStr = pairsStr
+                                + pair.getMasterMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString() + ","
+                                + pair.getSlaveMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString() + ";";
+                    }
+                }
+            }
+            pairsStr = pairsStr.substring(0, pairsStr.length() - 1);
+
+            PrintWriter out = new PrintWriter("pairs.txt");
+            out.println(pairsStr);
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    static String getOptimalMaster(String[] files) {
+        String masterName = "";
+        Product[] products = Arrays.stream(files).map(file -> {
+            try {
+                return ProductIO.readProduct(file);
+            } catch (Exception e) {
+                return null;
+            }
+        }).toArray(Product[]::new);
+        try {
+            masterName = InSARStackOverview.findOptimalMasterProduct(products).getName();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        Arrays.stream(products).forEach(product -> {
+            try {
+                product.closeIO();
+            } catch (IOException e) {
+                System.out.println(e);
+            }
+        });
+
+        return masterName;
     }
 }

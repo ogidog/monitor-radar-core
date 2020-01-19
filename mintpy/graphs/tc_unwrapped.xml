@@ -20,6 +20,8 @@
       <externalDEMApplyEGM>true</externalDEMApplyEGM>
       <demResamplingMethod>BILINEAR_INTERPOLATION</demResamplingMethod>
       <imgResamplingMethod>BILINEAR_INTERPOLATION</imgResamplingMethod>
+      <pixelSpacingInMeter>0.0</pixelSpacingInMeter>
+      <pixelSpacingInDegree>0.0</pixelSpacingInDegree>
       <mapProjection>GEOGCS[&quot;WGS84(DD)&quot;, &#xd;
   DATUM[&quot;WGS84&quot;, &#xd;
     SPHEROID[&quot;WGS84&quot;, 6378137.0, 298.257223563]], &#xd;
@@ -48,27 +50,10 @@
       <externalAuxFile/>
     </parameters>
   </node>
-  <node id="Subset">
-    <operator>Subset</operator>
-    <sources>
-      <sourceProduct refid="Terrain-Correction"/>
-    </sources>
-    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <sourceBands/>
-      <region>0,0,0,0</region>
-      <referenceBand/>
-      <geoRegion>POLYGON ((86.21370697021484 54.76390838623047, 86.69263458251953 54.76390838623047, 86.69263458251953 54.54048156738281, 86.21370697021484 54.54048156738281, 86.21370697021484 54.76390838623047, 86.21370697021484 54.76390838623047))</geoRegion>
-      <subSamplingX>1</subSamplingX>
-      <subSamplingY>1</subSamplingY>
-      <fullSwath>false</fullSwath>
-      <tiePointGridNames/>
-      <copyMetadata>true</copyMetadata>
-    </parameters>
-  </node>
   <node id="Write">
     <operator>Write</operator>
     <sources>
-      <sourceProduct refid="Subset"/>
+      <sourceProduct refid="Terrain-Correction"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <file>I:\Temp\mintpy\interferograms\20180405_20190211\20180405_20190211_unw_tc.dim</file>
@@ -82,9 +67,6 @@
     </node>
     <node id="Terrain-Correction">
       <displayPosition x="149.0" y="133.0"/>
-    </node>
-    <node id="Subset">
-      <displayPosition x="326.0" y="132.0"/>
     </node>
     <node id="Write">
             <displayPosition x="457.0" y="132.0"/>
