@@ -16,7 +16,7 @@ public class TimeseriesGraph {
 
     public static void main(String[] args) {
 
-        /*
+
         String fileList = "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190106T002729_20190106T002759_014366_01ABBB_3DE0.zip," +
                 "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190118T002729_20190118T002759_014541_01B15F_2552.zip," +
                 "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190130T002729_20190130T002759_014716_01B6FF_32CF.zip," +
@@ -48,8 +48,8 @@ public class TimeseriesGraph {
                 "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20191126T002737_20191126T002807_019091_024077_FCDB.zip," +
                 "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20191208T002737_20191208T002807_019266_0245FF_B721.zip," +
                 "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20191220T002737_20191220T002806_019441_024B94_7F20.zip";
-        */
-        String fileList = "F:\\satimg\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20180405T002722_20180405T002752_010341_012D2E_4CAC.zip," +
+
+        /*String fileList = "F:\\satimg\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20180405T002722_20180405T002752_010341_012D2E_4CAC.zip," +
                 "F:\\satimg\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20180417T002722_20180417T002752_010516_0132C3_A59B.zip," +
                 "F:\\satimg\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20180429T002723_20180429T002753_010691_01385F_CCBB.zip," +
                 "F:\\satimg\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20180511T002724_20180511T002753_010866_013E05_36C0.zip," +
@@ -80,7 +80,7 @@ public class TimeseriesGraph {
                 "F:\\satimg\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190307T002728_20190307T002758_015241_01C842_51EA.zip," +
                 "F:\\satimg\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190319T002728_20190319T002758_015416_01CDED_4F45.zip," +
                 "F:\\satimg\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190331T002729_20190331T002758_015591_01D3A4_F37A.zip," +
-                "F:\\satimg\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190412T002729_20190412T002759_015766_01D977_02DF.zip";
+                "F:\\satimg\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190412T002729_20190412T002759_015766_01D977_02DF.zip";*/
 
         Product[] products = Arrays.stream(fileList.split(",")).map(file -> {
             try {
@@ -104,6 +104,7 @@ public class TimeseriesGraph {
                     double bTemp = pair.getTemporalBaseline();
                     double dopplerDiff = pair.getDopplerDifference();
                     double heightAmbiguity = pair.getHeightAmb();
+                    double coh=pair.getCoherence();
                     /*double bNormFrac, bTempFrac, dopplerDiffFrac = 0.0, gammaMin = 0.85, gamma;
                     bNormFrac = bNorm / 121 <= 1.0 ? bNorm / 121 : 1;
                     bTempFrac = bTemp / 120 <= 1.0 ? bTemp / 120 : 1;
@@ -115,24 +116,24 @@ public class TimeseriesGraph {
                         continue;
                     }
                     //if (gamma > gammaMin) {
-                    if (Math.abs(bNorm) <= 121 && Math.abs(bTemp) <= 120 && Math.abs(heightAmbiguity) < 300) {
+                    if (coh>=0.9) {
                         //counter++;
-                        /*System.out.println(pair.getMasterMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString()
+                        System.out.println(pair.getMasterMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString()
                                 + " - " + pair.getSlaveMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString()
                                 + " - B_norm: " + pair.getPerpendicularBaseline() + ", B_temp: " + pair.getTemporalBaseline() + ","
-                                + " Doppler: " + pair.getDopplerDifference() + ", 2pi Amb: " + pair.getHeightAmb());*/
+                                + " Doppler: " + pair.getDopplerDifference() + ", 2pi Amb: " + pair.getHeightAmb() + ", coh: " + coh);
                         pairsStr = pairsStr
                                 + pair.getMasterMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString() + ","
                                 + pair.getSlaveMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString() + ";";
                     }
                 }
-                //System.out.println("\n");
+                System.out.println("\n");
             }
             //System.out.println("Total pairs: " + counter);
             pairsStr = pairsStr.substring(0, pairsStr.length() - 1);
 
-            PrintWriter out = new PrintWriter("pairs.txt");
-            out.println(pairsStr);
+            /*PrintWriter out = new PrintWriter("pairs.txt");
+            out.println(pairsStr);*/
 
 
         } catch (Exception e) {

@@ -86,7 +86,9 @@ public class Stage1 {
         //topsarSplitModifiedParameters.put("masterName", getOptimalMaster(files));
         saveParameters(configDir, "s1_tops_split", topsarSplitModifiedParameters);
 
-        composingIntfPairs(files);
+        // Composing interferometric pairs
+        System.out.println("\nComposing interferometric pairs...\n");
+        composingIntfPairs(files, workingDir);
     }
 
     static HashMap getParameters(String configDir) {
@@ -166,7 +168,7 @@ public class Stage1 {
 
     }
 
-    static void composingIntfPairs(String[] files) {
+    static void composingIntfPairs(String[] files, String workingDir) {
 
         Product[] products = Arrays.stream(files).map(file -> {
             try {
@@ -177,39 +179,53 @@ public class Stage1 {
         }).toArray(Product[]::new);
 
         String pairsStr = "";
+        int pairCounter = 0;
+
         try {
+
             InSARStackOverview.IfgPair[] pairs;
-            InSARStackOverview.IfgPair pair ;
+            InSARStackOverview.IfgPair pair;
             InSARStackOverview.IfgStack[] stackOverview = InSARStackOverview.calculateInSAROverview(products);
 
             for (int i = 0; i < stackOverview.length; i++) {
                 pairs = stackOverview[i].getMasterSlave();
                 for (int j = i; j < pairs.length; j++) {
                     pair = pairs[j];
-                    double bNorm = pair.getPerpendicularBaseline();
+                    /*double bNorm = pair.getPerpendicularBaseline();
                     double bTemp = pair.getTemporalBaseline();
                     double dopplerDiff = pair.getDopplerDifference();
-                    double heightAmbiguity = pair.getHeightAmb();
+                    double heightAmbiguity = pair.getHeightAmb();*/
+                    double coh = pair.getCoherence();
 
                     if (pair.getMasterMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString().equals(
                             pair.getSlaveMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString())) {
                         continue;
                     }
-                    if (Math.abs(bNorm) <= 121 && Math.abs(bTemp) <= 120 && Math.abs(heightAmbiguity) < 300) {
+                    // if (Math.abs(bNorm) <= 121 && Math.abs(bTemp) <= 120 && Math.abs(heightAmbiguity) < 300) {
+                    // if (Math.abs(bNorm) <= 2500 && Math.abs(bTemp) <= 40) {
+                    if (coh >= 0.9) {
                         pairsStr = pairsStr
                                 + pair.getMasterMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString() + ","
                                 + pair.getSlaveMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString() + ";";
+                        pairCounter++;
                     }
                 }
             }
             pairsStr = pairsStr.substring(0, pairsStr.length() - 1);
+            System.out.println("Total interferometric pairs: " + pairCounter);
 
-            PrintWriter out = new PrintWriter("pairs.txt");
-            out.println(pairsStr);
+            if (Files.exists(Paths.get(workingDir + File.separator + "applyorbitfile" + File.separator + "pairs.txt"))) {
+                Files.delete(Paths.get(workingDir + File.separator + "applyorbitfile" + File.separator + "pairs.txt"));
+            }
+
+            PrintWriter out = new PrintWriter(workingDir + File.separator + "applyorbitfile" + File.separator + "pairs.txt");
+            out.print(pairsStr);
+            out.close();
 
         } catch (Exception e) {
             System.out.println(e);
         }
+
     }
 
     static String getOptimalMaster(String[] files) {
