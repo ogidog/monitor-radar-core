@@ -9,13 +9,77 @@ import org.esa.snap.core.datamodel.Product;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TimeseriesGraph {
 
     public static void main(String[] args) {
+        intfPairCorrecting();
+        // intfPairComposing();
+    }
 
+    public static void intfPairCorrecting() {
+
+        String pairsStr = "";
+        TreeMap<String, ArrayList> pairs = new TreeMap<>();
+        Pattern datePattern = Pattern.compile("(\\d\\d\\d\\d\\d\\d\\d\\d)");
+
+        // Read pairs.txt
+        try {
+            pairsStr = new String(Files.readAllBytes(Paths.get("pairs.txt")));
+            Arrays.stream(pairsStr.split(";")).forEach(pair -> {
+                String masterDate, slaveDate;
+
+                Matcher dateMatcher = datePattern.matcher(pair.split(",")[0]);
+                dateMatcher.find();
+                masterDate = dateMatcher.group();
+
+                dateMatcher = datePattern.matcher(pair.split(",")[1]);
+                dateMatcher.find();
+                slaveDate = dateMatcher.group();
+
+                ArrayList<String> slaves = null;
+
+                if (!pairs.containsKey(masterDate)) {
+                    slaves = new ArrayList();
+                    slaves.add(slaveDate);
+                    pairs.put(masterDate, slaves);
+                } else {
+                    pairs.get(masterDate).add(slaveDate);
+                }
+
+                System.out.println();
+
+            });
+
+            String[] masterKeys = pairs.keySet().stream().toArray(String[]::new);
+            String row = "", column = "";
+
+            for (int i = 0; i < masterKeys.length; i++) {
+                int rowSize = pairs.get(masterKeys[i]).size();
+                for (int j = 0; j < masterKeys.length; j++) {
+                    if (j < rowSize) {
+                        row = row + pairs.get(masterKeys[i]).get(j);
+                    }
+                }
+            }
+
+            System.out.println(pairs);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public static void intfPairComposing() {
 
         String fileList = "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190106T002729_20190106T002759_014366_01ABBB_3DE0.zip," +
                 "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190118T002729_20190118T002759_014541_01B15F_2552.zip," +
@@ -91,6 +155,7 @@ public class TimeseriesGraph {
         }).toArray(Product[]::new);
 
         String pairsStr = "";
+
         try {
             InSARStackOverview.IfgPair[] pairs = null;
             InSARStackOverview.IfgPair pair = null;
@@ -100,45 +165,49 @@ public class TimeseriesGraph {
                 pairs = stackOverview[i].getMasterSlave();
                 for (int j = i; j < pairs.length; j++) {
                     pair = pairs[j];
-                    double bNorm = pair.getPerpendicularBaseline();
+                    /*double bNorm = pair.getPerpendicularBaseline();
                     double bTemp = pair.getTemporalBaseline();
                     double dopplerDiff = pair.getDopplerDifference();
                     double heightAmbiguity = pair.getHeightAmb();
-                    double coh=pair.getCoherence();
-                    /*double bNormFrac, bTempFrac, dopplerDiffFrac = 0.0, gammaMin = 0.85, gamma;
+                    double bNormFrac, bTempFrac, dopplerDiffFrac = 0.0, gammaMin = 0.85, gamma;
                     bNormFrac = bNorm / 121 <= 1.0 ? bNorm / 121 : 1;
                     bTempFrac = bTemp / 120 <= 1.0 ? bTemp / 120 : 1;
                     dopplerDiffFrac = dopplerDiff / 325 <= 1.0 ? dopplerDiff / 325 : 1;
                     gamma = (1 - bNormFrac) * (1 - bTempFrac)*(1 - dopplerDiffFrac);*/
 
+                    double coh = pair.getCoherence();
+                    double bNorm = pair.getPerpendicularBaseline();
+                    double bTemp = pair.getTemporalBaseline();
                     if (pair.getMasterMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString().equals(
                             pair.getSlaveMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString())) {
                         continue;
                     }
                     //if (gamma > gammaMin) {
-                    if (coh>=0.9) {
-                        //counter++;
-                        System.out.println(pair.getMasterMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString()
+                    // if (coh >= 0.9) {
+                    if (Math.abs(bTemp) <= 40) {
+                        counter++;
+                        /*System.out.println(pair.getMasterMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString()
                                 + " - " + pair.getSlaveMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString()
                                 + " - B_norm: " + pair.getPerpendicularBaseline() + ", B_temp: " + pair.getTemporalBaseline() + ","
-                                + " Doppler: " + pair.getDopplerDifference() + ", 2pi Amb: " + pair.getHeightAmb() + ", coh: " + coh);
+                                + " Doppler: " + pair.getDopplerDifference() + ", 2pi Amb: " + pair.getHeightAmb() + ", coh: " + coh);*/
                         pairsStr = pairsStr
                                 + pair.getMasterMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString() + ","
-                                + pair.getSlaveMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString() + ";";
+                                + pair.getSlaveMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString() + "," + bNorm + ";";
                     }
                 }
-                System.out.println("\n");
+                //System.out.println("\n");
             }
-            //System.out.println("Total pairs: " + counter);
+
             pairsStr = pairsStr.substring(0, pairsStr.length() - 1);
+            System.out.println("Total pairs: " + counter);
 
-            /*PrintWriter out = new PrintWriter("pairs.txt");
-            out.println(pairsStr);*/
-
+            // Write pairs to file
+            PrintWriter out = new PrintWriter("pairs.txt");
+            out.println(pairsStr);
+            out.close();
 
         } catch (Exception e) {
             System.out.println(e);
         }
     }
-
 }
