@@ -11,25 +11,24 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class TimeseriesGraph {
 
+    static Pattern datePattern = Pattern.compile("(\\d\\d\\d\\d\\d\\d\\d\\d)");
+
     public static void main(String[] args) {
-        intfPairCorrecting();
-        // intfPairComposing();
+        // intfPairCorrecting();
+        intfPairComposing();
     }
 
     public static void intfPairCorrecting() {
 
         String pairsStr = "";
         TreeMap<String, ArrayList> pairs = new TreeMap<>();
-        Pattern datePattern = Pattern.compile("(\\d\\d\\d\\d\\d\\d\\d\\d)");
 
         // Read pairs.txt
         try {
@@ -81,7 +80,34 @@ public class TimeseriesGraph {
 
     public static void intfPairComposing() {
 
-        String fileList = "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190106T002729_20190106T002759_014366_01ABBB_3DE0.zip," +
+        String fileList =
+                "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190106T002729_20190106T002759_014366_01ABBB_3DE0.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190130T002729_20190130T002759_014716_01B6FF_32CF.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190211T002728_20190211T002758_014891_01BCBF_EF14.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190223T002728_20190223T002758_015066_01C279_1629.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190307T002728_20190307T002758_015241_01C842_51EA.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190319T002728_20190319T002758_015416_01CDED_4F45.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190412T002729_20190412T002759_015766_01D977_02DF.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190424T002729_20190424T002759_015941_01DF44_C2DF.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190506T002730_20190506T002800_016116_01E521_3B49.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190518T002730_20190518T002800_016291_01EA92_0661.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190611T002732_20190611T002802_016641_01F521_0071.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190623T002732_20190623T002802_016816_01FA53_B9AA.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190705T002733_20190705T002803_016991_01FF82_D865.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190717T002734_20190717T002804_017166_0204AA_CDC4.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190810T002735_20190810T002805_017516_020F11_68A1.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190903T002737_20190903T002806_017866_0219F6_1FEF.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190915T002737_20190915T002807_018041_021F69_E11B.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190927T002738_20190927T002808_018216_0224CE_0DDF.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20191009T002738_20191009T002808_018391_022A52_6475.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20191102T002738_20191102T002808_018741_023530_B861.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20191126T002737_20191126T002807_019091_024077_FCDB.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20191208T002737_20191208T002807_019266_0245FF_B721.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20191220T002737_20191220T002806_019441_024B94_7F20.zip";
+
+
+        /*String fileList =
+                "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190106T002729_20190106T002759_014366_01ABBB_3DE0.zip," +
                 "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190118T002729_20190118T002759_014541_01B15F_2552.zip," +
                 "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190130T002729_20190130T002759_014716_01B6FF_32CF.zip," +
                 "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190211T002728_20190211T002758_014891_01BCBF_EF14.zip," +
@@ -111,7 +137,7 @@ public class TimeseriesGraph {
                 "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20191114T002738_20191114T002808_018916_023AD6_210D.zip," +
                 "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20191126T002737_20191126T002807_019091_024077_FCDB.zip," +
                 "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20191208T002737_20191208T002807_019266_0245FF_B721.zip," +
-                "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20191220T002737_20191220T002806_019441_024B94_7F20.zip";
+                "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20191220T002737_20191220T002806_019441_024B94_7F20.zip";*/
 
         /*String fileList = "F:\\satimg\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20180405T002722_20180405T002752_010341_012D2E_4CAC.zip," +
                 "F:\\satimg\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20180417T002722_20180417T002752_010516_0132C3_A59B.zip," +
@@ -154,7 +180,9 @@ public class TimeseriesGraph {
             }
         }).toArray(Product[]::new);
 
-        String pairsStr = "";
+        String pairsStr = "", pairsStr1 = "";
+
+        TreeSet<String> dates = new TreeSet<>();
 
         try {
             InSARStackOverview.IfgPair[] pairs = null;
@@ -184,26 +212,47 @@ public class TimeseriesGraph {
                     }
                     //if (gamma > gammaMin) {
                     // if (coh >= 0.9) {
-                    if (Math.abs(bTemp) <= 40) {
+                    if (Math.abs(bTemp) <= 30 && Math.abs(bNorm) <= 120) {
                         counter++;
-                        /*System.out.println(pair.getMasterMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString()
-                                + " - " + pair.getSlaveMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString()
+
+                        Matcher dateMatcher = datePattern.matcher(pair.getMasterMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString());
+                        dateMatcher.find();
+                        String masterDate = dateMatcher.group();
+                        dates.add(masterDate);
+
+                        dateMatcher = datePattern.matcher(pair.getSlaveMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString());
+                        dateMatcher.find();
+                        String slaveDate = dateMatcher.group();
+                        dates.add(slaveDate);
+
+                        /*System.out.println(masterDate
+                                + " <-> " + slaveDate
                                 + " - B_norm: " + pair.getPerpendicularBaseline() + ", B_temp: " + pair.getTemporalBaseline() + ","
                                 + " Doppler: " + pair.getDopplerDifference() + ", 2pi Amb: " + pair.getHeightAmb() + ", coh: " + coh);*/
+                        pairsStr1 = pairsStr1 + masterDate + " <-> " + slaveDate + "\n";
+
                         pairsStr = pairsStr
                                 + pair.getMasterMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString() + ","
                                 + pair.getSlaveMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString() + "," + bNorm + ";";
                     }
                 }
+
                 //System.out.println("\n");
             }
 
             pairsStr = pairsStr.substring(0, pairsStr.length() - 1);
             System.out.println("Total pairs: " + counter);
 
+            String[] datesStr = dates.stream().toArray(String[]::new);
+
+            for (int i = 0; i < datesStr.length; i++) {
+                pairsStr1 = pairsStr1.replace(datesStr[i], String.valueOf(i));
+            }
+            System.out.println(pairsStr1);
+
             // Write pairs to file
-            PrintWriter out = new PrintWriter("pairs.txt");
-            out.println(pairsStr);
+            PrintWriter out = new PrintWriter("pairs1.txt");
+            out.println(pairsStr1);
             out.close();
 
         } catch (Exception e) {
