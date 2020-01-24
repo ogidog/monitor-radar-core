@@ -21,58 +21,32 @@ public class TimeseriesGraph {
     static Pattern datePattern = Pattern.compile("(\\d\\d\\d\\d\\d\\d\\d\\d)");
 
     public static void main(String[] args) {
-        // intfPairCorrecting();
-        intfPairComposing();
+        intfPairCorrecting();
+        // intfPairComposing();
     }
 
     public static void intfPairCorrecting() {
 
-        String pairsStr = "";
         TreeMap<String, ArrayList> pairs = new TreeMap<>();
 
         // Read pairs.txt
         try {
-            pairsStr = new String(Files.readAllBytes(Paths.get("pairs.txt")));
-            Arrays.stream(pairsStr.split(";")).forEach(pair -> {
-                String masterDate, slaveDate;
 
-                Matcher dateMatcher = datePattern.matcher(pair.split(",")[0]);
-                dateMatcher.find();
-                masterDate = dateMatcher.group();
+            // String pairIDStr = new String(Files.readAllBytes(Paths.get("pairs.txt"))).trim();
+            String pairIDStr = "0-1;1-2;1-3;2-3;2-4;3-4;3-5;4-5;5-6;6-7;7-8;7-9;8-9;9-11;10-11;10-12;11-12;11-13;12-13;13-14;14-15;15-16;16-17;16-18;18-19;19-22;20-21;20-22;21-22";
 
-                dateMatcher = datePattern.matcher(pair.split(",")[1]);
-                dateMatcher.find();
-                slaveDate = dateMatcher.group();
-
-                ArrayList<String> slaves = null;
-
-                if (!pairs.containsKey(masterDate)) {
-                    slaves = new ArrayList();
-                    slaves.add(slaveDate);
-                    pairs.put(masterDate, slaves);
-                } else {
-                    pairs.get(masterDate).add(slaveDate);
-                }
-
-                System.out.println();
-
+            Graph g = new Graph(23);
+            Arrays.stream(pairIDStr.split(";")).forEach(pair -> {
+                int v1, v2;
+                v1 = Integer.valueOf(pair.split("-")[0]);
+                v2 = Integer.valueOf(pair.split("-")[1]);
+                g.addEdge(v1, v2);
+                g.addEdge(v2, v1);
             });
 
-            String[] masterKeys = pairs.keySet().stream().toArray(String[]::new);
-            String row = "", column = "";
+            g.DFS(0);
 
-            for (int i = 0; i < masterKeys.length; i++) {
-                int rowSize = pairs.get(masterKeys[i]).size();
-                for (int j = 0; j < masterKeys.length; j++) {
-                    if (j < rowSize) {
-                        row = row + pairs.get(masterKeys[i]).get(j);
-                    }
-                }
-            }
-
-            System.out.println(pairs);
-
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -179,20 +153,26 @@ public class TimeseriesGraph {
                 return null;
             }
         }).toArray(Product[]::new);
+        String pairIDStr = "", pairNameStr = "";
+        // TreeSet<String> dates = new TreeSet<>();
+        // TreeMap<String, String> productNames = new TreeMap<>();
+        TreeSet<String> productNames = new TreeSet<>();
+        String masterProductName, slaveProductName;
 
-        String pairsStr = "", pairsStr1 = "";
-
-        TreeSet<String> dates = new TreeSet<>();
+        InSARStackOverview.IfgPair[] masterSlavePairs;
+        InSARStackOverview.IfgPair masterSlavePair;
+        InSARStackOverview.IfgStack[] stackOverview;
 
         try {
-            InSARStackOverview.IfgPair[] pairs = null;
-            InSARStackOverview.IfgPair pair = null;
-            InSARStackOverview.IfgStack[] stackOverview = InSARStackOverview.calculateInSAROverview(products);
+            stackOverview = InSARStackOverview.calculateInSAROverview(products);
+
             int counter = 0;
+
             for (int i = 0; i < stackOverview.length; i++) {
-                pairs = stackOverview[i].getMasterSlave();
-                for (int j = i; j < pairs.length; j++) {
-                    pair = pairs[j];
+                masterSlavePairs = stackOverview[i].getMasterSlave();
+                for (int j = i; j < masterSlavePairs.length; j++) {
+                    masterSlavePair = masterSlavePairs[j];
+
                     /*double bNorm = pair.getPerpendicularBaseline();
                     double bTemp = pair.getTemporalBaseline();
                     double dopplerDiff = pair.getDopplerDifference();
@@ -203,19 +183,18 @@ public class TimeseriesGraph {
                     dopplerDiffFrac = dopplerDiff / 325 <= 1.0 ? dopplerDiff / 325 : 1;
                     gamma = (1 - bNormFrac) * (1 - bTempFrac)*(1 - dopplerDiffFrac);*/
 
-                    double coh = pair.getCoherence();
-                    double bNorm = pair.getPerpendicularBaseline();
-                    double bTemp = pair.getTemporalBaseline();
-                    if (pair.getMasterMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString().equals(
-                            pair.getSlaveMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString())) {
+                    double coh = masterSlavePair.getCoherence();
+                    double bNorm = masterSlavePair.getPerpendicularBaseline();
+                    double bTemp = masterSlavePair.getTemporalBaseline();
+                    if (masterSlavePair.getMasterMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString().equals(
+                            masterSlavePair.getSlaveMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString())) {
                         continue;
                     }
                     //if (gamma > gammaMin) {
                     // if (coh >= 0.9) {
                     if (Math.abs(bTemp) <= 30 && Math.abs(bNorm) <= 120) {
-                        counter++;
 
-                        Matcher dateMatcher = datePattern.matcher(pair.getMasterMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString());
+                        /*Matcher dateMatcher = datePattern.matcher(pair.getMasterMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString());
                         dateMatcher.find();
                         String masterDate = dateMatcher.group();
                         dates.add(masterDate);
@@ -223,40 +202,96 @@ public class TimeseriesGraph {
                         dateMatcher = datePattern.matcher(pair.getSlaveMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString());
                         dateMatcher.find();
                         String slaveDate = dateMatcher.group();
-                        dates.add(slaveDate);
+                        dates.add(slaveDate);*/
 
                         /*System.out.println(masterDate
                                 + " <-> " + slaveDate
                                 + " - B_norm: " + pair.getPerpendicularBaseline() + ", B_temp: " + pair.getTemporalBaseline() + ","
                                 + " Doppler: " + pair.getDopplerDifference() + ", 2pi Amb: " + pair.getHeightAmb() + ", coh: " + coh);*/
-                        pairsStr1 = pairsStr1 + masterDate + " <-> " + slaveDate + "\n";
 
-                        pairsStr = pairsStr
+                        masterProductName = masterSlavePair.getMasterMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString();
+                        slaveProductName = masterSlavePair.getSlaveMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString();
+                        productNames.add(masterProductName);
+                        productNames.add(slaveProductName);
+
+                        pairNameStr = pairNameStr + masterProductName + "-" + slaveProductName + ";";
+
+                        counter++;
+
+                        /*pairsStr = pairsStr
                                 + pair.getMasterMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString() + ","
-                                + pair.getSlaveMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString() + "," + bNorm + ";";
+                                + pair.getSlaveMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString() + "," + bNorm + ";";*/
                     }
                 }
-
-                //System.out.println("\n");
             }
 
-            pairsStr = pairsStr.substring(0, pairsStr.length() - 1);
             System.out.println("Total pairs: " + counter);
 
-            String[] datesStr = dates.stream().toArray(String[]::new);
+            pairNameStr = pairNameStr.substring(0, pairNameStr.length() - 1);
+            pairIDStr = pairNameStr;
+            String[] productNamesStr = productNames.stream().toArray(String[]::new);
 
-            for (int i = 0; i < datesStr.length; i++) {
-                pairsStr1 = pairsStr1.replace(datesStr[i], String.valueOf(i));
+            for (int i = 0; i < productNamesStr.length; i++) {
+                pairIDStr = pairIDStr.replace(productNamesStr[i], String.valueOf(i));
             }
-            System.out.println(pairsStr1);
+
+            System.out.println(pairIDStr);
+            System.out.println(pairNameStr);
 
             // Write pairs to file
-            PrintWriter out = new PrintWriter("pairs1.txt");
-            out.println(pairsStr1);
+            PrintWriter out = new PrintWriter("pairs.txt");
+            out.println(pairIDStr);
             out.close();
 
         } catch (Exception e) {
             System.out.println(e);
         }
+    }
+}
+
+// This class represents a directed graph using adjacency list
+// representation
+class Graph {
+    private int V;   // No. of vertices
+
+    // Array  of lists for Adjacency List Representation
+    private LinkedList<Integer> adj[];
+
+    // Constructor
+    Graph(int v) {
+        V = v;
+        adj = new LinkedList[v];
+        for (int i = 0; i < v; ++i)
+            adj[i] = new LinkedList();
+    }
+
+    //Function to add an edge into the graph
+    void addEdge(int v, int w) {
+        adj[v].add(w);  // Add w to v's list.
+    }
+
+    // A function used by DFS
+    void DFSUtil(int v, boolean visited[]) {
+        // Mark the current node as visited and print it
+        visited[v] = true;
+        System.out.print(v + " ");
+
+        // Recur for all the vertices adjacent to this vertex
+        Iterator<Integer> i = adj[v].listIterator();
+        while (i.hasNext()) {
+            int n = i.next();
+            if (!visited[n])
+                DFSUtil(n, visited);
+        }
+    }
+
+    // The function to do DFS traversal. It uses recursive DFSUtil()
+    void DFS(int v) {
+        // Mark all the vertices as not visited(set as
+        // false by default in java)
+        boolean visited[] = new boolean[V];
+
+        // Call the recursive helper function to print DFS traversal
+        DFSUtil(v, visited);
     }
 }
