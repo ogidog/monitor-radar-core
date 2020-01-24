@@ -21,8 +21,8 @@ public class TimeseriesGraph {
     static Pattern datePattern = Pattern.compile("(\\d\\d\\d\\d\\d\\d\\d\\d)");
 
     public static void main(String[] args) {
-        intfPairCorrecting();
-        // intfPairComposing();
+        //intfPairCorrecting();
+        intfPairComposing();
     }
 
     public static void intfPairCorrecting() {
@@ -54,6 +54,7 @@ public class TimeseriesGraph {
 
     public static void intfPairComposing() {
 
+        /*
         String fileList =
                 "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190106T002729_20190106T002759_014366_01ABBB_3DE0.zip," +
                         "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190130T002729_20190130T002759_014716_01B6FF_32CF.zip," +
@@ -78,42 +79,43 @@ public class TimeseriesGraph {
                         "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20191126T002737_20191126T002807_019091_024077_FCDB.zip," +
                         "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20191208T002737_20191208T002807_019266_0245FF_B721.zip," +
                         "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20191220T002737_20191220T002806_019441_024B94_7F20.zip";
+         */
 
-
-        /*String fileList =
+        String fileList =
                 "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190106T002729_20190106T002759_014366_01ABBB_3DE0.zip," +
-                "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190118T002729_20190118T002759_014541_01B15F_2552.zip," +
-                "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190130T002729_20190130T002759_014716_01B6FF_32CF.zip," +
-                "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190211T002728_20190211T002758_014891_01BCBF_EF14.zip," +
-                "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190223T002728_20190223T002758_015066_01C279_1629.zip," +
-                "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190307T002728_20190307T002758_015241_01C842_51EA.zip," +
-                "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190319T002728_20190319T002758_015416_01CDED_4F45.zip," +
-                "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190331T002729_20190331T002758_015591_01D3A4_F37A.zip," +
-                "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190412T002729_20190412T002759_015766_01D977_02DF.zip," +
-                "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190424T002729_20190424T002759_015941_01DF44_C2DF.zip," +
-                "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190506T002730_20190506T002800_016116_01E521_3B49.zip," +
-                "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190518T002730_20190518T002800_016291_01EA92_0661.zip," +
-                "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190530T002731_20190530T002801_016466_01EFEC_5A79.zip," +
-                "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190611T002732_20190611T002802_016641_01F521_0071.zip," +
-                "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190623T002732_20190623T002802_016816_01FA53_B9AA.zip," +
-                "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190705T002733_20190705T002803_016991_01FF82_D865.zip," +
-                "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190717T002734_20190717T002804_017166_0204AA_CDC4.zip," +
-                "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190729T002735_20190729T002804_017341_0209C7_C915.zip," +
-                "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190810T002735_20190810T002805_017516_020F11_68A1.zip," +
-                "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190822T002736_20190822T002806_017691_021488_6C90.zip," +
-                "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190903T002737_20190903T002806_017866_0219F6_1FEF.zip," +
-                "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190915T002737_20190915T002807_018041_021F69_E11B.zip," +
-                "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190927T002738_20190927T002808_018216_0224CE_CE50.zip," +
-                "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190927T002738_20190927T002808_018216_0224CE_0DDF.zip," +
-                "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20191009T002738_20191009T002808_018391_022A52_6475.zip," +
-                "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20191021T002738_20191021T002808_018566_022FB2_C9C2.zip," +
-                "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20191102T002738_20191102T002808_018741_023530_B861.zip," +
-                "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20191114T002738_20191114T002808_018916_023AD6_210D.zip," +
-                "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20191126T002737_20191126T002807_019091_024077_FCDB.zip," +
-                "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20191208T002737_20191208T002807_019266_0245FF_B721.zip," +
-                "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20191220T002737_20191220T002806_019441_024B94_7F20.zip";*/
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190118T002729_20190118T002759_014541_01B15F_2552.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190130T002729_20190130T002759_014716_01B6FF_32CF.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190211T002728_20190211T002758_014891_01BCBF_EF14.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190223T002728_20190223T002758_015066_01C279_1629.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190307T002728_20190307T002758_015241_01C842_51EA.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190319T002728_20190319T002758_015416_01CDED_4F45.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190331T002729_20190331T002758_015591_01D3A4_F37A.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190412T002729_20190412T002759_015766_01D977_02DF.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190424T002729_20190424T002759_015941_01DF44_C2DF.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190506T002730_20190506T002800_016116_01E521_3B49.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190518T002730_20190518T002800_016291_01EA92_0661.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190530T002731_20190530T002801_016466_01EFEC_5A79.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190611T002732_20190611T002802_016641_01F521_0071.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190623T002732_20190623T002802_016816_01FA53_B9AA.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190705T002733_20190705T002803_016991_01FF82_D865.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190717T002734_20190717T002804_017166_0204AA_CDC4.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190729T002735_20190729T002804_017341_0209C7_C915.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190810T002735_20190810T002805_017516_020F11_68A1.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190822T002736_20190822T002806_017691_021488_6C90.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190903T002737_20190903T002806_017866_0219F6_1FEF.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190915T002737_20190915T002807_018041_021F69_E11B.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190927T002738_20190927T002808_018216_0224CE_CE50.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190927T002738_20190927T002808_018216_0224CE_0DDF.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20191009T002738_20191009T002808_018391_022A52_6475.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20191021T002738_20191021T002808_018566_022FB2_C9C2.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20191102T002738_20191102T002808_018741_023530_B861.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20191114T002738_20191114T002808_018916_023AD6_210D.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20191126T002737_20191126T002807_019091_024077_FCDB.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20191208T002737_20191208T002807_019266_0245FF_B721.zip," +
+                        "Y:\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20191220T002737_20191220T002806_019441_024B94_7F20.zip";
 
-        /*String fileList = "F:\\satimg\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20180405T002722_20180405T002752_010341_012D2E_4CAC.zip," +
+        /*
+        String fileList = "F:\\satimg\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20180405T002722_20180405T002752_010341_012D2E_4CAC.zip," +
                 "F:\\satimg\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20180417T002722_20180417T002752_010516_0132C3_A59B.zip," +
                 "F:\\satimg\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20180429T002723_20180429T002753_010691_01385F_CCBB.zip," +
                 "F:\\satimg\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20180511T002724_20180511T002753_010866_013E05_36C0.zip," +
@@ -144,7 +146,8 @@ public class TimeseriesGraph {
                 "F:\\satimg\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190307T002728_20190307T002758_015241_01C842_51EA.zip," +
                 "F:\\satimg\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190319T002728_20190319T002758_015416_01CDED_4F45.zip," +
                 "F:\\satimg\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190331T002729_20190331T002758_015591_01D3A4_F37A.zip," +
-                "F:\\satimg\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190412T002729_20190412T002759_015766_01D977_02DF.zip";*/
+                "F:\\satimg\\Satellites\\Sentinel-1A\\S1B_IW_SLC__1SDV_20190412T002729_20190412T002759_015766_01D977_02DF.zip";
+         */
 
         Product[] products = Arrays.stream(fileList.split(",")).map(file -> {
             try {
@@ -153,9 +156,8 @@ public class TimeseriesGraph {
                 return null;
             }
         }).toArray(Product[]::new);
+
         String pairIDStr = "", pairNameStr = "";
-        // TreeSet<String> dates = new TreeSet<>();
-        // TreeMap<String, String> productNames = new TreeMap<>();
         TreeSet<String> productNames = new TreeSet<>();
         String masterProductName, slaveProductName;
 
@@ -173,16 +175,6 @@ public class TimeseriesGraph {
                 for (int j = i; j < masterSlavePairs.length; j++) {
                     masterSlavePair = masterSlavePairs[j];
 
-                    /*double bNorm = pair.getPerpendicularBaseline();
-                    double bTemp = pair.getTemporalBaseline();
-                    double dopplerDiff = pair.getDopplerDifference();
-                    double heightAmbiguity = pair.getHeightAmb();
-                    double bNormFrac, bTempFrac, dopplerDiffFrac = 0.0, gammaMin = 0.85, gamma;
-                    bNormFrac = bNorm / 121 <= 1.0 ? bNorm / 121 : 1;
-                    bTempFrac = bTemp / 120 <= 1.0 ? bTemp / 120 : 1;
-                    dopplerDiffFrac = dopplerDiff / 325 <= 1.0 ? dopplerDiff / 325 : 1;
-                    gamma = (1 - bNormFrac) * (1 - bTempFrac)*(1 - dopplerDiffFrac);*/
-
                     double coh = masterSlavePair.getCoherence();
                     double bNorm = masterSlavePair.getPerpendicularBaseline();
                     double bTemp = masterSlavePair.getTemporalBaseline();
@@ -190,9 +182,8 @@ public class TimeseriesGraph {
                             masterSlavePair.getSlaveMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString())) {
                         continue;
                     }
-                    //if (gamma > gammaMin) {
-                    // if (coh >= 0.9) {
-                    if (Math.abs(bTemp) <= 30 && Math.abs(bNorm) <= 120) {
+
+                    if (Math.abs(bTemp) <= 40 && Math.abs(bNorm) <= 120) {
 
                         /*Matcher dateMatcher = datePattern.matcher(pair.getMasterMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString());
                         dateMatcher.find();
