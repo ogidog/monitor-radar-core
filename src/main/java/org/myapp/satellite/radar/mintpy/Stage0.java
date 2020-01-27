@@ -6,6 +6,7 @@ import org.esa.snap.core.datamodel.Product;
 import org.myapp.utils.ConsoleArgsReader;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -34,6 +35,15 @@ public class Stage0 {
         } catch (Exception e) {
             System.out.println(e);
         }
+
+        // 1: by the bPerpCrit, bTempCrit
+        composeIntfPairs(workingDir, fileList, bPerpCrit, bTempCrit);
+
+        // 2: by the by optimalmaster
+        // composeIntfPairs(workingDir, fileList);
+    }
+
+    static void composeIntfPairs(String workingDir, String fileList, String bPerpCrit, String bTempCrit) {
 
         String pairIDStr = "", pairNameStr = "", pairDateStr = "";
         TreeSet<String> productNames = new TreeSet<>();
@@ -96,6 +106,14 @@ public class Stage0 {
 
             System.out.println("Total pairs: " + counter);
 
+            Arrays.stream(products).forEach(product -> {
+                try {
+                    product.closeIO();
+                } catch (IOException e) {
+                    System.out.println(e);
+                }
+            });
+
             pairNameStr = pairNameStr.substring(0, pairNameStr.length() - 1);
             pairIDStr = pairNameStr;
             String[] productNamesStr = productNames.stream().toArray(String[]::new);
@@ -117,6 +135,52 @@ public class Stage0 {
 
             out = new PrintWriter(workingDir + File.separator + "network" + File.separator + "pairID.txt");
             out.println(pairIDStr);
+            out.close();
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    static void composeIntfPairs(String workingDir, String fileList) {
+
+        String masterProductName = "";
+        String pairNameStr = "";
+
+        Product[] products = Arrays.stream(fileList.split(",")).map(file -> {
+            try {
+                return ProductIO.readProduct(file);
+            } catch (Exception e) {
+                return null;
+            }
+        }).toArray(Product[]::new);
+
+        try {
+            masterProductName = InSARStackOverview.findOptimalMasterProduct(products).getName();
+
+
+            for (int i = 0; i < products.length; i++) {
+                Product product = products[i];
+                String slaveProductName = product.getName();
+                if (!masterProductName.equals(slaveProductName)) {
+                    pairNameStr = pairNameStr + masterProductName + "," + slaveProductName + ";";
+                }
+            }
+            pairNameStr = pairNameStr.substring(0, pairNameStr.length() - 1);
+
+            Arrays.stream(products).forEach(product -> {
+                try {
+                    product.closeIO();
+                } catch (IOException e) {
+                    System.out.println(e);
+                }
+            });
+
+            new File(workingDir + File.separator + "network").mkdirs();
+
+            // Write pairs to file
+            PrintWriter out = new PrintWriter(workingDir + File.separator + "network" + File.separator + "pairNames.txt");
+            out.println(pairNameStr);
             out.close();
 
         } catch (Exception e) {

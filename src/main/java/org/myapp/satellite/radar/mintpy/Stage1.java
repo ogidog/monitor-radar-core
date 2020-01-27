@@ -165,28 +165,4 @@ public class Stage1 {
 
     }
 
-    static String getOptimalMaster(String[] files) {
-        String masterName = "";
-        Product[] products = Arrays.stream(files).map(file -> {
-            try {
-                return ProductIO.readProduct(file);
-            } catch (Exception e) {
-                return null;
-            }
-        }).toArray(Product[]::new);
-        try {
-            masterName = InSARStackOverview.findOptimalMasterProduct(products).getName();
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-        Arrays.stream(products).forEach(product -> {
-            try {
-                product.closeIO();
-            } catch (IOException e) {
-                System.out.println(e);
-            }
-        });
-
-        return masterName;
-    }
 }
