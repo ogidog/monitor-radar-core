@@ -39,12 +39,15 @@ public class Stage0 {
 
         switch(networkModel){
             case "1":
+                // 1: by the bPerpCrit, bTempCrit
                 composeIntfPairs(workingDir, fileList, bPerpCrit, bTempCrit);
                 break;
             case "2":
+                // 2: by the by optimalmaster
                 composeIntfPairs(workingDir, fileList);
                 break;
             case "3":
+                // 3: by the bPerpCrit, bTempCrit and two-way direction pairs
                 composeIntfPairsExtended(workingDir, fileList, bPerpCrit, bTempCrit);
                 break;
             default:
@@ -52,14 +55,6 @@ public class Stage0 {
                 break;
         }
 
-        // 1: by the bPerpCrit, bTempCrit
-        //composeIntfPairs(workingDir, fileList, bPerpCrit, bTempCrit);
-
-        // 2: by the by optimalmaster
-        // composeIntfPairs(workingDir, fileList);
-
-        // 3: by the bPerpCrit, bTempCrit and two-way direction pairs
-        // composeIntfPairsExtended(workingDir, fileList, bPerpCrit, bTempCrit);
     }
 
     static void composeIntfPairs(String workingDir, String fileList, String bPerpCrit, String bTempCrit) {
