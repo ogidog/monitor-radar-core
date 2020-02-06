@@ -37,7 +37,7 @@ public class Stage0 {
             System.out.println(e);
         }
 
-        switch(networkModel){
+        switch (networkModel) {
             case "1":
                 // 1: by the bPerpCrit, bTempCrit
                 composeIntfPairs(workingDir, fileList, bPerpCrit, bTempCrit);
@@ -49,6 +49,10 @@ public class Stage0 {
             case "3":
                 // 3: by the bPerpCrit, bTempCrit and two-way direction pairs
                 composeIntfPairsExtended(workingDir, fileList, bPerpCrit, bTempCrit);
+                break;
+            case "4":
+                // 4: by the optimal master get bperp, btemp, doplerdiff
+                composeIntfPairsByOptimalMaster(workingDir, fileList);
                 break;
             default:
                 System.out.println("No model selected.");
@@ -300,4 +304,69 @@ public class Stage0 {
             System.out.println(e);
         }
     }
+
+    static void composeIntfPairsByOptimalMaster(String workingDir, String fileList) {
+        try {
+
+            Product[] products = Arrays.stream(fileList.split(",")).map(file -> {
+                try {
+                    return ProductIO.readProduct(file);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }).toArray(Product[]::new);
+
+            InSARStackOverview.IfgPair[] masterSlavePairs;
+            InSARStackOverview.IfgStack[] stackOverview;
+            InSARStackOverview.IfgPair masterSlavePair;
+
+            String masterProductName, slaveProductName;
+            String masterProductDate = "", slaveProductDate;
+            String blList = "";
+
+            String optimalMasterName = InSARStackOverview.findOptimalMasterProduct(products).getName();
+
+            stackOverview = InSARStackOverview.calculateInSAROverview(products);
+            masterSlavePairs = stackOverview[0].getMasterSlave();
+
+            for (int i = 0; i < stackOverview.length; i++) {
+                masterSlavePairs = stackOverview[i].getMasterSlave();
+                for (int j = 0; j < masterSlavePairs.length; j++) {
+                    masterSlavePair = masterSlavePairs[j];
+
+                    masterProductName = masterSlavePair.getMasterMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString();
+                    slaveProductName = masterSlavePair.getSlaveMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString();
+
+                    if (optimalMasterName.equals(masterProductName) && !optimalMasterName.equals(slaveProductName)) {
+
+                        double bPerp = masterSlavePair.getPerpendicularBaseline();
+                        double bTemp = masterSlavePair.getTemporalBaseline();
+                        double dopplerDiff = masterSlavePair.getDopplerDifference();
+
+                        Matcher dateMatcher = datePattern.matcher(masterSlavePair.getMasterMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString());
+                        dateMatcher.find();
+                        masterProductDate = dateMatcher.group();
+
+                        dateMatcher = datePattern.matcher(masterSlavePair.getSlaveMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString());
+                        dateMatcher.find();
+                        slaveProductDate = dateMatcher.group();
+                        blList = blList + slaveProductDate + " " + bPerp + " " + dopplerDiff + "\n";
+                    }
+                }
+            }
+            blList = masterProductDate + " 0.0 0.0\n" + blList;
+            blList = blList.trim();
+
+            PrintWriter out = new PrintWriter(workingDir + File.separator + "prep" + File.separator + "blList.txt");
+            out.println(blList);
+            out.close();
+
+            System.out.println(blList);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }
