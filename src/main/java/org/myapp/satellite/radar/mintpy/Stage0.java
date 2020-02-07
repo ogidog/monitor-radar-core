@@ -22,6 +22,16 @@ import java.util.stream.Stream;
 
 public class Stage0 {
 
+    /*
+    workingDir="D:\\mnt\\fast\\dockers\\monitor-radar-core\\monitor_radar_usr\\processing\\1580805641883"
+    resultDir="D:\\mnt\\hdfs\\user\\monitor_radar_usr\\monitor-radar-core\\results\\1580805641883"
+    snapDir="D:\\mnt\\hdfs\\user\\monitor_radar_usr\\monitor-radar-core\\.snap"
+    filesList=""
+    bPerpCrit=120
+    bTempCrit=40
+    proc="prepFiles" || networkModel4
+     */
+
     static Pattern datePattern = Pattern.compile("(\\d\\d\\d\\d\\d\\d\\d\\d)");
 
     public static void main(String[] args) {
@@ -392,6 +402,20 @@ public class Stage0 {
     }
 
     static void prepFiles(String workingDir, String resultDir, String snapDir, String fileList) {
+
+        try {
+            Files.walk(Paths.get(resultDir + File.separator + "applyorbitfile"))
+                    .sorted(Comparator.reverseOrder())
+                    .map(Path::toFile)
+                    .forEach(File::delete);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        try {
+            new File(resultDir + File.separator + "applyorbitfile").mkdirs();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
 
         String configDir = resultDir + File.separator + "config";
         String graphDir = resultDir + File.separator + "graphs";
