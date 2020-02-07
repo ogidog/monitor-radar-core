@@ -28,6 +28,7 @@ public class Stage1 {
         String snapDir = consoleParameters.get("snapDir").toString();
         String resultDir = consoleParameters.get("resultDir").toString();
         String filesList = consoleParameters.get("filesList").toString();
+        String imagePartition = consoleParameters.get("imagepartition").toString();
 
         String configDir = resultDir + File.separator + "config";
 
@@ -44,9 +45,13 @@ public class Stage1 {
                     .sorted(Comparator.reverseOrder())
                     .map(Path::toFile)
                     .forEach(File::delete);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
             new File(workingDir + File.separator + "applyorbitfile").mkdirs();
         } catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
         }
 
         TOPSARSplitOpEnv topsarSplitOpEnv = new TOPSARSplitOpEnv();

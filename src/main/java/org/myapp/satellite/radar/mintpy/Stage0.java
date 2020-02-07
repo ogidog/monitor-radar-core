@@ -23,16 +23,22 @@ public class Stage0 {
 
         HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
         String workingDir = consoleParameters.get("workingDir").toString();
+        String resultDir = consoleParameters.get("resultDir").toString();
         String fileList = consoleParameters.get("filesList").toString();
         String bPerpCrit = consoleParameters.get("bPerpCrit").toString();
         String bTempCrit = consoleParameters.get("bTempCrit").toString();
         String networkModel = consoleParameters.get("networkModel").toString();
 
         try {
-            Files.walk(Paths.get(workingDir + File.separator + "network"))
+            Files.walk(Paths.get(resultDir + File.separator + "network"))
                     .sorted(Comparator.reverseOrder())
                     .map(Path::toFile)
                     .forEach(File::delete);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        try {
+            new File(resultDir + File.separator + "network").mkdirs();
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -52,7 +58,7 @@ public class Stage0 {
                 break;
             case "4":
                 // 4: by the optimal master get bperp, btemp, doplerdiff
-                composeIntfPairsByOptimalMaster(workingDir, fileList);
+                composeIntfPairsByOptimalMaster(workingDir, resultDir, fileList);
                 break;
             default:
                 System.out.println("No model selected.");
@@ -305,7 +311,7 @@ public class Stage0 {
         }
     }
 
-    static void composeIntfPairsByOptimalMaster(String workingDir, String fileList) {
+    static void composeIntfPairsByOptimalMaster(String workingDir, String resultDir, String fileList) {
         try {
 
             Product[] products = Arrays.stream(fileList.split(",")).map(file -> {
@@ -323,12 +329,11 @@ public class Stage0 {
 
             String masterProductName, slaveProductName;
             String masterProductDate = "", slaveProductDate;
-            String blList = "";
+            String blList = "", dateToProductName = "";
 
             String optimalMasterName = InSARStackOverview.findOptimalMasterProduct(products).getName();
 
             stackOverview = InSARStackOverview.calculateInSAROverview(products);
-            masterSlavePairs = stackOverview[0].getMasterSlave();
 
             for (int i = 0; i < stackOverview.length; i++) {
                 masterSlavePairs = stackOverview[i].getMasterSlave();
@@ -341,7 +346,6 @@ public class Stage0 {
                     if (optimalMasterName.equals(masterProductName) && !optimalMasterName.equals(slaveProductName)) {
 
                         double bPerp = masterSlavePair.getPerpendicularBaseline();
-                        double bTemp = masterSlavePair.getTemporalBaseline();
                         double dopplerDiff = masterSlavePair.getDopplerDifference();
 
                         Matcher dateMatcher = datePattern.matcher(masterSlavePair.getMasterMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString());
@@ -351,18 +355,26 @@ public class Stage0 {
                         dateMatcher = datePattern.matcher(masterSlavePair.getSlaveMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString());
                         dateMatcher.find();
                         slaveProductDate = dateMatcher.group();
+
                         blList = blList + slaveProductDate + " " + bPerp + " " + dopplerDiff + "\n";
+
+                        dateToProductName = dateToProductName + slaveProductDate + ";" + slaveProductName + "\n";
                     }
                 }
             }
             blList = masterProductDate + " 0.0 0.0\n" + blList;
             blList = blList.trim();
 
-            PrintWriter out = new PrintWriter(workingDir + File.separator + "prep" + File.separator + "blList.txt");
+            dateToProductName = masterProductDate + "-" + optimalMasterName + "\n" + dateToProductName;
+            dateToProductName = dateToProductName.trim();
+
+            PrintWriter out = new PrintWriter(resultDir + File.separator + "network" + File.separator + "blList.txt");
             out.println(blList);
             out.close();
 
-            System.out.println(blList);
+            out = new PrintWriter(resultDir + File.separator + "network" + File.separator + "date2Name.txt");
+            out.println(dateToProductName);
+            out.close();
 
         } catch (Exception e) {
             e.printStackTrace();
