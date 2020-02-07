@@ -187,6 +187,10 @@ public class TOPSARSplitOpEnv {
         }
     }
 
+    public String getSourceProductName() {
+        return sourceProduct.getName();
+    }
+
     public String getIntersectionGeoRegion() {
         return intersectionGeoRegion;
     }
