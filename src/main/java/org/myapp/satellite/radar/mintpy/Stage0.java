@@ -53,7 +53,7 @@ public class Stage0 {
                 composeIntfPairsByOptimalMaster(resultDir, fileList);
                 break;
             case "prepFiles":
-                prepFiles(resultDir, snapDir, fileList);
+                prepFiles(workingDir, resultDir, snapDir, fileList);
                 break;
             default:
                 System.out.println("No procedure selected.");
@@ -391,10 +391,10 @@ public class Stage0 {
         }
     }
 
-    static void prepFiles(String resultDir, String snapDir, String fileList) {
+    static void prepFiles(String workingDir, String resultDir, String snapDir, String fileList) {
 
         String configDir = resultDir + File.separator + "config";
-        String graphDir = resultDir + File.separator + "graph";
+        String graphDir = resultDir + File.separator + "graphs";
 
         HashMap parameters = getParameters(configDir);
         if (parameters == null) {
@@ -452,20 +452,17 @@ public class Stage0 {
         }
 
         TOPSARSplitOpEnv topsarSplitOpEnv = new TOPSARSplitOpEnv();
-        ApplyOrbitFileOpEnv applyOrbitFileOpEnv = new ApplyOrbitFileOpEnv(snapDir);
-        WriteOpEnv writeOpEnv = new WriteOpEnv();
 
         Product targetProduct;
         Graph graph = null;
         try {
-            FileReader fileReader1 = new FileReader(graphDir + File.separator + "applyorbitfile.xml");
-            graph = GraphIO.read(fileReader1);
-            fileReader1.close();
+            FileReader fileReader = new FileReader(graphDir + File.separator + "applyorbitfile.xml");
+            graph = GraphIO.read(fileReader);
+            fileReader.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        graph.getNode("TOPSAR-Split").getConfiguration().getChild("subswath").setValue(((HashMap) parameters.get("TOPSARSplit")).get("subswath").toString());
         graph.getNode("TOPSAR-Split").getConfiguration().getChild("selectedPolarisations").setValue(((HashMap) parameters.get("TOPSARSplit")).get("selectedPolarisations").toString());
         graph.getNode("Apply-Orbit-File").getConfiguration().getChild("orbitType").setValue(((HashMap) parameters.get("ApplyOrbitFile")).get("orbitType").toString());
         graph.getNode("Apply-Orbit-File").getConfiguration().getChild("polyDegree").setValue(((HashMap) parameters.get("ApplyOrbitFile")).get("polyDegree").toString());
@@ -475,12 +472,12 @@ public class Stage0 {
             try {
 
                 targetProduct = topsarSplitOpEnv.getTargetProduct(files[i], parameters);
-                targetProduct = applyOrbitFileOpEnv.getTargetProduct(targetProduct, parameters);
 
                 graph.getNode("Read").getConfiguration().getChild("file").setValue(files[i]);
+                graph.getNode("TOPSAR-Split").getConfiguration().getChild("subswath").setValue(topsarSplitOpEnv.getSubSwath());
                 graph.getNode("TOPSAR-Split").getConfiguration().getChild("firstBurstIndex").setValue(topsarSplitOpEnv.getFirstBurstIndex());
                 graph.getNode("TOPSAR-Split").getConfiguration().getChild("lastBurstIndex").setValue(topsarSplitOpEnv.getLastBurstIndex());
-                graph.getNode("Write").getConfiguration().getChild("file").setValue(resultDir + File.separator + "applyorbitfile" + File.separator + topsarSplitOpEnv.getSourceProductName() + ".dim");
+                graph.getNode("Write").getConfiguration().getChild("file").setValue(workingDir + File.separator + "applyorbitfile" + File.separator + topsarSplitOpEnv.getSourceProductName() + ".dim");
 
                 FileWriter fileWriter = new FileWriter(resultDir + File.separator + "applyorbitfile" + File.separator + topsarSplitOpEnv.getSourceProductName() + ".xml");
                 GraphIO.write(graph, fileWriter);
@@ -493,7 +490,6 @@ public class Stage0 {
                 System.out.println(e);
             }
 
-            applyOrbitFileOpEnv.Dispose();
             topsarSplitOpEnv.Dispose();
         }
     }

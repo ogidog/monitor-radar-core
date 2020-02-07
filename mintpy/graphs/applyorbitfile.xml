@@ -13,7 +13,7 @@
       <sourceProduct refid="Read"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <subswath>IW1</subswath>
+      <subswath>IW2</subswath>
       <selectedPolarisations>VV</selectedPolarisations>
       <firstBurstIndex>2</firstBurstIndex>
       <lastBurstIndex>3</lastBurstIndex>

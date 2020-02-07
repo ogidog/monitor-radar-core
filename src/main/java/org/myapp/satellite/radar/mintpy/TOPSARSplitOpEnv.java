@@ -191,6 +191,10 @@ public class TOPSARSplitOpEnv {
         return sourceProduct.getName();
     }
 
+    public String getSubSwath() {
+        return topSarSplitParameters.get("subswath").toString();
+    }
+
     public String getIntersectionGeoRegion() {
         return intersectionGeoRegion;
     }
