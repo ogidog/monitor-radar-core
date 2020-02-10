@@ -4,7 +4,7 @@
     <operator>Read</operator>
     <sources/>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>I:\Temp\mintpy\prep\snaphu_import\20180405_20190211_Orb_Stack_Ifg_Deb_DInSAR_Flt_unw.dim</file>
+      <file>F:\mnt\fast\dockers\monitor-radar-core\monitor_radar_usr\processing\1580805641883\snaphu_import\20180604_20190412_Orb_Stack_Ifg_Deb_DInSAR_Flt_unw.dim</file>
     </parameters>
   </node>
   <node id="Terrain-Correction">
@@ -56,7 +56,7 @@
       <sourceProduct refid="Terrain-Correction"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>I:\Temp\mintpy\interferograms\20180405_20190211\20180405_20190211_unw_tc.dim</file>
+      <file>F:\mnt\fast\dockers\monitor-radar-core\monitor_radar_usr\processing\1580805641883\tc\unwrap\20180604_20190412\20180604_20190412_unw_tc.dim</file>
       <formatName>BEAM-DIMAP</formatName>
     </parameters>
   </node>

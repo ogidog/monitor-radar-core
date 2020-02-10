@@ -6,12 +6,12 @@
       <sourceProduct refid="Read"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <targetFolder>I:\Temp\mintpy\prep\snaphu_export</targetFolder>
+      <targetFolder>F:\mnt\fast\dockers\monitor-radar-core\monitor_radar_usr\processing\1580805641883\snaphu_export</targetFolder>
       <statCostMode>DEFO</statCostMode>
       <initMethod>MST</initMethod>
       <numberOfTileRows>10</numberOfTileRows>
       <numberOfTileCols>10</numberOfTileCols>
-      <numberOfProcessors>4</numberOfProcessors>
+      <numberOfProcessors>8</numberOfProcessors>
       <rowOverlap>10</rowOverlap>
       <colOverlap>10</colOverlap>
       <tileCostThreshold>500</tileCostThreshold>
@@ -21,7 +21,7 @@
     <operator>Read</operator>
     <sources/>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>I:\Temp\mintpy\prep\filter\20180405_20181014_Orb_Stack_Ifg_Deb_DInSAR_Flt.dim</file>
+      <file>F:\mnt\fast\dockers\monitor-radar-core\monitor_radar_usr\processing\1580805641883\filter\20180604_20190412_Orb_Stack_Ifg_Deb_DInSAR_ML_Flt.dim</file>
     </parameters>
   </node>
   <applicationData id="Presentation">

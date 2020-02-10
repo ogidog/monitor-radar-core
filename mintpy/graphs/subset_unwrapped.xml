@@ -4,7 +4,7 @@
     <operator>Read</operator>
     <sources/>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>I:\Temp\mintpy\prep\snaphu_import\20180405_20190211_Orb_Stack_Ifg_Deb_DInSAR_Flt_unw.dim</file>
+      <file>F:\mnt\fast\dockers\monitor-radar-core\monitor_radar_usr\processing\1580805641883\snaphu_import\20180604_20190412_Orb_Stack_Ifg_Deb_DInSAR_Flt_unw.dim</file>
     </parameters>
   </node>
   <node id="Terrain-Correction">
@@ -20,6 +20,8 @@
       <externalDEMApplyEGM>true</externalDEMApplyEGM>
       <demResamplingMethod>BILINEAR_INTERPOLATION</demResamplingMethod>
       <imgResamplingMethod>BILINEAR_INTERPOLATION</imgResamplingMethod>
+      <pixelSpacingInMeter>20.28</pixelSpacingInMeter>
+      <pixelSpacingInDegree>1.8217833961943898E-4</pixelSpacingInDegree>
       <mapProjection>GEOGCS[&quot;WGS84(DD)&quot;, &#xd;
   DATUM[&quot;WGS84&quot;, &#xd;
     SPHEROID[&quot;WGS84&quot;, 6378137.0, 298.257223563]], &#xd;
@@ -57,7 +59,7 @@
       <sourceBands/>
       <region>0,0,0,0</region>
       <referenceBand/>
-      <geoRegion>POLYGON ((86.21370697021484 54.76390838623047, 86.69263458251953 54.76390838623047, 86.69263458251953 54.54048156738281, 86.21370697021484 54.54048156738281, 86.21370697021484 54.76390838623047, 86.21370697021484 54.76390838623047))</geoRegion>
+      <geoRegion>POLYGON ((85.65203094482422 55.375152587890625, 85.92394256591797 55.375152587890625, 85.92394256591797 55.275146484375, 85.65203094482422 55.275146484375, 85.65203094482422 55.375152587890625, 85.65203094482422 55.375152587890625))</geoRegion>
       <subSamplingX>1</subSamplingX>
       <subSamplingY>1</subSamplingY>
       <fullSwath>false</fullSwath>
@@ -71,7 +73,7 @@
       <sourceProduct refid="Subset"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>I:\Temp\mintpy\interferograms\20180405_20190211\20180405_20190211_unw_tc.dim</file>
+      <file>F:\mnt\fast\dockers\monitor-radar-core\monitor_radar_usr\processing\1580805641883\subset\unwrap\20180604_20190412\20180604_20190412_unw_tc.dim</file>
       <formatName>BEAM-DIMAP</formatName>
     </parameters>
   </node>
