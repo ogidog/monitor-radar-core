@@ -14,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -60,10 +61,10 @@ public class Stage0 {
                 break;
             case "networkModel4":
                 // 4: by the optimal master get bperp, btemp, doplerdiff
-                composeIntfPairsByOptimalMaster(resultDir, fileList);
+                composeIntfPairsByOptimalMaster(workingDir, resultDir, fileList);
                 break;
             case "prepFiles":
-                prepFiles(workingDir, resultDir, snapDir, fileList);
+                prepFiles(workingDir, resultDir, fileList);
                 break;
             default:
                 System.out.println("No procedure selected.");
@@ -316,8 +317,16 @@ public class Stage0 {
         }
     }
 
-    static void composeIntfPairsByOptimalMaster(String resultDir, String fileList) {
+    static void composeIntfPairsByOptimalMaster(String workingDir, String resultDir, String fileList) {
 
+        try {
+            Files.walk(Paths.get(workingDir + File.separator + "network"))
+                    .sorted(Comparator.reverseOrder())
+                    .map(Path::toFile)
+                    .forEach(File::delete);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
         try {
             Files.walk(Paths.get(resultDir + File.separator + "network"))
                     .sorted(Comparator.reverseOrder())
@@ -327,7 +336,9 @@ public class Stage0 {
             System.out.println(e);
         }
         try {
+            new File(workingDir + File.separator + "network").mkdirs();
             new File(resultDir + File.separator + "network").mkdirs();
+            Files.copy(Paths.get(resultDir + File.separator + "config" + File.separator + "network.template"), Paths.get(workingDir + File.separator + "network" + File.separator + "network.template"), StandardCopyOption.REPLACE_EXISTING);
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -388,11 +399,11 @@ public class Stage0 {
             dateToProductName = masterProductDate + ";" + optimalMasterName + "\n" + dateToProductName;
             dateToProductName = dateToProductName.trim();
 
-            PrintWriter out = new PrintWriter(resultDir + File.separator + "network" + File.separator + "blList.txt");
+            PrintWriter out = new PrintWriter(workingDir + File.separator + "network" + File.separator + "blList.txt");
             out.println(blList);
             out.close();
 
-            out = new PrintWriter(resultDir + File.separator + "network" + File.separator + "date2Name.txt");
+            out = new PrintWriter(workingDir + File.separator + "network" + File.separator + "date2Name.txt");
             out.println(dateToProductName);
             out.close();
 
@@ -401,7 +412,7 @@ public class Stage0 {
         }
     }
 
-    static void prepFiles(String workingDir, String resultDir, String snapDir, String fileList) {
+    static void prepFiles(String workingDir, String resultDir, String fileList) {
 
         try {
             Files.walk(Paths.get(resultDir + File.separator + "applyorbitfile"))
@@ -443,8 +454,8 @@ public class Stage0 {
             e.printStackTrace();
         }
 
-        String ifgListFile = resultDir + File.separator + "network" + File.separator + "ifg_list.txt";
-        String date2NameFile = resultDir + File.separator + "network" + File.separator + "date2Name.txt";
+        String ifgListFile = workingDir + File.separator + "network" + File.separator + "ifg_list.txt";
+        String date2NameFile = workingDir + File.separator + "network" + File.separator + "date2Name.txt";
 
         HashMap<String, String> date2NameMap = new HashMap<>();
 
