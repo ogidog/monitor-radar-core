@@ -439,7 +439,7 @@ public class Stage0 {
 
         String[] files = fileList.split(",");
 
-        try {
+        /*try {
             Files.walk(Paths.get(resultDir + File.separator + "applyorbitfile"))
                     .sorted(Comparator.reverseOrder())
                     .map(Path::toFile)
@@ -452,7 +452,7 @@ public class Stage0 {
             new File(resultDir + File.separator + "applyorbitfile").mkdirs();
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
 
         String ifgListFile = workingDir + File.separator + "network" + File.separator + "ifg_list.txt";
         String date2NameFile = workingDir + File.separator + "network" + File.separator + "date2Name.txt";
@@ -526,6 +526,21 @@ public class Stage0 {
             }
 
             topsarSplitOpEnv.Dispose();
+        }
+
+        try {
+            Files.walk(Paths.get(workingDir))
+                    .sorted(Comparator.reverseOrder())
+                    .map(Path::toFile)
+                    .forEach(File::delete);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            new File(workingDir).delete();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
