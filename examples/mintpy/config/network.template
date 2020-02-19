@@ -1,4 +1,4 @@
-selectNetwork.method        = delaunay
+selectNetwork.method        = sequental
 selectNetwork.referenceFile = no
 
 # Baseline Info
