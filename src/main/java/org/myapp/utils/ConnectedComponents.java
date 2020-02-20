@@ -141,7 +141,7 @@ public class ConnectedComponents {
             List<String> includedPairPaths = maxConnectedComponentPaths;
             pairPaths.stream().filter(path -> !includedPairPaths.contains(Paths.get(path)))
                     .forEach(path -> {
-                        //removeDirectory(new File(path));
+                        removeDirectory(new File(path));
                     });
 
         } catch (Exception e) {
