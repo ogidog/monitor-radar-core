@@ -172,6 +172,52 @@ public class Stage0 {
         }
     }
 
+    static void composeIntfPairs(String workingDir, String fileList) {
+
+        String masterProductName = "";
+        String pairNameStr = "";
+
+        Product[] products = Arrays.stream(fileList.split(",")).map(file -> {
+            try {
+                return ProductIO.readProduct(file);
+            } catch (Exception e) {
+                return null;
+            }
+        }).toArray(Product[]::new);
+
+        try {
+            masterProductName = InSARStackOverview.findOptimalMasterProduct(products).getName();
+
+
+            for (int i = 0; i < products.length; i++) {
+                Product product = products[i];
+                String slaveProductName = product.getName();
+                if (!masterProductName.equals(slaveProductName)) {
+                    pairNameStr = pairNameStr + masterProductName + "," + slaveProductName + ";";
+                }
+            }
+            pairNameStr = pairNameStr.substring(0, pairNameStr.length() - 1);
+
+            Arrays.stream(products).forEach(product -> {
+                try {
+                    product.closeIO();
+                } catch (IOException e) {
+                    System.out.println(e);
+                }
+            });
+
+            new File(workingDir + File.separator + "network").mkdirs();
+
+            // Write pairs to file
+            PrintWriter out = new PrintWriter(workingDir + File.separator + "network" + File.separator + "pairNames.txt");
+            out.println(pairNameStr);
+            out.close();
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
     static void composeIntfPairsExtended(String workingDir, String fileList, String bPerpCrit, String bTempCrit) {
 
         String pairIDStr = "", pairNameStr = "", pairDateStr = "";
@@ -264,52 +310,6 @@ public class Stage0 {
 
             out = new PrintWriter(workingDir + File.separator + "network" + File.separator + "pairID.txt");
             out.println(pairIDStr);
-            out.close();
-
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-    }
-
-    static void composeIntfPairs(String workingDir, String fileList) {
-
-        String masterProductName = "";
-        String pairNameStr = "";
-
-        Product[] products = Arrays.stream(fileList.split(",")).map(file -> {
-            try {
-                return ProductIO.readProduct(file);
-            } catch (Exception e) {
-                return null;
-            }
-        }).toArray(Product[]::new);
-
-        try {
-            masterProductName = InSARStackOverview.findOptimalMasterProduct(products).getName();
-
-
-            for (int i = 0; i < products.length; i++) {
-                Product product = products[i];
-                String slaveProductName = product.getName();
-                if (!masterProductName.equals(slaveProductName)) {
-                    pairNameStr = pairNameStr + masterProductName + "," + slaveProductName + ";";
-                }
-            }
-            pairNameStr = pairNameStr.substring(0, pairNameStr.length() - 1);
-
-            Arrays.stream(products).forEach(product -> {
-                try {
-                    product.closeIO();
-                } catch (IOException e) {
-                    System.out.println(e);
-                }
-            });
-
-            new File(workingDir + File.separator + "network").mkdirs();
-
-            // Write pairs to file
-            PrintWriter out = new PrintWriter(workingDir + File.separator + "network" + File.separator + "pairNames.txt");
-            out.println(pairNameStr);
             out.close();
 
         } catch (Exception e) {
@@ -439,21 +439,6 @@ public class Stage0 {
 
         String[] files = fileList.split(",");
 
-        /*try {
-            Files.walk(Paths.get(resultDir + File.separator + "applyorbitfile"))
-                    .sorted(Comparator.reverseOrder())
-                    .map(Path::toFile)
-                    .forEach(File::delete);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        try {
-            new File(resultDir + File.separator + "applyorbitfile").mkdirs();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
-
         String ifgListFile = workingDir + File.separator + "network" + File.separator + "ifg_list.txt";
         String date2NameFile = workingDir + File.separator + "network" + File.separator + "date2Name.txt";
 
@@ -461,27 +446,35 @@ public class Stage0 {
 
         try {
 
-            Stream<String> stream = Files.lines(Paths.get(date2NameFile), StandardCharsets.UTF_8);
-            stream.forEach(s -> {
-                date2NameMap.put(s.trim().split(";")[0], s.trim().split(";")[1]);
-            });
-            stream.close();
+            if (Files.exists(Paths.get(ifgListFile)) && Files.exists(Paths.get(date2NameFile))) {
 
-            stream = Files.lines(Paths.get(ifgListFile), StandardCharsets.UTF_8);
-            String pairNames = stream.map(s -> {
-                if (!s.contains("#")) {
-                    String masterDate = s.split(" ")[0].split("-")[0];
-                    String slaveDate = s.split(" ")[0].split("-")[1];
-                    return date2NameMap.get(masterDate) + "," + date2NameMap.get(slaveDate);
-                } else {
-                    return "";
+                Stream<String> stream = Files.lines(Paths.get(date2NameFile), StandardCharsets.UTF_8);
+                stream.forEach(s -> {
+                    date2NameMap.put(s.trim().split(";")[0], s.trim().split(";")[1]);
+                });
+                stream.close();
+
+                stream = Files.lines(Paths.get(ifgListFile), StandardCharsets.UTF_8);
+                String pairNames = stream.map(s -> {
+                    if (!s.contains("#")) {
+                        String masterDate = s.split(" ")[0].split("-")[0];
+                        String slaveDate = s.split(" ")[0].split("-")[1];
+                        return date2NameMap.get(masterDate) + "," + date2NameMap.get(slaveDate);
+                    } else {
+                        return "";
+                    }
+                }).filter(s -> !s.equals("")).collect(Collectors.joining(";"));
+
+                PrintWriter out = new PrintWriter(resultDir + File.separator + "network" + File.separator + "pairNames.txt");
+                out.println(pairNames);
+                out.close();
+            } else {
+
+                if (Files.exists(Paths.get(workingDir + File.separator + "network" + File.separator + "pairNames.txt"))) {
+                    Files.copy(Paths.get(workingDir + File.separator + "network" + File.separator + "pairNames.txt"), Paths.get(resultDir + File.separator + "network" + File.separator + "pairNames.txt"));
                 }
-            }).filter(s -> !s.equals("")).collect(Collectors.joining(";"));
 
-            PrintWriter out = new PrintWriter(resultDir + File.separator + "network" + File.separator + "pairNames.txt");
-            out.println(pairNames);
-            out.close();
-
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
