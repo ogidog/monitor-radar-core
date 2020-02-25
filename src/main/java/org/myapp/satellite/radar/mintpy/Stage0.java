@@ -419,11 +419,18 @@ public class Stage0 {
                     .sorted(Comparator.reverseOrder())
                     .map(Path::toFile)
                     .forEach(File::delete);
+
+            Files.walk(Paths.get(resultDir + File.separator + "network"))
+                    .sorted(Comparator.reverseOrder())
+                    .map(Path::toFile)
+                    .forEach(File::delete);
         } catch (Exception e) {
             System.out.println(e);
         }
+
         try {
             new File(resultDir + File.separator + "applyorbitfile").mkdirs();
+            new File(resultDir + File.separator + "network").mkdirs();
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -468,6 +475,7 @@ public class Stage0 {
                 PrintWriter out = new PrintWriter(resultDir + File.separator + "network" + File.separator + "pairNames.txt");
                 out.println(pairNames);
                 out.close();
+
             } else {
 
                 if (Files.exists(Paths.get(workingDir + File.separator + "network" + File.separator + "pairNames.txt"))) {
@@ -544,12 +552,21 @@ public class Stage0 {
         try {
             stageParameters = new HashMap<>();
 
-            // TOPSARSplit
+            // DataSet
             JSONParser parser = new JSONParser();
-            FileReader fileReader = new FileReader(configDir + File.separator + "s1_tops_split.json");
+            FileReader fileReader = new FileReader(configDir + File.separator + "dataset.json");
             JSONObject jsonObject = (JSONObject) parser.parse(fileReader);
-            HashMap jsonParameters = (HashMap) jsonObject.get("parameters");
             HashMap<String, HashMap> jsonParameters1 = (HashMap) jsonObject.get("parameters");
+
+            stageParameters.put("DataSet",
+                    (HashMap) jsonParameters1.entrySet().stream
+                            ().collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue().get("value")))
+            );
+
+            // TOPSARSplit
+            fileReader = new FileReader(configDir + File.separator + "s1_tops_split.json");
+            jsonObject = (JSONObject) parser.parse(fileReader);
+            jsonParameters1 = (HashMap) jsonObject.get("parameters");
 
             stageParameters.put("TOPSARSplit",
                     (HashMap) jsonParameters1.entrySet().stream
@@ -561,7 +578,7 @@ public class Stage0 {
             // ApplyOrbitFile
             fileReader = new FileReader(configDir + File.separator + "apply_orbit_file.json");
             jsonObject = (JSONObject) parser.parse(fileReader);
-            jsonParameters = (HashMap) jsonObject.get("parameters");
+            HashMap jsonParameters = (HashMap) jsonObject.get("parameters");
 
             HashMap parameters = new HashMap();
             parameters.put("polyDegree", Integer.valueOf(((HashMap) jsonParameters.get("polyDegree")).get("value").toString()));

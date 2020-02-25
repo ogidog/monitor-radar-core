@@ -28,7 +28,7 @@ public class TOPSARSplitOpEnv {
     TOPSARSplitOp op;
     Sentinel1Utils s1u;
     Sentinel1Utils.SubSwathInfo[] subSwathInfos;
-    HashMap subsetParameters, topSarSplitParameters;
+    HashMap subsetParameters, topSarSplitParameters, dataSetParameters;
 
     String intersectionGeoRegion = "";
     int firstBurstIndex, lastBurstIndex;
@@ -39,14 +39,15 @@ public class TOPSARSplitOpEnv {
 
             subsetParameters = (HashMap) stageParameters.get("Subset");
             topSarSplitParameters = (HashMap) stageParameters.get("TOPSARSplit");
+            dataSetParameters = (HashMap) stageParameters.get("DataSet");
 
-            String dbms = topSarSplitParameters.get("databaseIp").toString(); // "172.16.1.4"; // "10.101.80.252";
+            String dbms = dataSetParameters.get("databaseIp").toString(); // "172.16.1.4"; // "10.101.80.252";
 
             Class.forName("org.postgresql.Driver");
             connection = DriverManager
                     .getConnection(
-                            "jdbc:postgresql://" + dbms + ":5432/" + topSarSplitParameters.get("databaseName").toString(),
-                            topSarSplitParameters.get("databaseLogin").toString(), topSarSplitParameters.get("databasePasswd").toString());
+                            "jdbc:postgresql://" + dbms + ":5432/" + dataSetParameters.get("databaseName").toString(),
+                            dataSetParameters.get("databaseLogin").toString(), dataSetParameters.get("databasePasswd").toString());
             connection.setAutoCommit(false);
 
             sourceProduct = ProductIO.readProduct(new File(file));

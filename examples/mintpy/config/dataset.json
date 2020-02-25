@@ -1,0 +1,74 @@
+{
+  "name": "dataset",
+  "description": "DataSet settings are used for the processing.",
+  "label": "DataSet",
+  "parameters": {
+    "filesList": {
+      "name": "filesList",
+      "options": [
+        ""
+      ],
+      "index": 1,
+      "defaultvalue": "",
+      "label": "DataSet",
+      "type": "inputTypes.select",
+      "value": ""
+    },
+    "masterName": {
+      "name": "masterName",
+      "options": [
+        ""
+      ],
+      "index": 2,
+      "defaultvalue": "",
+      "label": "Select master",
+      "type": "inputTypes.select",
+      "value": "S1B_IW_SLC__1SDV_20190729T002735_20190729T002804_017341_0209C7_C915"
+    },
+    "databaseIp": {
+      "name": "databaseIp",
+      "index": 5,
+      "defaultvalue": "10.101.80.252",
+      "label": "Database IP",
+      "type": "inputTypes.text",
+      "value": "10.101.80.252"
+    },
+    "databaseLogin": {
+      "name": "databaseLogin",
+      "index": 6,
+      "defaultvalue": "satimg_adm",
+      "label": "Database Login",
+      "type": "inputTypes.text",
+      "value": "satimg_adm"
+    },
+    "databasePasswd": {
+      "name": "databasePasswd",
+      "index": 7,
+      "defaultvalue": "rfnfkjucybvrjd",
+      "label": "Database Password",
+      "type": "inputTypes.text",
+      "value": "rfnfkjucybvrjd"
+    },
+    "databaseName": {
+      "name": "databaseName",
+      "index": 8,
+      "defaultvalue": "satimgdb",
+      "label": "Database Name",
+      "type": "inputTypes.text",
+      "value": "satimgdb"
+    },
+    "networkModel": {
+      "name": "networkModel",
+      "options": [
+        "Sequential",
+        "Delaunay",
+        "Single Master"
+      ],
+      "index": 9,
+      "defaultvalue": "Sequential",
+      "label": "Network Model",
+      "type": "inputTypes.select",
+      "value": "Sequential"
+    }
+  }
+}
