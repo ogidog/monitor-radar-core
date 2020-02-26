@@ -47,10 +47,10 @@ public class Stage0 {
         String proc = consoleParameters.get("proc").toString();
 
         switch (proc) {
-            case "networkModel1":
-                networkModel1Processing(workingDir, fileList);
+            case "NetworkModel1":
+                networkModel1Processing(workingDir, resultDir, fileList);
                 break;
-            case "networkModel2":
+            case "NetworkModel2":
                 networkModel2Processing(workingDir, resultDir, fileList);
                 break;
             case "prepFiles":
@@ -63,7 +63,7 @@ public class Stage0 {
 
     }
 
-    static void networkModel1Processing(String workingDir, String fileList) {
+    static void networkModel1Processing(String workingDir, String resultDir, String fileList) {
 
         String masterProductName = "";
         String pairNameStr = "";
@@ -77,8 +77,20 @@ public class Stage0 {
         }).toArray(Product[]::new);
 
         try {
-            masterProductName = InSARStackOverview.findOptimalMasterProduct(products).getName();
 
+            String configDir = resultDir + File.separator + "config";
+            HashMap parameters = getParameters(configDir);
+            if (parameters == null) {
+                System.out.println("Fail to read parameters.");
+                return;
+            }
+
+            HashMap dataSetParameters = (HashMap) parameters.get("DataSet");
+            if (String.valueOf(dataSetParameters.get("masterName")).toLowerCase().contains("optimal")) {
+                masterProductName = InSARStackOverview.findOptimalMasterProduct(products).getName();
+            } else {
+                masterProductName = String.valueOf(dataSetParameters.get("masterName"));
+            }
 
             for (int i = 0; i < products.length; i++) {
                 Product product = products[i];
