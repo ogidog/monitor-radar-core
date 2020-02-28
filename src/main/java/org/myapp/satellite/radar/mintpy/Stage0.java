@@ -53,7 +53,7 @@ public class Stage0 {
             case "NetworkModel2":
                 networkModel2Processing(workingDir, resultDir, fileList);
                 break;
-            case "prepFiles":
+            case "PrepFiles":
                 prepFiles(workingDir, resultDir, fileList);
                 break;
             default:

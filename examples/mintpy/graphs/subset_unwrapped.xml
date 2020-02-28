@@ -20,8 +20,6 @@
       <externalDEMApplyEGM>true</externalDEMApplyEGM>
       <demResamplingMethod>BILINEAR_INTERPOLATION</demResamplingMethod>
       <imgResamplingMethod>BILINEAR_INTERPOLATION</imgResamplingMethod>
-      <pixelSpacingInMeter>20.28</pixelSpacingInMeter>
-      <pixelSpacingInDegree>1.8217833961943898E-4</pixelSpacingInDegree>
       <mapProjection>GEOGCS[&quot;WGS84(DD)&quot;, &#xd;
   DATUM[&quot;WGS84&quot;, &#xd;
     SPHEROID[&quot;WGS84&quot;, 6378137.0, 298.257223563]], &#xd;
@@ -50,27 +48,10 @@
       <externalAuxFile/>
     </parameters>
   </node>
-  <node id="Subset">
-    <operator>Subset</operator>
-    <sources>
-      <sourceProduct refid="Terrain-Correction"/>
-    </sources>
-    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <sourceBands/>
-      <region>0,0,0,0</region>
-      <referenceBand/>
-      <geoRegion>POLYGON ((85.65203094482422 55.375152587890625, 85.92394256591797 55.375152587890625, 85.92394256591797 55.275146484375, 85.65203094482422 55.275146484375, 85.65203094482422 55.375152587890625, 85.65203094482422 55.375152587890625))</geoRegion>
-      <subSamplingX>1</subSamplingX>
-      <subSamplingY>1</subSamplingY>
-      <fullSwath>false</fullSwath>
-      <tiePointGridNames/>
-      <copyMetadata>true</copyMetadata>
-    </parameters>
-  </node>
   <node id="Write">
     <operator>Write</operator>
     <sources>
-      <sourceProduct refid="Subset"/>
+      <sourceProduct refid="Terrain-Correction"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <file>F:\mnt\fast\dockers\monitor-radar-core\monitor_radar_usr\processing\1580805641883\subset\unwrap\20180604_20190412\20180604_20190412_unw_tc.dim</file>
@@ -83,10 +64,7 @@
             <displayPosition x="37.0" y="134.0"/>
     </node>
     <node id="Terrain-Correction">
-      <displayPosition x="149.0" y="133.0"/>
-    </node>
-    <node id="Subset">
-      <displayPosition x="326.0" y="132.0"/>
+      <displayPosition x="177.0" y="135.0"/>
     </node>
     <node id="Write">
             <displayPosition x="457.0" y="132.0"/>

@@ -4,7 +4,7 @@
     <operator>Read</operator>
     <sources/>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>I:\Temp\mintpy\prep\filter\20180405_20180616_Orb_Stack_Ifg_Deb_DInSAR_Flt.dim</file>
+      <file>I:\Temp\mintpy\prep\filter\20180405_20190211_Orb_Stack_Ifg_Deb_DInSAR_Flt.dim</file>
     </parameters>
   </node>
   <node id="BandSelect">
@@ -15,7 +15,7 @@
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <selectedPolarisations/>
       <sourceBands/>
-      <bandNamePattern>^elevat.*</bandNamePattern>
+      <bandNamePattern>^q.*||^i.*</bandNamePattern>
     </parameters>
   </node>
   <node id="Terrain-Correction">
@@ -31,6 +31,8 @@
       <externalDEMApplyEGM>true</externalDEMApplyEGM>
       <demResamplingMethod>BILINEAR_INTERPOLATION</demResamplingMethod>
       <imgResamplingMethod>BILINEAR_INTERPOLATION</imgResamplingMethod>
+      <pixelSpacingInMeter>0.0</pixelSpacingInMeter>
+      <pixelSpacingInDegree>0.0</pixelSpacingInDegree>
       <mapProjection>GEOGCS[&quot;WGS84(DD)&quot;, &#xd;
   DATUM[&quot;WGS84&quot;, &#xd;
     SPHEROID[&quot;WGS84&quot;, 6378137.0, 298.257223563]], &#xd;
@@ -43,10 +45,10 @@
       <standardGridOriginY>0.0</standardGridOriginY>
       <nodataValueAtSea>true</nodataValueAtSea>
       <saveDEM>false</saveDEM>
-      <saveLatLon>false</saveLatLon>
-      <saveIncidenceAngleFromEllipsoid>false</saveIncidenceAngleFromEllipsoid>
-      <saveLocalIncidenceAngle>false</saveLocalIncidenceAngle>
-      <saveProjectedLocalIncidenceAngle>false</saveProjectedLocalIncidenceAngle>
+      <saveLatLon>true</saveLatLon>
+      <saveIncidenceAngleFromEllipsoid>true</saveIncidenceAngleFromEllipsoid>
+      <saveLocalIncidenceAngle>true</saveLocalIncidenceAngle>
+      <saveProjectedLocalIncidenceAngle>true</saveProjectedLocalIncidenceAngle>
       <saveSelectedSourceBand>true</saveSelectedSourceBand>
       <outputComplex>false</outputComplex>
       <applyRadiometricNormalization>false</applyRadiometricNormalization>
@@ -67,9 +69,9 @@
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <targetBands>
         <targetBand>
-          <name>dem</name>
+          <name>Phase_wrp</name>
           <type>float32</type>
-          <expression>elevation*1</expression>
+          <expression>atan2(q_ifg_VV_05Apr2018_11Feb2019,i_ifg_VV_05Apr2018_11Feb2019)</expression>
           <description/>
           <unit/>
           <noDataValue>0.0</noDataValue>
@@ -84,7 +86,7 @@
       <sourceProduct refid="Terrain-Correction"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>I:\Temp\mintpy\interferograms\dem_tc.dim</file>
+      <file>I:\Temp\mintpy\interferograms\20180405_20190211\20180405_20190211_filt_int_sub_tc.dim</file>
       <formatName>BEAM-DIMAP</formatName>
     </parameters>
   </node>
@@ -94,16 +96,16 @@
             <displayPosition x="42.0" y="122.0"/>
     </node>
     <node id="BandSelect">
-      <displayPosition x="127.0" y="122.0"/>
+      <displayPosition x="146.0" y="121.0"/>
     </node>
     <node id="Terrain-Correction">
-      <displayPosition x="345.0" y="119.0"/>
+      <displayPosition x="349.0" y="115.0"/>
     </node>
     <node id="BandMaths">
-      <displayPosition x="226.0" y="121.0"/>
+      <displayPosition x="249.0" y="118.0"/>
     </node>
     <node id="Write">
-      <displayPosition x="371.0" y="236.0"/>
+      <displayPosition x="376.0" y="198.0"/>
     </node>
   </applicationData>
 </graph>

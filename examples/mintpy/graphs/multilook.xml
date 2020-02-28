@@ -82,13 +82,30 @@
       <coherenceThreshold>0.2</coherenceThreshold>
     </parameters>
   </node>
-  <node id="Write">
-    <operator>Write</operator>
+  <node id="Subset">
+    <operator>Subset</operator>
     <sources>
       <sourceProduct refid="GoldsteinPhaseFiltering"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>F:\mnt\fast\dockers\monitor-radar-core\monitor_radar_usr\processing\1580805641883\filter\20180604_20190412_Orb_Stack_Ifg_Deb_DInSAR_ML_Flt.dim</file>
+      <sourceBands/>
+      <region>0,0,0,0</region>
+      <referenceBand/>
+      <geoRegion>POLYGON ((0 0, 0 0, 0 0, 0 0, 0 0, 0 0))</geoRegion>
+      <subSamplingX>1</subSamplingX>
+      <subSamplingY>1</subSamplingY>
+      <fullSwath>false</fullSwath>
+      <tiePointGridNames/>
+      <copyMetadata>true</copyMetadata>
+    </parameters>
+  </node>
+  <node id="Write">
+    <operator>Write</operator>
+    <sources>
+      <sourceProduct refid="Subset"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>F:\mnt\fast\dockers\monitor-radar-core\monitor_radar_usr\processing\1580805641883\filter\target.dim</file>
       <formatName>BEAM-DIMAP</formatName>
     </parameters>
   </node>
@@ -112,8 +129,11 @@
     <node id="GoldsteinPhaseFiltering">
       <displayPosition x="439.0" y="265.0"/>
     </node>
+    <node id="Subset">
+      <displayPosition x="298.0" y="320.0"/>
+    </node>
     <node id="Write">
-      <displayPosition x="481.0" y="337.0"/>
+      <displayPosition x="425.0" y="322.0"/>
     </node>
   </applicationData>
 </graph>

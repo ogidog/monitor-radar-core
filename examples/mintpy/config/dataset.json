@@ -68,7 +68,7 @@
       "defaultvalue": "Sequential:NetworkModel2",
       "label": "Network Model",
       "type": "inputTypes.select",
-      "value": "Sequential"
+      "value": "Sequential:NetworkModel2"
     }
   }
 }

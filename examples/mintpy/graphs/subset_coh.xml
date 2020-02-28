@@ -59,27 +59,10 @@
       <externalAuxFile/>
     </parameters>
   </node>
-  <node id="Subset">
-    <operator>Subset</operator>
-    <sources>
-      <sourceProduct refid="Terrain-Correction"/>
-    </sources>
-    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <sourceBands/>
-      <region>0,0,0,0</region>
-      <referenceBand/>
-      <geoRegion>POLYGON ((86.21370697021484 54.76390838623047, 86.69263458251953 54.76390838623047, 86.69263458251953 54.54048156738281, 86.21370697021484 54.54048156738281, 86.21370697021484 54.76390838623047, 86.21370697021484 54.76390838623047))</geoRegion>
-      <subSamplingX>1</subSamplingX>
-      <subSamplingY>1</subSamplingY>
-      <fullSwath>false</fullSwath>
-      <tiePointGridNames/>
-      <copyMetadata>true</copyMetadata>
-    </parameters>
-  </node>
   <node id="Write">
     <operator>Write</operator>
     <sources>
-      <sourceProduct refid="Subset"/>
+      <sourceProduct refid="Terrain-Correction"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <file>I:\Temp\mintpy\interferograms\20180405_20190211\20180405_20190211_coh_tc.dim</file>
@@ -96,9 +79,6 @@
     </node>
     <node id="Terrain-Correction">
       <displayPosition x="345.0" y="119.0"/>
-    </node>
-    <node id="Subset">
-      <displayPosition x="371.0" y="184.0"/>
     </node>
     <node id="Write">
       <displayPosition x="371.0" y="236.0"/>

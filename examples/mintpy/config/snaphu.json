@@ -1,0 +1,43 @@
+{
+  "label": "SNAPHU",
+  "name": "snaphu",
+  "description": "Phase unwrapping method based on SNAPHU algorithm.",
+  "parameters": {
+    "CONNCOMPTHRESH": {
+      "index": 0,
+      "name": "CONNCOMPTHRESH",
+      "label": "Cost threshold for connected components",
+      "type": "inputTypes.text",
+      "value": 100,
+      "defaultvalue": 300
+    },
+    "MAXNCOMPS": {
+      "index": 1,
+      "name": "MAXNCOMPS",
+      "label": "Maximum number of connected components per tile",
+      "type": "inputTypes.text",
+      "value": 32,
+      "defaultvalue": 32
+    },
+    "CONNCOMPOUTTYPE": {
+      "index": 2,
+      "name": "CONNCOMPOUTTYPE",
+      "label": "Type to use for connected component output file",
+      "type": "inputTypes.select",
+      "value": "UINT",
+      "defaultvalue": "UCHAR",
+      "options": [
+        "UINT",
+        "UCHAR"
+      ]
+    },
+    "generateConnectedComponentsFile": {
+      "index": 3,
+      "name": "generateConnectedComponentsFile",
+      "label": "Generate Connected Components File",
+      "type": "inputTypes.checkBox",
+      "value": true,
+      "defaultvalue": true
+    }
+  }
+}

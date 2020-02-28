@@ -4,7 +4,7 @@
     <operator>Read</operator>
     <sources/>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>I:\Temp\mintpy\prep\filter\20180405_20180616_Orb_Stack_Ifg_Deb_DInSAR_Flt.dim</file>
+      <file>I:\Temp\mintpy\prep\filter\20180405_20190211_Orb_Stack_Ifg_Deb_DInSAR_Flt.dim</file>
     </parameters>
   </node>
   <node id="BandSelect">
@@ -15,13 +15,13 @@
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <selectedPolarisations/>
       <sourceBands/>
-      <bandNamePattern>^elevat.*</bandNamePattern>
+      <bandNamePattern>^coh.*</bandNamePattern>
     </parameters>
   </node>
   <node id="Terrain-Correction">
     <operator>Terrain-Correction</operator>
     <sources>
-      <sourceProduct refid="BandMaths"/>
+      <sourceProduct refid="BandSelect"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <sourceBands/>
@@ -31,6 +31,8 @@
       <externalDEMApplyEGM>true</externalDEMApplyEGM>
       <demResamplingMethod>BILINEAR_INTERPOLATION</demResamplingMethod>
       <imgResamplingMethod>BILINEAR_INTERPOLATION</imgResamplingMethod>
+      <pixelSpacingInMeter>0.0</pixelSpacingInMeter>
+      <pixelSpacingInDegree>0.0</pixelSpacingInDegree>
       <mapProjection>GEOGCS[&quot;WGS84(DD)&quot;, &#xd;
   DATUM[&quot;WGS84&quot;, &#xd;
     SPHEROID[&quot;WGS84&quot;, 6378137.0, 298.257223563]], &#xd;
@@ -59,32 +61,13 @@
       <externalAuxFile/>
     </parameters>
   </node>
-  <node id="BandMaths">
-    <operator>BandMaths</operator>
-    <sources>
-      <sourceProduct refid="BandSelect"/>
-    </sources>
-    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <targetBands>
-        <targetBand>
-          <name>dem</name>
-          <type>float32</type>
-          <expression>elevation*1</expression>
-          <description/>
-          <unit/>
-          <noDataValue>0.0</noDataValue>
-        </targetBand>
-      </targetBands>
-      <variables/>
-    </parameters>
-  </node>
   <node id="Write">
     <operator>Write</operator>
     <sources>
       <sourceProduct refid="Terrain-Correction"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>I:\Temp\mintpy\interferograms\dem_tc.dim</file>
+      <file>I:\Temp\mintpy\interferograms\20180405_20190211\20180405_20190211_coh_tc.dim</file>
       <formatName>BEAM-DIMAP</formatName>
     </parameters>
   </node>
@@ -98,9 +81,6 @@
     </node>
     <node id="Terrain-Correction">
       <displayPosition x="345.0" y="119.0"/>
-    </node>
-    <node id="BandMaths">
-      <displayPosition x="226.0" y="121.0"/>
     </node>
     <node id="Write">
       <displayPosition x="371.0" y="236.0"/>
