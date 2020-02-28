@@ -6,30 +6,52 @@ import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.gpf.OperatorSpi;
 import org.esa.snap.core.gpf.common.SubsetOp;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.awt.*;
 import java.io.File;
+import java.io.FileReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ConnectedComponents {
 
     public static void main(String[] args) {
 
+        /*
+
+        workingDir="D:\mnt\fast\dockers\monitor-radar-core\monitor_radar_usr\processing\1580805641883"
+        resultDir="D:\mnt\hdfs\user\monitor_radar_usr\monitor-radar-core\results\1582784223886"
+        connectedComponentPercent=10
+        minCoh=0.87
+
+         */
+
         HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
         String workingDir = consoleParameters.get("workingDir").toString();
+        String resultDir = consoleParameters.get("resultDir").toString();
         int connectedComponentPercent = Integer.valueOf(consoleParameters.get("connectedComponentPercent").toString());
         float minCoh = Float.valueOf(consoleParameters.get("minCoh").toString());
 
 
         try {
 
+            String configDir = resultDir + File.separator + "config";
+            HashMap<String, HashMap> snaphuParameters = getParameters(configDir);
+            Object generateConnectedComponentsFile = ((HashMap) snaphuParameters.get("Snaphu")).get("generateConnectedComponentsFile");
+
+            if (!Boolean.valueOf(generateConnectedComponentsFile.toString())) {
+                return;
+            }
+
             List<String> pairPaths = new ArrayList<>();
 
-            Product[] products = Files.walk(Paths.get(workingDir))
+            Product[] products = Files.walk(Paths.get(workingDir + File.separator + "prep"))
                     .filter(file -> file.toAbsolutePath().toString().endsWith("_coh_tc.dim"))
                     .map(file -> file.toFile())
                     .map(file -> {
@@ -77,7 +99,7 @@ public class ConnectedComponents {
                 }
             }
 
-            Files.walk(Paths.get(workingDir))
+            Files.walk(Paths.get(workingDir + File.separator + "prep"))
                     .filter(file -> file.toAbsolutePath().toString().endsWith("_cc.dim"))
                     .forEach(file -> {
 
@@ -111,7 +133,7 @@ public class ConnectedComponents {
                                 });
 
                                 // TODO: delete
-                                //System.out.println(ccBandName + " -> " + counter + " points (" + file.getParent() + ")");
+                                System.out.println(ccBandName + " -> " + counter + " points (" + file.getParent() + ")");
                                 //
                             }
 
@@ -138,16 +160,16 @@ public class ConnectedComponents {
 
             System.out.println("Y:" + maxConnectedComponentPoint[1] + ", X:" + maxConnectedComponentPoint[0]);
 
+
             List<String> includedPairPaths = maxConnectedComponentPaths;
             pairPaths.stream().filter(path -> !includedPairPaths.contains(Paths.get(path)))
                     .forEach(path -> {
-                        removeDirectory(new File(path));
+                        //removeDirectory(new File(path));
                     });
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     public static void removeDirectory(File dir) {
@@ -162,5 +184,55 @@ public class ConnectedComponents {
         } else {
             dir.delete();
         }
+    }
+
+    public void modifyMintPyConfigFile(String workingDir, String configDir, double y, double x) {
+        try {
+            Files.lines(Paths.get(configDir + File.separator + "smallbaselineApp.cfg")).map(line -> {
+                if (line.contains("mintpy.load.connCompFile")) {
+                    return "mintpy.load.connCompFile = /home/work/*_*/*_cc*.data/Unw*.img";
+                }
+                if (line.contains("mintpy.network.tempBaseMax")) {
+                    return "mintpy.network.tempBaseMax = 250";
+                }
+                if (line.contains("mintpy.network.perpBaseMax")) {
+                    return "mintpy.network.perpBaseMax = 250";
+                }
+                if (line.contains("mintpy.reference.lalo")) {
+                    return "mintpy.reference.lalo = " + x + "," + y;
+                }
+                if (line.contains("mintpy.unwrapError.method")) {
+                    return "mintpy.unwrapError.method = bridging";
+                }
+                return line;
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    static HashMap getParameters(String configDir) {
+
+        HashMap<String, HashMap> stageParameters = null;
+
+        try {
+            stageParameters = new HashMap<>();
+
+            // DataSet
+            JSONParser parser = new JSONParser();
+            FileReader fileReader = new FileReader(configDir + File.separator + "snaphu.json");
+            JSONObject jsonObject = (JSONObject) parser.parse(fileReader);
+            HashMap<String, HashMap> jsonParameters1 = (HashMap) jsonObject.get("parameters");
+
+            stageParameters.put("Snaphu",
+                    (HashMap) jsonParameters1.entrySet().stream
+                            ().collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue().get("value")))
+            );
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return stageParameters;
     }
 }
