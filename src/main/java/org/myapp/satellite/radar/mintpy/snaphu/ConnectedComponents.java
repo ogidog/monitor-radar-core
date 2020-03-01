@@ -157,12 +157,15 @@ public class ConnectedComponents {
             //
 
             String excludedIfgIndex = "";
+            pairPaths.sort(String::compareTo);
             for (int i = 0; i < pairPaths.size(); i++) {
                 if (!maxConnectedComponentPaths.contains(pairPaths.get(i))) {
+                    System.out.println(pairPaths.get(i));
                     excludedIfgIndex = excludedIfgIndex + i + ",";
                 }
             }
             excludedIfgIndex = excludedIfgIndex.substring(0, excludedIfgIndex.length() - 1).trim();
+            System.out.println(excludedIfgIndex);
 
             modifyMintPyConfigFile(workingDir, configDir, maxConnectedComponentPoint[1], maxConnectedComponentPoint[0], excludedIfgIndex);
 
