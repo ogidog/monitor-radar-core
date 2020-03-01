@@ -1,9 +1,10 @@
-package org.myapp.utils;
+package org.myapp.satellite.radar.mintpy.snaphu;
 
 import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.datamodel.*;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.myapp.utils.ConsoleArgsReader;
 
 import java.io.File;
 import java.io.FileReader;
