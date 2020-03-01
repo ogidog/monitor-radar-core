@@ -1,19 +1,14 @@
 package org.myapp.utils;
 
-import com.twitter.chill.java.ArraysAsListSerializer;
-import org.esa.s1tbx.sentinel1.gpf.TOPSARSplitOp;
 import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.datamodel.*;
-import org.esa.snap.core.gpf.OperatorSpi;
-import org.esa.snap.core.gpf.common.SubsetOp;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import java.awt.*;
 import java.io.File;
 import java.io.FileReader;
+import java.io.PrintWriter;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
@@ -24,12 +19,10 @@ public class ConnectedComponents {
     public static void main(String[] args) {
 
         /*
-
-        workingDir="D:\mnt\fast\dockers\monitor-radar-core\monitor_radar_usr\processing\1580805641883"
-        resultDir="D:\mnt\hdfs\user\monitor_radar_usr\monitor-radar-core\results\1582784223886"
+        workingDir="F:\\mnt\\fast\\dockers\\monitor-radar-core\\monitor_radar_usr\\processing\\1580805641883"
+        resultDir="F:\\mnt\\hdfs\\user\\monitor_radar_usr\\monitor-radar-core\\results\\1580805641883"
         connectedComponentPercent=10
         minCoh=0.87
-
          */
 
         HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
@@ -128,12 +121,12 @@ public class ConnectedComponents {
                                     int width = product.getBand(ccBandName).getRasterWidth();
                                     product.getBand(ccBandName).getGeoCoding().getPixelPos(geoPos, pixelPos);
                                     if (data[(int) pixelPos.getY() * width + (int) pixelPos.getX()] > 0.0) {
-                                        entry.getValue().add(file.getParent());
+                                        entry.getValue().add(file.getParent().toString());
                                     }
                                 });
 
-                                // TODO: delete
-                                System.out.println(ccBandName + " -> " + counter + " points (" + file.getParent() + ")");
+                                // TODO: убрать
+                                // System.out.println(ccBandName + " -> " + counter + " points (" + file.getParent() + ")");
                                 //
                             }
 
@@ -158,14 +151,27 @@ public class ConnectedComponents {
                 }
             }
 
-            System.out.println("Y:" + maxConnectedComponentPoint[1] + ", X:" + maxConnectedComponentPoint[0]);
+            // TODO: убрать
+            // System.out.println("Y:" + maxConnectedComponentPoint[1] + ", X:" + maxConnectedComponentPoint[0]);
+            //
 
+            String excludedIfgIndex = "";
+            for (int i = 0; i < pairPaths.size(); i++) {
+                if (!maxConnectedComponentPaths.contains(pairPaths.get(i))) {
+                    excludedIfgIndex = excludedIfgIndex + i + ",";
+                }
+            }
+            excludedIfgIndex = excludedIfgIndex.substring(0, excludedIfgIndex.length() - 1).trim();
 
-            List<String> includedPairPaths = maxConnectedComponentPaths;
+            modifyMintPyConfigFile(workingDir, configDir, maxConnectedComponentPoint[1], maxConnectedComponentPoint[0], excludedIfgIndex);
+
+            /*
             pairPaths.stream().filter(path -> !includedPairPaths.contains(Paths.get(path)))
                     .forEach(path -> {
                         //removeDirectory(new File(path));
                     });
+             */
+
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -186,9 +192,11 @@ public class ConnectedComponents {
         }
     }
 
-    public void modifyMintPyConfigFile(String workingDir, String configDir, double y, double x) {
+    public static void modifyMintPyConfigFile(String workingDir, String configDir, double y, double x, String excludedIfgIndex) {
         try {
-            Files.lines(Paths.get(configDir + File.separator + "smallbaselineApp.cfg")).map(line -> {
+            // TODO: данные и другие параметры из smallbaseline.cfg менять из файла smallbaseline.json, когда будет добавлен раздел настройки MintPy в monitor-radar-frontend
+
+            String smallBaseLineAppConfig = Files.lines(Paths.get(configDir + File.separator + "smallbaselineApp.cfg")).map(line -> {
                 if (line.contains("mintpy.load.connCompFile")) {
                     return "mintpy.load.connCompFile = /home/work/*_*/*_cc*.data/Unw*.img";
                 }
@@ -204,8 +212,20 @@ public class ConnectedComponents {
                 if (line.contains("mintpy.unwrapError.method")) {
                     return "mintpy.unwrapError.method = bridging";
                 }
+                if (line.contains("mintpy.unwrapError.ramp")) {
+                    return "mintpy.unwrapError.ramp = linear";
+                }
+                if (line.contains("mintpy.network.excludeIfgIndex")) {
+                    return "mintpy.network.excludeIfgIndex = " + excludedIfgIndex;
+                }
                 return line;
-            });
+            }).collect(Collectors.joining("\n"));
+
+            // Write ifgs12_excluded.txt to file
+            PrintWriter out = new PrintWriter(workingDir + File.separator + "prep" + File.separator + "smallbaselineApp.cfg");
+            out.println(smallBaseLineAppConfig);
+            out.close();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
