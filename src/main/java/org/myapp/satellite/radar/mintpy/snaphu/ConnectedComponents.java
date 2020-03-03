@@ -6,8 +6,11 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.myapp.utils.ConsoleArgsReader;
 
+import javax.imageio.stream.ImageInputStream;
+import javax.imageio.stream.ImageOutputStream;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -19,52 +22,91 @@ public class ConnectedComponents {
 
     public static void main(String[] args) {
 
-        /*
-        workingDir="F:\\mnt\\fast\\dockers\\monitor-radar-core\\monitor_radar_usr\\processing\\1580805641883"
-        resultDir="F:\\mnt\\hdfs\\user\\monitor_radar_usr\\monitor-radar-core\\results\\1580805641883"
-        connectedComponentPercent=10
-        minCoh=0.87
-         */
-
         HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
         String workingDir = consoleParameters.get("workingDir").toString();
         String resultDir = consoleParameters.get("resultDir").toString();
         int connectedComponentPercent = Integer.valueOf(consoleParameters.get("connectedComponentPercent").toString());
         float minCoh = Float.valueOf(consoleParameters.get("minCoh").toString());
 
+        String configDir = resultDir + File.separator + "config";
+        HashMap<String, HashMap> snaphuParameters = getParameters(configDir);
+        Object generateConnectedComponentsFile = ((HashMap) snaphuParameters.get("Snaphu")).get("generateConnectedComponentsFile");
+
+        if (!Boolean.valueOf(generateConnectedComponentsFile.toString())) {
+            return;
+        }
 
         try {
-
-            String configDir = resultDir + File.separator + "config";
-            HashMap<String, HashMap> snaphuParameters = getParameters(configDir);
-            Object generateConnectedComponentsFile = ((HashMap) snaphuParameters.get("Snaphu")).get("generateConnectedComponentsFile");
-
-            if (!Boolean.valueOf(generateConnectedComponentsFile.toString())) {
-                return;
-            }
-
-            List<String> pairPaths = new ArrayList<>();
-
-            Product[] products = Files.walk(Paths.get(workingDir + File.separator + "prep"))
-                    .filter(file -> file.toAbsolutePath().toString().endsWith("_coh_tc.dim"))
+            Product[] ccProducts = Files.walk(Paths.get(workingDir + File.separator + "prep"))
+                    .filter(file -> file.toAbsolutePath().toString().endsWith("_cc.dim"))
                     .map(file -> file.toFile())
                     .map(file -> {
                         try {
-                            pairPaths.add(file.getParent());
                             return ProductIO.readProduct(file);
                         } catch (Exception e) {
                             return null;
                         }
                     }).toArray(Product[]::new);
 
-            int maxWidth = products[0].getSceneRasterWidth(), maxHeight = products[0].getSceneRasterHeight();
-            for (Product product : products) {
+            int maxWidth = ccProducts[0].getSceneRasterWidth(), maxHeight = ccProducts[0].getSceneRasterHeight();
+            for (Product product : ccProducts) {
                 maxWidth = product.getSceneRasterWidth() > maxWidth ? product.getSceneRasterWidth() : maxWidth;
                 maxHeight = product.getSceneRasterHeight() > maxHeight ? product.getSceneRasterHeight() : maxHeight;
             }
 
+            int[][] intersectData = new int[maxHeight][maxWidth];
+            for (int y = 0; y < maxHeight; y++) {
+                for (int x = 0; x < maxWidth; x++) {
+                    intersectData[y][x] = 1;
+                }
+            }
+
+            boolean isAllNull = false;
+            for (Product product : ccProducts) {
+                product.getBandAt(0).readRasterDataFully();
+                float[] data = ((ProductData.Float) product.getBandAt(0).getData()).getArray();
+                isAllNull = false;
+                for (int y = 0; y < product.getSceneRasterHeight(); y++) {
+                    for (int x = 0; x < product.getSceneRasterWidth(); x++) {
+                        if (data[y * product.getSceneRasterWidth() + x] > 0.0 && intersectData[y][x] == 1) {
+                            intersectData[y][x] = 1;
+                            isAllNull = true;
+                        } else {
+                            intersectData[y][x] = 0;
+                        }
+                    }
+                }
+                if (!isAllNull) {
+
+                    // TODO: убрать
+                    System.out.println(product.getName());
+
+                    break;
+                }
+            }
+
+            for (Product product : ccProducts) {
+                product.closeIO();
+            }
+
+            if (!isAllNull) {
+                return;
+            }
+
+
+            Product[] cohProducts = Files.walk(Paths.get(workingDir + File.separator + "prep"))
+                    .filter(file -> file.toAbsolutePath().toString().endsWith("_coh_tc.dim"))
+                    .map(file -> file.toFile())
+                    .map(file -> {
+                        try {
+                            return ProductIO.readProduct(file);
+                        } catch (Exception e) {
+                            return null;
+                        }
+                    }).toArray(Product[]::new);
+
             float[][] aveCoh = new float[maxHeight][maxWidth];
-            for (Product product : products) {
+            for (Product product : cohProducts) {
                 product.getBandAt(0).readRasterDataFully();
                 float[] data = ((ProductData.Float) product.getBandAt(0).getData()).getArray();
                 for (int y = 0; y < product.getSceneRasterHeight(); y++) {
@@ -76,127 +118,40 @@ public class ConnectedComponents {
             }
             for (int y = 0; y < maxHeight; y++) {
                 for (int x = 0; x < maxWidth; x++) {
-                    aveCoh[y][x] = aveCoh[y][x] / (float) products.length;
+                    aveCoh[y][x] = aveCoh[y][x] / (float) cohProducts.length;
                 }
             }
 
 
-            HashMap<Double[], ArrayList> maxCoh = new HashMap<>();
-            for (int y = 0; y < maxHeight; y++) {
-                for (int x = 0; x < maxWidth; x++) {
-                    if (aveCoh[y][x] > minCoh) {
-                        PixelPos pixelPos = new PixelPos(x, y);
-                        GeoPos geoPos = new GeoPos();
-                        products[0].getBandAt(0).getGeoCoding().getGeoPos(pixelPos, geoPos);
-                        maxCoh.put(new Double[]{geoPos.lat, geoPos.lon}, new ArrayList());
+            float maxAveCoh = 0.0f;
+            int maxCohY = 0, maxCohX = 0;
+            for (int y = 0; y < intersectData.length; y++) {
+                for (int x = 0; x < intersectData[0].length; x++) {
+                    if (intersectData[y][x] == 1) {
+                        if (aveCoh[y][x] > maxAveCoh) {
+                            maxCohY = y;
+                            maxCohX = x;
+                            maxAveCoh = aveCoh[y][x];
+                        }
                     }
                 }
             }
 
-            Files.walk(Paths.get(workingDir + File.separator + "prep"))
-                    .filter(file -> file.toAbsolutePath().toString().endsWith("_cc.dim"))
-                    .forEach(file -> {
-
-                        try {
-
-                            Product product = ProductIO.readProduct(file.toFile());
-                            Band[] bands = product.getBands();
-                            String ccBandName = Arrays.stream(bands).filter(band -> band.getName().contains("Unw_"))
-                                    .map(Band::getName).toArray(String[]::new)[0];
-
-                            product.getBand(ccBandName).readRasterDataFully();
-                            float[] data = ((ProductData.Float) product.getBand(ccBandName).getData()).getArray();
-                            int counter = 0;
-                            for (int i = 0; i < data.length; i++) {
-                                if (data[i] > 0.0) {
-                                    counter += 1;
-                                }
-                            }
-
-                            if (((float) counter / (float) data.length) * 100 > connectedComponentPercent) {
-                                maxCoh.entrySet().stream().forEach(entry -> {
-                                    double lat = entry.getKey()[0];
-                                    double lon = entry.getKey()[1];
-                                    GeoPos geoPos = new GeoPos(lat, lon);
-                                    PixelPos pixelPos = new PixelPos();
-                                    int width = product.getBand(ccBandName).getRasterWidth();
-                                    product.getBand(ccBandName).getGeoCoding().getPixelPos(geoPos, pixelPos);
-                                    if (data[(int) pixelPos.getY() * width + (int) pixelPos.getX()] > 0.0) {
-                                        entry.getValue().add(file.getParent().toString());
-                                    }
-                                });
-
-                                // TODO: убрать
-                                // System.out.println(ccBandName + " -> " + counter + " points (" + file.getParent() + ")");
-                                //
-                            }
-
-                            product.closeIO();
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    });
-
-            Iterator iterator = maxCoh.keySet().iterator();
-            int maxConnectedComponentPathAmount = 0;
-            ArrayList<String> maxConnectedComponentPaths = null;
-            Double[] maxConnectedComponentPoint = null;
-            while (iterator.hasNext()) {
-                Object connectedComponentPoint = iterator.next();
-                ArrayList<String> connectedComponentPaths = maxCoh.get(connectedComponentPoint);
-                if (connectedComponentPaths.size() > maxConnectedComponentPathAmount) {
-                    maxConnectedComponentPathAmount = connectedComponentPaths.size();
-                    maxConnectedComponentPaths = connectedComponentPaths;
-                    maxConnectedComponentPoint = (Double[]) connectedComponentPoint;
-                }
+            if (maxCohY == 0 && maxCohX == 0 && maxAveCoh == 0.0) {
+                System.out.println("(" + maxCohY + ", " + maxCohX + ") = " + maxAveCoh);
+                return;
             }
 
-            // TODO: убрать
-            // System.out.println("Y:" + maxConnectedComponentPoint[1] + ", X:" + maxConnectedComponentPoint[0]);
-            //
-
-            String excludedIfgIndex = "";
-            pairPaths.sort(String::compareTo);
-            for (int i = 0; i < pairPaths.size(); i++) {
-                if (!maxConnectedComponentPaths.contains(pairPaths.get(i))) {
-                    System.out.println(pairPaths.get(i));
-                    excludedIfgIndex = excludedIfgIndex + i + ",";
-                }
-            }
-            excludedIfgIndex = excludedIfgIndex.substring(0, excludedIfgIndex.length() - 1).trim();
-            System.out.println(excludedIfgIndex);
-
-            modifyMintPyConfigFile(workingDir, configDir, maxConnectedComponentPoint[1], maxConnectedComponentPoint[0], excludedIfgIndex);
-
-            /*
-            pairPaths.stream().filter(path -> !includedPairPaths.contains(Paths.get(path)))
-                    .forEach(path -> {
-                        //removeDirectory(new File(path));
-                    });
-             */
-
+            modifyMintPyConfigFile(workingDir, configDir, maxCohY, maxCohX);
+            System.out.println("(" + maxCohY + ", " + maxCohX + ") = " + maxAveCoh);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
-    public static void removeDirectory(File dir) {
-        if (dir.isDirectory()) {
-            File[] files = dir.listFiles();
-            if (files != null && files.length > 0) {
-                for (File aFile : files) {
-                    removeDirectory(aFile);
-                }
-            }
-            dir.delete();
-        } else {
-            dir.delete();
-        }
-    }
-
-    public static void modifyMintPyConfigFile(String workingDir, String configDir, double y, double x, String excludedIfgIndex) {
+    public static void modifyMintPyConfigFile(String workingDir, String configDir, double y, double x) {
         try {
             // TODO: данные и другие параметры из smallbaseline.cfg менять из файла smallbaseline.json, когда будет добавлен раздел настройки MintPy в monitor-radar-frontend
 
@@ -210,17 +165,14 @@ public class ConnectedComponents {
                 if (line.contains("mintpy.network.perpBaseMax")) {
                     return "mintpy.network.perpBaseMax = 250";
                 }
-                if (line.contains("mintpy.reference.lalo")) {
-                    return "mintpy.reference.lalo = " + x + "," + y;
+                if (line.contains("mintpy.reference.yx")) {
+                    return "mintpy.reference.yx = " + (int)y + "," + (int)x;
                 }
                 if (line.contains("mintpy.unwrapError.method")) {
                     return "mintpy.unwrapError.method = bridging";
                 }
                 if (line.contains("mintpy.unwrapError.ramp")) {
                     return "mintpy.unwrapError.ramp = linear";
-                }
-                if (line.contains("mintpy.network.excludeIfgIndex")) {
-                    return "mintpy.network.excludeIfgIndex = " + excludedIfgIndex;
                 }
                 return line;
             }).collect(Collectors.joining("\n"));
