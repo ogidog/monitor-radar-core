@@ -144,7 +144,7 @@ public class Stage13 {
 
         for (int i = 0; i < products.length; i++) {
 
-            File newProductFile = new File(products[i].getFileLocation().toString().replace("\\tc\\", "\\tc_resize\\"));
+            File newProductFile = new File(products[i].getFileLocation().toString().replace(File.separator + "tc", File.separator + "tc_resize"));
 
             OperatorSpi operatorSpiSubset = new SubsetOp.Spi();
             SubsetOp subsetOp = (SubsetOp) operatorSpiSubset.createOperator();
