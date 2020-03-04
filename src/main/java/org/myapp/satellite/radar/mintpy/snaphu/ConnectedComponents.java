@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,18 +26,17 @@ public class ConnectedComponents {
         HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
         String workingDir = consoleParameters.get("workingDir").toString();
         String resultDir = consoleParameters.get("resultDir").toString();
-        int connectedComponentPercent = Integer.valueOf(consoleParameters.get("connectedComponentPercent").toString());
-        float minCoh = Float.valueOf(consoleParameters.get("minCoh").toString());
 
         String configDir = resultDir + File.separator + "config";
         HashMap<String, HashMap> snaphuParameters = getParameters(configDir);
         Object generateConnectedComponentsFile = ((HashMap) snaphuParameters.get("Snaphu")).get("generateConnectedComponentsFile");
 
-        if (!Boolean.valueOf(generateConnectedComponentsFile.toString())) {
-            return;
-        }
-
         try {
+            Files.copy(Paths.get(configDir + File.separator + "smallbaselineApp.cfg"), Paths.get(workingDir + File.separator + "prep" + File.separator + "smallbaselineApp.cfg"), StandardCopyOption.REPLACE_EXISTING);
+            if (!Boolean.valueOf(generateConnectedComponentsFile.toString())) {
+                return;
+            }
+
             Product[] ccProducts = Files.walk(Paths.get(workingDir + File.separator + "prep"))
                     .filter(file -> file.toAbsolutePath().toString().endsWith("_cc.dim"))
                     .map(file -> file.toFile())
@@ -138,12 +138,18 @@ public class ConnectedComponents {
             }
 
             if (maxCohY == 0 && maxCohX == 0 && maxAveCoh == 0.0) {
+                // TODO: убрать
                 System.out.println("(" + maxCohY + ", " + maxCohX + ") = " + maxAveCoh);
+                //
+
                 return;
             }
 
             modifyMintPyConfigFile(workingDir, configDir, maxCohY, maxCohX);
+
+            // TODO: убрать
             System.out.println("(" + maxCohY + ", " + maxCohX + ") = " + maxAveCoh);
+            //
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -166,7 +172,7 @@ public class ConnectedComponents {
                     return "mintpy.network.perpBaseMax = 250";
                 }
                 if (line.contains("mintpy.reference.yx")) {
-                    return "mintpy.reference.yx = " + (int)y + "," + (int)x;
+                    return "mintpy.reference.yx = " + (int) y + "," + (int) x;
                 }
                 if (line.contains("mintpy.unwrapError.method")) {
                     return "mintpy.unwrapError.method = bridging";

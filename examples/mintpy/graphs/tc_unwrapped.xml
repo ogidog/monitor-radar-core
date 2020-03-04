@@ -20,8 +20,6 @@
       <externalDEMApplyEGM>true</externalDEMApplyEGM>
       <demResamplingMethod>BILINEAR_INTERPOLATION</demResamplingMethod>
       <imgResamplingMethod>BILINEAR_INTERPOLATION</imgResamplingMethod>
-      <pixelSpacingInMeter>0.0</pixelSpacingInMeter>
-      <pixelSpacingInDegree>0.0</pixelSpacingInDegree>
       <mapProjection>GEOGCS[&quot;WGS84(DD)&quot;, &#xd;
   DATUM[&quot;WGS84&quot;, &#xd;
     SPHEROID[&quot;WGS84&quot;, 6378137.0, 298.257223563]], &#xd;
@@ -56,7 +54,7 @@
       <sourceProduct refid="Terrain-Correction"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>F:\mnt\fast\dockers\monitor-radar-core\monitor_radar_usr\processing\1580805641883\tc\unwrap\20180604_20190412\20180604_20190412_unw_tc.dim</file>
+      <file>F:\mnt\fast\dockers\monitor-radar-core\monitor_radar_usr\processing\1580805641883\subset\unwrap\20180604_20190412\20180604_20190412_unw_tc.dim</file>
       <formatName>BEAM-DIMAP</formatName>
     </parameters>
   </node>
@@ -66,7 +64,7 @@
             <displayPosition x="37.0" y="134.0"/>
     </node>
     <node id="Terrain-Correction">
-      <displayPosition x="149.0" y="133.0"/>
+      <displayPosition x="177.0" y="135.0"/>
     </node>
     <node id="Write">
             <displayPosition x="457.0" y="132.0"/>
