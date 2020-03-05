@@ -52,10 +52,6 @@ public class Stage14 {
 
         try {
 
-            if (!Boolean.valueOf(useTroposphericDelayCorrection.toString())) {
-                return;
-            }
-
             String graphDir = resultDir + File.separator + "graphs";
 
             Product[] products = null;
@@ -65,6 +61,11 @@ public class Stage14 {
                         .sorted(Comparator.reverseOrder())
                         .map(Path::toFile)
                         .forEach(File::delete);
+            }
+
+            if (!Boolean.valueOf(useTroposphericDelayCorrection.toString())) {
+                new File(workingDir + File.separator + "prep").renameTo(new File(workingDir + File.separator + "prep_resize"));
+                return;
             }
 
             products = Files.walk(Paths.get(workingDir + File.separator + "prep"))
@@ -111,6 +112,13 @@ public class Stage14 {
                     .filter(file -> file.toAbsolutePath().toString().contains("dem_tc.dim"))
                     .map(file -> file.toAbsolutePath().toString()).toArray(String[]::new);
             subset(graphDir, productFiles, minWidth, minHeight, "dem");
+
+            if (Files.exists(Paths.get(workingDir + File.separator + "prep"))) {
+                Files.walk(Paths.get(workingDir + File.separator + "prep"))
+                        .sorted(Comparator.reverseOrder())
+                        .map(Path::toFile)
+                        .forEach(File::delete);
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
