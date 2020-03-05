@@ -1,0 +1,15 @@
+{
+  "label": "MintPy",
+  "name": "mintpy",
+  "description": "The MintPy package for Interferometric Synthetic Aperture Radar time series analysis.",
+  "parameters": {
+    "useTroposphericDelayCorrection": {
+      "index": 0,
+      "name": "useTroposphericDelayCorrection",
+      "label": "Use Tropospheric Delay Correction",
+      "type": "inputTypes.checkBox",
+      "value": true,
+      "defaultvalue": false
+    }
+  }
+}

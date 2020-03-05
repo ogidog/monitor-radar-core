@@ -32,12 +32,12 @@ public class ConnectedComponents {
         Object generateConnectedComponentsFile = ((HashMap) snaphuParameters.get("Snaphu")).get("generateConnectedComponentsFile");
 
         try {
-            Files.copy(Paths.get(configDir + File.separator + "smallbaselineApp.cfg"), Paths.get(workingDir + File.separator + "prep" + File.separator + "smallbaselineApp.cfg"), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(Paths.get(configDir + File.separator + "smallbaselineApp.cfg"), Paths.get(workingDir + File.separator + "prep_resize" + File.separator + "smallbaselineApp.cfg"), StandardCopyOption.REPLACE_EXISTING);
             if (!Boolean.valueOf(generateConnectedComponentsFile.toString())) {
                 return;
             }
 
-            Product[] ccProducts = Files.walk(Paths.get(workingDir + File.separator + "prep"))
+            Product[] ccProducts = Files.walk(Paths.get(workingDir + File.separator + "prep_resize"))
                     .filter(file -> file.toAbsolutePath().toString().endsWith("_cc.dim"))
                     .map(file -> file.toFile())
                     .map(file -> {
@@ -94,7 +94,7 @@ public class ConnectedComponents {
             }
 
 
-            Product[] cohProducts = Files.walk(Paths.get(workingDir + File.separator + "prep"))
+            Product[] cohProducts = Files.walk(Paths.get(workingDir + File.separator + "prep_resize"))
                     .filter(file -> file.toAbsolutePath().toString().endsWith("_coh_tc.dim"))
                     .map(file -> file.toFile())
                     .map(file -> {
@@ -184,7 +184,7 @@ public class ConnectedComponents {
             }).collect(Collectors.joining("\n"));
 
             // Write ifgs12_excluded.txt to file
-            PrintWriter out = new PrintWriter(workingDir + File.separator + "prep" + File.separator + "smallbaselineApp.cfg");
+            PrintWriter out = new PrintWriter(workingDir + File.separator + "prep_resize" + File.separator + "smallbaselineApp.cfg");
             out.println(smallBaseLineAppConfig);
             out.close();
 
