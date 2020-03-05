@@ -10,6 +10,8 @@ import org.esa.snap.core.gpf.common.WriteOp;
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
 import org.esa.snap.runtime.Config;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.myapp.utils.ConsoleArgsReader;
 
 import java.awt.*;
@@ -21,6 +23,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class Stage14 {
 
@@ -43,7 +46,16 @@ public class Stage14 {
 
         Config.instance().preferences().put("snap.userdir", snapDir);
 
+        String configDir = resultDir + File.separator + "config";
+        HashMap<String, HashMap> smallBaselineParameters = getParameters(configDir);
+        Object useTroposphericDelayCorrection = ((HashMap) smallBaselineParameters.get("MintPy")).get("useTroposphericDelayCorrection");
+
         try {
+
+            if (!Boolean.valueOf(useTroposphericDelayCorrection.toString())) {
+                return;
+            }
+
             String graphDir = resultDir + File.separator + "graphs";
 
             Product[] products = null;
@@ -148,5 +160,30 @@ public class Stage14 {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    static HashMap getParameters(String configDir) {
+
+        HashMap<String, HashMap> stageParameters = null;
+
+        try {
+            stageParameters = new HashMap<>();
+
+            // DataSet
+            JSONParser parser = new JSONParser();
+            FileReader fileReader = new FileReader(configDir + File.separator + "smallbaselineApp.json");
+            JSONObject jsonObject = (JSONObject) parser.parse(fileReader);
+            HashMap<String, HashMap> jsonParameters1 = (HashMap) jsonObject.get("parameters");
+
+            stageParameters.put("MintPy",
+                    (HashMap) jsonParameters1.entrySet().stream
+                            ().collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue().get("value")))
+            );
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return stageParameters;
     }
 }

@@ -8,7 +8,7 @@
       "name": "useTroposphericDelayCorrection",
       "label": "Use Tropospheric Delay Correction",
       "type": "inputTypes.checkBox",
-      "value": true,
+      "value": false,
       "defaultvalue": false
     }
   }
