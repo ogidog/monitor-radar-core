@@ -1,13 +1,11 @@
-selectNetwork.method        = sequental
+selectNetwork.method = sequential
 selectNetwork.referenceFile = no
-
 # Baseline Info
 selectNetwork.perpBaseMax   = 500.
-selectNetwork.tempBaseMax   = 1800.
+selectNetwork.tempBaseMax   = 500.
 selectNetwork.tempBaseMin   = 0.
 selectNetwork.keepSeasonal  = no
 selectNetwork.dopOverlapMin = 15.
-
 # Date Info
 selectNetwork.masterDate    = no
 selectNetwork.startDate     = no
