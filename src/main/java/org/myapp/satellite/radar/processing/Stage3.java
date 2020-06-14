@@ -96,7 +96,7 @@ public class Stage3 {
 
                 ProcessBuilder processBuilder = new ProcessBuilder(System.getenv("SNAP_HOME") + File.separator + "bin" + File.separator + "gpt" +
                         (System.getProperty("os.name").toLowerCase().contains("windows") ? ".exe" : ""),
-                        tmpDir + File.separator + "TopoPhaseRemoval" + (index) + ".xml", "-Dsnap.userdir=" + snapDir
+                        tmpDir + File.separator + "TopoPhaseRemoval" + (index) + ".xml"
                 ).inheritIO();
                 Process p = processBuilder.start();
                 p.waitFor();

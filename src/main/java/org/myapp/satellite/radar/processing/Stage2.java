@@ -109,7 +109,7 @@ public class Stage2 {
 
                 ProcessBuilder processBuilder = new ProcessBuilder(System.getenv("SNAP_HOME") + File.separator + "bin" + File.separator + "gpt" +
                         (System.getProperty("os.name").toLowerCase().contains("windows") ? ".exe" : ""),
-                        tmpDir + File.separator + "Subset" + (index) + ".xml", "-Dsnap.userdir=" + snapDir
+                        tmpDir + File.separator + "Subset" + (index) + ".xml"
                 ).inheritIO();
                 Process p = processBuilder.start();
                 p.waitFor();

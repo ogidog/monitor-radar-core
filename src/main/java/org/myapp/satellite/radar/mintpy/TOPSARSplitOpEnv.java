@@ -1,13 +1,8 @@
 package org.myapp.satellite.radar.mintpy;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Polygon;
 import org.esa.s1tbx.commons.Sentinel1Utils;
 import org.esa.s1tbx.sentinel1.gpf.TOPSARSplitOp;
 import org.esa.snap.core.dataio.ProductIO;
-import org.esa.snap.core.datamodel.GeoPos;
-import org.esa.snap.core.datamodel.PixelPos;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.OperatorSpi;
 

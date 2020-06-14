@@ -4,6 +4,8 @@ import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.datamodel.MetadataElement;
 import org.esa.snap.core.datamodel.Product;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.DriverManager;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -30,6 +32,23 @@ public class DBManager {
     }
 
     private static void addNewImageToDB(String imageNames, String imageRealDir, String imageDirInDBRecord) {
+
+        if (imageNames.length() == 0) {
+            try {
+                imageNames = Files.find(Paths.get(imageRealDir), 99,
+                        (path, attr) -> {
+                            if (path.toString().endsWith(".zip")) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        }).map(path -> path.getFileName().toString())
+                        .collect(Collectors.joining(","));
+
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        }
 
         Connection connection = null;
         try {
@@ -71,7 +90,7 @@ public class DBManager {
                         e.printStackTrace();
                         try {
                             connection.rollback();
-                        }catch (Exception e1){
+                        } catch (Exception e1) {
                             e1.printStackTrace();
                         }
                     }

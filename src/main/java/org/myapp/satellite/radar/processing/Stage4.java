@@ -58,7 +58,7 @@ public class Stage4 {
                     ProcessBuilder processBuilder =
                             new ProcessBuilder(System.getenv("SNAP_HOME") + File.separator + "bin" + File.separator + "gpt" +
                                     (System.getProperty("os.name").toLowerCase().contains("windows") ? ".exe" : ""),
-                                    tmpDir + File.separator + "PSExport.xml", "-Dsnap.userdir=" + snapDir
+                                    tmpDir + File.separator + "PSExport.xml"
                             ).inheritIO();
                     Process p = processBuilder.start();
                     p.waitFor();
