@@ -1,0 +1,40 @@
+<graph id="Graph">
+  <version>1.0</version>
+  <node id="Read">
+    <operator>Read</operator>
+    <sources/>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>D:\Temp\test1\123456789123\esd\Subset_S1B_IW_SLC__1SDV_20180920T002731_20180920T002801_012791_0179CD_D5A9_Orb_Stack_Deb.dim</file>
+    </parameters>
+  </node>
+  <node id="StampsExport">
+    <operator>StampsExport</operator>
+    <sources>
+      <sourceProduct refid="Read"/>
+      <sourceProduct.1 refid="Read(2)"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <targetFolder>D:\Temp\test1\123456789123\stampsexport</targetFolder>
+      <psiFormat>true</psiFormat>
+    </parameters>
+  </node>
+  <node id="Read(2)">
+    <operator>Read</operator>
+    <sources/>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>D:\Temp\test1\123456789123\topophaseremoval\Subset_S1B_IW_SLC__1SDV_20180920T002731_20180920T002801_012791_0179CD_D5A9_Orb_Stack_Ifg_Deb_DInSAR.dim</file>
+    </parameters>
+  </node>
+  <applicationData id="Presentation">
+    <Description/>
+    <node id="Read">
+            <displayPosition x="37.0" y="134.0"/>
+    </node>
+    <node id="StampsExport">
+      <displayPosition x="194.0" y="126.0"/>
+    </node>
+    <node id="Read(2)">
+      <displayPosition x="30.0" y="191.0"/>
+    </node>
+  </applicationData>
+</graph>
