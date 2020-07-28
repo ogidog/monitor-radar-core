@@ -28,13 +28,13 @@
   <applicationData id="Presentation">
     <Description/>
     <node id="Read">
-            <displayPosition x="37.0" y="134.0"/>
+            <displayPosition x="33.0" y="60.0"/>
     </node>
     <node id="StampsExport">
       <displayPosition x="194.0" y="126.0"/>
     </node>
     <node id="Read(2)">
-      <displayPosition x="30.0" y="191.0"/>
+      <displayPosition x="35.0" y="183.0"/>
     </node>
   </applicationData>
 </graph>

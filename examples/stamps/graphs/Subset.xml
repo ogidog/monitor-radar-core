@@ -1,40 +1,15 @@
 <graph id="Graph">
   <version>1.0</version>
-  <node id="Back-Geocoding">
-    <operator>Back-Geocoding</operator>
-    <sources>
-      <sourceProduct.2 refid="ProductSet-Reader"/>
-    </sources>
-    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <demName>SRTM 3Sec</demName>
-      <demResamplingMethod>BICUBIC_INTERPOLATION</demResamplingMethod>
-      <externalDEMFile/>
-      <externalDEMNoDataValue>0.0</externalDEMNoDataValue>
-      <resamplingType>BISINC_5_POINT_INTERPOLATION</resamplingType>
-      <maskOutAreaWithoutElevation>true</maskOutAreaWithoutElevation>
-      <outputRangeAzimuthOffset>false</outputRangeAzimuthOffset>
-      <outputDerampDemodPhase>false</outputDerampDemodPhase>
-      <disableReramp>false</disableReramp>
-    </parameters>
-  </node>
-  <node id="TOPSAR-Deburst">
-    <operator>TOPSAR-Deburst</operator>
-    <sources>
-      <sourceProduct refid="Back-Geocoding"/>
-    </sources>
-    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <selectedPolarisations/>
-    </parameters>
-  </node>
   <node id="Subset">
     <operator>Subset</operator>
     <sources>
-      <sourceProduct refid="TOPSAR-Deburst"/>
+      <sourceProduct refid="Read"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <sourceBands/>
-      <region>0,0,25076,1510</region>
-      <geoRegion>POLYGON ((86.00137713959259 55.30520992112386,86.00137713959259 55.41773523572507,86.20788461904168 55.41773523572507,86.20788461904168 55.30520992112386,86.00137713959259 55.30520992112386,86.00137713959259 55.30520992112386))</geoRegion>
+      <region>0,23,2611,662</region>
+      <referenceBand/>
+      <geoRegion/>
       <subSamplingX>1</subSamplingX>
       <subSamplingY>1</subSamplingY>
       <fullSwath>false</fullSwath>
@@ -42,39 +17,31 @@
       <copyMetadata>true</copyMetadata>
     </parameters>
   </node>
+  <node id="Read">
+    <operator>Read</operator>
+    <sources/>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement"/>
+  </node>
   <node id="Write">
     <operator>Write</operator>
     <sources>
       <sourceProduct refid="Subset"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>D:\snap-workspace\polysaevo\subset\New Folder\subset_master_Stack_Deb.dim</file>
+      <file>D:\Temp\test1\123456789123\subset_topophaseremoval\target.dim</file>
       <formatName>BEAM-DIMAP</formatName>
-    </parameters>
-  </node>
-  <node id="ProductSet-Reader">
-    <operator>ProductSet-Reader</operator>
-    <sources/>
-    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <fileList>F:\Temp\applyorbitfiles\S1A_IW_SLC__1SDV_20170122T002755_20170122T002824_014937_018613_A687_Orb.dim,F:\Temp\applyorbitfiles\S1B_IW_SLC__1SDV_20170128T002712_20170128T002742_004041_006FC5_0AD8_Orb.dim</fileList>
     </parameters>
   </node>
   <applicationData id="Presentation">
     <Description/>
-    <node id="Back-Geocoding">
-            <displayPosition x="163.0" y="44.0"/>
-    </node>
-    <node id="TOPSAR-Deburst">
-            <displayPosition x="295.0" y="43.0"/>
-    </node>
     <node id="Subset">
-            <displayPosition x="431.0" y="43.0"/>
+      <displayPosition x="237.0" y="136.0"/>
+    </node>
+    <node id="Read">
+      <displayPosition x="84.0" y="131.0"/>
     </node>
     <node id="Write">
-            <displayPosition x="523.0" y="42.0"/>
-    </node>
-    <node id="ProductSet-Reader">
-            <displayPosition x="14.0" y="44.0"/>
+      <displayPosition x="385.0" y="143.0"/>
     </node>
   </applicationData>
 </graph>
