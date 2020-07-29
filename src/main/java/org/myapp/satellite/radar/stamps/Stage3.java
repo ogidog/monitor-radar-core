@@ -11,6 +11,8 @@ import org.json.simple.parser.JSONParser;
 import org.myapp.utils.ConsoleArgsReader;
 
 import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -58,6 +60,22 @@ public class Stage3 {
                 }
 
             }).map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
+
+            for (int i = 0; i < files1.length; i++) {
+                Path path = Paths.get(files1[i]);
+                Charset charset = StandardCharsets.UTF_8;
+                String content = new String(Files.readAllBytes(path), charset);
+                content = content.replaceAll("<NO_DATA_VALUE_USED>true</NO_DATA_VALUE_USED>",
+                        "<NO_DATA_VALUE_USED>false</NO_DATA_VALUE_USED>");
+                Files.write(path, content.getBytes(charset));
+
+                path = Paths.get(files2[i]);
+                content = new String(Files.readAllBytes(path), charset);
+                content = content.replaceAll("<NO_DATA_VALUE_USED>true</NO_DATA_VALUE_USED>",
+                        "<NO_DATA_VALUE_USED>false</NO_DATA_VALUE_USED>");
+                Files.write(path, content.getBytes(charset));
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -104,18 +122,18 @@ public class Stage3 {
             PrintWriter cmdWriter = new PrintWriter(stage3Dir + File.separator + "stage3.cmd", "UTF-8");
 
             for (int i = 0; i < files1.length; i++) {
-                    String fileName = Paths.get(files1[i]).getFileName().toString();
-                    graph.getNode("Read").getConfiguration().getChild("file").setValue(files1[i]);
-                    graph.getNode("Read(2)").getConfiguration().getChild("file").setValue(files2[i]);
-                    graph.getNode("StampsExport").getConfiguration().getChild("targetFolder")
-                            .setValue(stampsexportDir);
+                String fileName = Paths.get(files1[i]).getFileName().toString();
+                graph.getNode("Read").getConfiguration().getChild("file").setValue(files1[i]);
+                graph.getNode("Read(2)").getConfiguration().getChild("file").setValue(files2[i]);
+                graph.getNode("StampsExport").getConfiguration().getChild("targetFolder")
+                        .setValue(stampsexportDir);
 
-                    FileWriter fileWriter = new FileWriter(stage3Dir + File.separator + fileName + ".xml");
-                    GraphIO.write(graph, fileWriter);
-                    fileWriter.flush();
-                    fileWriter.close();
+                FileWriter fileWriter = new FileWriter(stage3Dir + File.separator + fileName + ".xml");
+                GraphIO.write(graph, fileWriter);
+                fileWriter.flush();
+                fileWriter.close();
 
-                    cmdWriter.println("gpt " + stage3Dir + File.separator + fileName + ".xml");
+                cmdWriter.println("gpt " + stage3Dir + File.separator + fileName + ".xml");
             }
 
 
