@@ -27,15 +27,8 @@ public class Stage2 {
 
         HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
         String outputDir = consoleParameters.get("outputDir").toString();
-        String configDir = consoleParameters.get("configDir").toString();
         String graphDir = consoleParameters.get("graphDir").toString();
         String filesList = consoleParameters.get("filesList").toString();
-
-        HashMap parameters = getParameters(configDir);
-        if (parameters == null) {
-            System.out.println("Fail to read parameters.");
-            return;
-        }
 
         String[] files;
         try {
@@ -160,69 +153,6 @@ public class Stage2 {
         }
 
 
-    }
-
-    static HashMap getParameters(String configDir) {
-
-        HashMap<String, HashMap> stageParameters = null;
-
-        try {
-            stageParameters = new HashMap<>();
-
-            // DataSet
-            JSONParser parser = new JSONParser();
-            FileReader fileReader = new FileReader(configDir + File.separator + "dataset.json");
-            JSONObject jsonObject = (JSONObject) parser.parse(fileReader);
-            HashMap<String, HashMap> jsonParameters1 = (HashMap) jsonObject.get("parameters");
-
-            stageParameters.put("DataSet",
-                    (HashMap) jsonParameters1.entrySet().stream
-                            ().collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue().get("value")))
-            );
-
-            // Interferogram
-            fileReader = new FileReader(configDir + File.separator + "interferogram_formation.json");
-            jsonObject = (JSONObject) parser.parse(fileReader);
-            HashMap jsonParameters = (HashMap) jsonObject.get("parameters");
-            jsonParameters1 = (HashMap) jsonObject.get("parameters");
-
-            stageParameters.put("Interferogram",
-                    (HashMap) jsonParameters1.entrySet().stream
-                            ().collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue().get("value")))
-            );
-
-            fileReader.close();
-
-            // TopoPhaseRemoval
-            fileReader = new FileReader(configDir + File.separator + "topo_phase_removal.json");
-            jsonObject = (JSONObject) parser.parse(fileReader);
-            jsonParameters = (HashMap) jsonObject.get("parameters");
-            jsonParameters1 = (HashMap) jsonObject.get("parameters");
-
-            stageParameters.put("TopoPhaseRemoval",
-                    (HashMap) jsonParameters1.entrySet().stream
-                            ().collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue().get("value")))
-            );
-
-            fileReader.close();
-
-            // Subset
-            fileReader = new FileReader(configDir + File.separator + "subset.json");
-            jsonObject = (JSONObject) parser.parse(fileReader);
-            jsonParameters = (HashMap) jsonObject.get("parameters");
-
-            String geoRegionCoordinates = ((HashMap) jsonParameters.get("geoRegion")).get("value").toString();
-            HashMap parameters = new HashMap();
-            parameters.put("geoRegion", "POLYGON ((" + geoRegionCoordinates + "))");
-            stageParameters.put("Subset", parameters);
-
-            fileReader.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return stageParameters;
     }
 
 }

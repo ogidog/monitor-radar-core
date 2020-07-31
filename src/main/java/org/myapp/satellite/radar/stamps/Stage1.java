@@ -76,13 +76,14 @@ public class Stage1 {
 
                 graph.getNode("Read").getConfiguration().getChild("file").setValue(files[i]);
                 graph.getNode("Write").getConfiguration().getChild("file")
-                        .setValue(files[i].replace(".zip", "") + "_Orb.dim");
+                        .setValue(outputDir + File.separator + "applyorbitfile" + File.separator
+                                + Paths.get(files[i]).getFileName().toString().replace(".zip", "") + "_Orb.dim");
                 graph.getNode("TOPSAR-Split").getConfiguration().getChild("subswath").setValue(topsarSplitOpEnv.getSubSwath());
                 graph.getNode("TOPSAR-Split").getConfiguration().getChild("firstBurstIndex").setValue(topsarSplitOpEnv.getFirstBurstIndex());
                 graph.getNode("TOPSAR-Split").getConfiguration().getChild("lastBurstIndex").setValue(topsarSplitOpEnv.getLastBurstIndex());
 
                 FileWriter fileWriter = new FileWriter(stage1Dir + File.separator
-                        + Paths.get(files[i]).getFileName().toString().replace(".dim", "") + ".xml");
+                        + Paths.get(files[i]).getFileName().toString().replace(".zip", "") + ".xml");
                 GraphIO.write(graph, fileWriter);
                 fileWriter.flush();
                 fileWriter.close();
