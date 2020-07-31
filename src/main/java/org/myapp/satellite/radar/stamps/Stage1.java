@@ -2,12 +2,16 @@
 package org.myapp.satellite.radar.stamps;
 
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.gpf.graph.Graph;
+import org.esa.snap.core.gpf.graph.GraphIO;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.myapp.utils.ConsoleArgsReader;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -20,77 +24,80 @@ public class Stage1 {
 
     public static void main(String[] args) {
 
-        /* outputDir="F:\\intellij-idea-workspace\\monitor-radar-core-v3\\processing"
-        snapDir="F:\\intellij-idea-workspace\\monitor-radar-core-v3\\.snap"
-        configDir="F:\\intellij-idea-workspace\\monitor-radar-core-v3\\config"
-        filesList="Y:\\Satellites\\Sentinel-1A\\S1A_IW_SLC__1SDV_20170122T002755_20170122T002824_014937_018613_A687.zip,Y:\\Satellites\\Sentinel-1A\\S1A_IW_SLC__1SDV_20170215T002754_20170215T002824_015287_0190E5_24DE.zip"*/
+        try {
 
-        HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
-        String outputDir = consoleParameters.get("outputDir").toString();
-        String snapDir = consoleParameters.get("snapDir").toString();
-        String configDir = consoleParameters.get("configDir").toString();
-        String filesList = consoleParameters.get("filesList").toString();
+            HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
+            String outputDir = consoleParameters.get("outputDir").toString();
+            String configDir = consoleParameters.get("configDir").toString();
+            String graphDir = consoleParameters.get("graphDir").toString();
+            String filesList = consoleParameters.get("filesList").toString();
 
-        HashMap parameters = getParameters(configDir);
-        if (parameters == null) {
-            System.out.println("Fail to read parameters.");
-            return;
-        }
-
-        String[] files;
-        if (!filesList.contains(",")) {
-            try {
-                files = Files.walk(Paths.get(filesList)).skip(1)
-                        .map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
-            } catch (Exception e) {
-                e.printStackTrace();
+            HashMap parameters = getParameters(configDir);
+            if (parameters == null) {
+                System.out.println("Fail to read parameters.");
                 return;
             }
-        } else {
-            files = filesList.split(",");
-        }
 
-        if (Files.exists(Paths.get(outputDir))) {
-            try {
+            String[] files;
+            if (!filesList.contains(",")) {
+                files = Files.walk(Paths.get(filesList)).skip(1)
+                        .map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
+            } else {
+                files = filesList.split(",");
+            }
+
+            if (Files.exists(Paths.get(outputDir))) {
                 Files.walk(Paths.get(outputDir))
                         .sorted(Comparator.reverseOrder())
                         .map(Path::toFile)
                         .forEach(File::delete);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return;
-            }
-        }
-
-        new File(outputDir).mkdirs();
-        new File(outputDir + File.separator + "applyorbitfile").mkdirs();
-
-        TOPSARSplitOpEnv topsarSplitOpEnv = new TOPSARSplitOpEnv();
-        ApplyOrbitFileOpEnv applyOrbitFileOpEnv = new ApplyOrbitFileOpEnv(snapDir);
-        WriteOpEnv writeOpEnv = new WriteOpEnv();
-
-        Product targetProduct;
-
-        for (int i = 0; i < files.length; i++) {
-            try {
-
-                targetProduct = topsarSplitOpEnv.getTargetProduct(files[i], parameters);
-                targetProduct = applyOrbitFileOpEnv.getTargetProduct(targetProduct, parameters);
-
-                if (targetProduct != null) {
-                    writeOpEnv.write(outputDir + File.separator + "applyorbitfile", targetProduct);
-                }
-
-                targetProduct.closeIO();
-
-            } catch (Exception e) {
-                e.printStackTrace();
             }
 
-            applyOrbitFileOpEnv.Dispose();
+            String stage1Dir = outputDir + "" + File.separator + "stage1";
+
+            new File(outputDir).mkdirs();
+            new File(outputDir + File.separator + "applyorbitfile").mkdirs();
+            new File(stage1Dir).mkdirs();
+
+            TOPSARSplitOpEnv topsarSplitOpEnv = new TOPSARSplitOpEnv();
+            Product targetProduct;
+            String graphFile = "applyorbitfile.xml";
+
+
+            FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
+            Graph graph = GraphIO.read(fileReader);
+            fileReader.close();
+
+            PrintWriter cmdWriter = new PrintWriter(stage1Dir + File.separator + "stage1.cmd", "UTF-8");
+
+            for (int i = 0; i < files.length; i++) {
+
+                topsarSplitOpEnv.getSplitParameters(files[i], parameters);
+
+                graph.getNode("Read").getConfiguration().getChild("file").setValue(files[i]);
+                graph.getNode("Write").getConfiguration().getChild("file")
+                        .setValue(files[i].replace(".zip", "") + "_Orb.dim");
+                graph.getNode("TOPSAR-Split").getConfiguration().getChild("subswath").setValue(topsarSplitOpEnv.getSubSwath());
+                graph.getNode("TOPSAR-Split").getConfiguration().getChild("firstBurstIndex").setValue(topsarSplitOpEnv.getFirstBurstIndex());
+                graph.getNode("TOPSAR-Split").getConfiguration().getChild("lastBurstIndex").setValue(topsarSplitOpEnv.getLastBurstIndex());
+
+                FileWriter fileWriter = new FileWriter(stage1Dir + File.separator
+                        + Paths.get(files[i]).getFileName().toString().replace(".dim", "") + ".xml");
+                GraphIO.write(graph, fileWriter);
+                fileWriter.flush();
+                fileWriter.close();
+
+                cmdWriter.println("gpt " + stage1Dir + File.separator
+                        + Paths.get(files[i]).getFileName().toString().replace(".zip", "") + ".xml");
+            }
+
+            cmdWriter.close();
             topsarSplitOpEnv.Dispose();
-        }
 
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
     }
 
     static HashMap getParameters(String configDir) {

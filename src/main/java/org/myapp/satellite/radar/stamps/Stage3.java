@@ -26,15 +26,8 @@ public class Stage3 {
 
     public static void main(String[] args) {
 
-        /* outputDir="F:\\intellij-idea-workspace\\monitor-radar-core-v3\\processing"
-        snapDir="F:\\intellij-idea-workspace\\monitor-radar-core-v3\\.snap"
-        configDir="F:\\intellij-idea-workspace\\monitor-radar-core-v3\\config"
-        filesList="Y:\\Satellites\\Sentinel-1A\\S1A_IW_SLC__1SDV_20170122T002755_20170122T002824_014937_018613_A687.zip,Y:\\Satellites\\Sentinel-1A\\S1A_IW_SLC__1SDV_20170215T002754_20170215T002824_015287_0190E5_24DE.zip"*/
-
         HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
         String outputDir = consoleParameters.get("outputDir").toString();
-        String snapDir = consoleParameters.get("snapDir").toString();
-        String configDir = consoleParameters.get("configDir").toString();
         String graphDir = consoleParameters.get("graphDir").toString();
         String filesList1 = consoleParameters.get("filesList1").toString();
         String filesList2 = consoleParameters.get("filesList2").toString();

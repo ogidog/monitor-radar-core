@@ -17,7 +17,6 @@ public class TOPSARSplitOpEnv {
 
     Connection connection = null;
 
-    String targetProductName;
     Product sourceProduct, targetProduct;
     OperatorSpi spi;
     TOPSARSplitOp op;
@@ -27,8 +26,9 @@ public class TOPSARSplitOpEnv {
 
     String intersectionGeoRegion = "";
     int firstBurstIndex, lastBurstIndex;
+    String subSwathName;
 
-    public Product getTargetProduct(String file, HashMap stageParameters) {
+    public Boolean getSplitParameters(String file, HashMap stageParameters) {
 
         try {
 
@@ -88,7 +88,7 @@ public class TOPSARSplitOpEnv {
                         resultColumn = resultColumn.replace("POLYGON((", "").replace("))", "");
                         intersectionGeoRegion = resultColumn + resultColumn.substring(resultColumn.lastIndexOf(","));
 
-                        topSarSplitParameters.put("subswath", subSwathInfos[i].subSwathName);
+                        subSwathName = subSwathInfos[i].subSwathName;
                         numOfBurst = subSwathInfos[i].numOfBursts;
 
                         statement.close();
@@ -112,7 +112,7 @@ public class TOPSARSplitOpEnv {
                 op.setSourceProduct(sourceProduct);
 
                 op.setParameter("selectedPolarisations", topSarSplitParameters.get("selectedPolarisations"));
-                op.setParameter("subswath", topSarSplitParameters.get("subswath"));
+                op.setParameter("subswath", subSwathName);
                 op.setParameter("firstBurstIndex", burst);
                 op.setParameter("lastBurstIndex", burst);
 
@@ -160,21 +160,10 @@ public class TOPSARSplitOpEnv {
             }
 
             if (firstBurstIndex != -1 && lastBurstIndex != -1) {
-
-                spi = new TOPSARSplitOp.Spi();
-                op = (TOPSARSplitOp) spi.createOperator();
-                op.setSourceProduct(sourceProduct);
-
-                op.setParameter("selectedPolarisations", topSarSplitParameters.get("selectedPolarisations"));
-                op.setParameter("subswath", topSarSplitParameters.get("subswath"));
-                op.setParameter("firstBurstIndex", firstBurstIndex);
-                op.setParameter("lastBurstIndex", lastBurstIndex);
-
-                targetProduct = op.getTargetProduct();
-                return targetProduct;
+                return true;
 
             } else {
-                return null;
+                return false;
             }
 
         } catch (Exception e) {
@@ -183,16 +172,8 @@ public class TOPSARSplitOpEnv {
         }
     }
 
-    public String getSourceProductName() {
-        return sourceProduct.getName();
-    }
-
     public String getSubSwath() {
-        return topSarSplitParameters.get("subswath").toString();
-    }
-
-    public String getIntersectionGeoRegion() {
-        return intersectionGeoRegion;
+        return subSwathName;
     }
 
     public String getFirstBurstIndex() {
