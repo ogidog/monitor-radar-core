@@ -6,12 +6,15 @@ import org.esa.snap.core.datamodel.Product;
 import org.myapp.utils.ConsoleArgsReader;
 
 import java.io.File;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Stage1 {
 
@@ -21,7 +24,7 @@ public class Stage1 {
 
             HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
             String outputDir = consoleParameters.get("outputDir").toString();
-            String graphDir = consoleParameters.get("graphDir").toString();
+            String configDir = consoleParameters.get("configDir").toString();
             String filesList = consoleParameters.get("filesList").toString();
 
             String[] files;
@@ -65,6 +68,57 @@ public class Stage1 {
             String optimalMasterName = InSARStackOverview.findOptimalMasterProduct(products).getName();
 
             stackOverview = InSARStackOverview.calculateInSAROverview(products);
+
+            Pattern datePattern = Pattern.compile("(\\d\\d\\d\\d\\d\\d\\d\\d)");
+
+            for (int i = 0; i < stackOverview.length; i++) {
+                masterSlavePairs = stackOverview[i].getMasterSlave();
+                for (int j = 0; j < masterSlavePairs.length; j++) {
+                    masterSlavePair = masterSlavePairs[j];
+
+                    masterProductName = masterSlavePair.getMasterMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString();
+                    slaveProductName = masterSlavePair.getSlaveMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString();
+
+                    if (optimalMasterName.equals(masterProductName) && !optimalMasterName.equals(slaveProductName)) {
+
+                        double bPerp = masterSlavePair.getPerpendicularBaseline();
+                        double dopplerDiff = masterSlavePair.getDopplerDifference();
+
+                        Matcher dateMatcher = datePattern.matcher(masterSlavePair.getMasterMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString());
+                        dateMatcher.find();
+                        masterProductDate = dateMatcher.group().substring(2);
+
+                        dateMatcher = datePattern.matcher(masterSlavePair.getSlaveMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString());
+                        dateMatcher.find();
+                        slaveProductDate = dateMatcher.group().substring(2);
+
+                        blList = blList + slaveProductDate + " " + bPerp + " " + dopplerDiff + "\n";
+
+                        dateToProductName = dateToProductName + slaveProductDate + ";" + slaveProductName + "\n";
+                    }
+                }
+            }
+            blList = masterProductDate + " 0.0 0.0\n" + blList;
+            blList = blList.trim();
+
+            dateToProductName = masterProductDate + ";" + optimalMasterName + "\n" + dateToProductName;
+            dateToProductName = dateToProductName.trim();
+
+            PrintWriter out = new PrintWriter(outputDir + File.separator + "network" + File.separator + "blList.txt");
+            out.println(blList);
+            out.close();
+
+            out = new PrintWriter(outputDir + File.separator + "network" + File.separator + "date2Name.txt");
+            out.println(dateToProductName);
+            out.close();
+
+            out = new PrintWriter(stage1Dir + File.separator + "stage1.cmd");
+            out.println("docker run -it -v " + outputDir + File.separator + "network" + ":/home/work/ ogidog/mintpy:latest python /home/python/MintPy/mintpy/select_network.py /home/work/selectNetwork.template -b /home/work/blList.txt -o /home/work/ifg_list.txt");
+            out.close();
+
+            Files.copy(Paths.get(configDir + File.separator + "selectNetwork.template"),
+                    Paths.get(outputDir + File.separator + "network" + File.separator + "selectNetwork.template"));
+
 
         } catch (Exception e) {
             e.printStackTrace();
