@@ -110,12 +110,12 @@ public class Stage2 {
             Graph graph = GraphIO.read(fileReader);
             fileReader.close();
 
-            String masterProductPath = Paths.get(graph.getNode("Read").getConfiguration().getChild("file").getValue()).getParent().toString();
-            String masterProductName = Paths.get(graph.getNode("Read").getConfiguration().getChild("file").getValue())
-                    .getFileName().toString().replace(".dim", "");
+            String masterProductName = InSARStackOverview.findOptimalMasterProduct(products).getName();
+            String masterProductPath = filesList;
 
             PrintWriter cmdWriter = new PrintWriter(stage2Dir + File.separator + "stage2.cmd", "UTF-8");
 
+            graph.getNode("Read").getConfiguration().getChild("file").setValue(masterProductPath + File.separator + masterProductName + ".dim");
             for (int i = 0; i < products.length; i++) {
                 Product product = products[i];
                 String slaveProductName = product.getName();

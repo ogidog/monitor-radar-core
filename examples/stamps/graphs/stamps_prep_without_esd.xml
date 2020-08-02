@@ -4,7 +4,7 @@
     <operator>Read</operator>
     <sources/>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>D:\Temp\test1\123456789123\applyorbitfile\S1B_IW_SLC__1SDV_20191218T004022_20191218T004045_019412_024AB9_3C1C_Orb.dim</file>
+      <file>D:\Temp\test1\123456789123\applyorbitfile\S1B_IW_SLC__1SDV_20191218T004022_20191218T004045_Orb.dim</file>
     </parameters>
   </node>
   <node id="Read(2)">
