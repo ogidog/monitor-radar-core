@@ -1,11 +1,12 @@
 
-package org.myapp.satellite.radar.stamps;
+package org.myapp.satellite.radar.sbas;
 
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.myapp.satellite.radar.sbas.TOPSARSplitOpEnv;
 import org.myapp.utils.ConsoleArgsReader;
 
 import java.io.File;
@@ -20,7 +21,7 @@ import java.util.HashMap;
 import java.util.stream.Collectors;
 
 
-public class Stage1 {
+public class Stage2 {
 
     public static void main(String[] args) {
 
@@ -46,18 +47,18 @@ public class Stage1 {
                 files = filesList.split(",");
             }
 
-            if (Files.exists(Paths.get(outputDir))) {
-                Files.walk(Paths.get(outputDir))
+            String applyorbitfileDir = outputDir+ File.separator + "applyorbitfile";
+            if (Files.exists(Paths.get(applyorbitfileDir))) {
+                Files.walk(Paths.get(applyorbitfileDir))
                         .sorted(Comparator.reverseOrder())
                         .map(Path::toFile)
                         .forEach(File::delete);
             }
 
-            String stage1Dir = outputDir + "" + File.separator + "stage1";
+            String stage2Dir = outputDir + "" + File.separator + "stage2";
 
-            new File(outputDir).mkdirs();
-            new File(outputDir + File.separator + "applyorbitfile").mkdirs();
-            new File(stage1Dir).mkdirs();
+            new File(applyorbitfileDir).mkdirs();
+            new File(stage2Dir).mkdirs();
 
             TOPSARSplitOpEnv topsarSplitOpEnv = new TOPSARSplitOpEnv();
             String graphFile = "applyorbitfile.xml";
@@ -67,7 +68,7 @@ public class Stage1 {
             Graph graph = GraphIO.read(fileReader);
             fileReader.close();
 
-            PrintWriter cmdWriter = new PrintWriter(stage1Dir + File.separator + "stage1.cmd", "UTF-8");
+            PrintWriter cmdWriter = new PrintWriter(stage2Dir + File.separator + "stage2.cmd", "UTF-8");
 
             for (int i = 0; i < files.length; i++) {
 
@@ -75,19 +76,19 @@ public class Stage1 {
 
                 graph.getNode("Read").getConfiguration().getChild("file").setValue(files[i]);
                 graph.getNode("Write").getConfiguration().getChild("file")
-                        .setValue(outputDir + File.separator + "applyorbitfile" + File.separator
+                        .setValue(applyorbitfileDir + File.separator
                                 + Paths.get(files[i]).getFileName().toString().replace(".zip", "") + "_Orb.dim");
                 graph.getNode("TOPSAR-Split").getConfiguration().getChild("subswath").setValue(topsarSplitOpEnv.getSubSwath());
                 graph.getNode("TOPSAR-Split").getConfiguration().getChild("firstBurstIndex").setValue(topsarSplitOpEnv.getFirstBurstIndex());
                 graph.getNode("TOPSAR-Split").getConfiguration().getChild("lastBurstIndex").setValue(topsarSplitOpEnv.getLastBurstIndex());
 
-                FileWriter fileWriter = new FileWriter(stage1Dir + File.separator
+                FileWriter fileWriter = new FileWriter(stage2Dir + File.separator
                         + Paths.get(files[i]).getFileName().toString().replace(".zip", "") + ".xml");
                 GraphIO.write(graph, fileWriter);
                 fileWriter.flush();
                 fileWriter.close();
 
-                cmdWriter.println("gpt " + stage1Dir + File.separator
+                cmdWriter.println("gpt " + stage2Dir + File.separator
                         + Paths.get(files[i]).getFileName().toString().replace(".zip", "") + ".xml");
             }
 
