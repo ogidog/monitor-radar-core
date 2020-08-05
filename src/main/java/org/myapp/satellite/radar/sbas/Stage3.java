@@ -58,7 +58,7 @@ public class Stage3 {
             HashMap<String,String> date2Name = new HashMap<>();
             BufferedReader br = new BufferedReader(new FileReader(date2NameFile));
             for(String line; (line = br.readLine()) != null; ) {
-
+                date2Name.put(line.split(";")[0], line.split(";")[1]);
             }
 
             new File(intfDir).mkdirs();
