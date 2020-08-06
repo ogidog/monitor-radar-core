@@ -52,7 +52,7 @@ public class TOPSARSplitOpEnv {
 
             int numOfBurst = 0;
             String splittedSwathGeoRegionWKT = "", splittedBurstOfSwathGeoRegionWKT = "";
-            String subsetGeoRegionWKT = "POLYGON((" + subsetParameters.get("geoRegionCoordinates").toString() + "))";
+            String subsetGeoRegionWKT = "POLYGON((" + subsetParameters.get("geoRegion").toString() + "))";
             String sql = "";
 
             for (int i = 0; i < subSwathInfos.length; i++) {

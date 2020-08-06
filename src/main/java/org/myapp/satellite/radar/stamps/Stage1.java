@@ -151,7 +151,7 @@ public class Stage1 {
 
             String geoRegionCoordinates = ((HashMap) jsonParameters.get("geoRegion")).get("value").toString();
             parameters = new HashMap();
-            parameters.put("geoRegionCoordinates", geoRegionCoordinates);
+            parameters.put("geoRegion", geoRegionCoordinates);
             stageParameters.put("Subset", parameters);
 
             fileReader.close();

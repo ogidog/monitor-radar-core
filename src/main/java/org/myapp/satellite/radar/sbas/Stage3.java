@@ -6,10 +6,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.myapp.utils.ConsoleArgsReader;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -43,33 +40,60 @@ public class Stage3 {
                 files = filesList.split(",");
             }
 
+            String stage3Dir = outputDir + "" + File.separator + "stage3";
             String intfDir = outputDir + File.separator + "intf";
+            String applyorbitfileDir = outputDir + File.separator + "applyorbitfile";
+
             if (Files.exists(Paths.get(intfDir))) {
                 Files.walk(Paths.get(intfDir))
                         .sorted(Comparator.reverseOrder())
                         .map(Path::toFile)
                         .forEach(File::delete);
             }
+            new File(intfDir).mkdirs();
+            new File(stage3Dir).mkdirs();
 
-            String stage3Dir = outputDir + "" + File.separator + "stage3";
             String date2NameFile = outputDir + "" + File.separator + "network" + File.separator + "date2Name.txt";
             String ifgListFile = outputDir + "" + File.separator + "network" + File.separator + "ifg_list.txt";
 
-            HashMap<String,String> date2Name = new HashMap<>();
+            HashMap<String, String> date2Name = new HashMap<>();
             BufferedReader br = new BufferedReader(new FileReader(date2NameFile));
-            for(String line; (line = br.readLine()) != null; ) {
+            for (String line; (line = br.readLine()) != null; ) {
                 date2Name.put(line.split(";")[0], line.split(";")[1]);
             }
-
-            new File(intfDir).mkdirs();
-            new File(stage3Dir).mkdirs();
 
             String graphFile = "filt_intf.xml";
             FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
             Graph graph = GraphIO.read(fileReader);
             fileReader.close();
 
-            PrintWriter cmdWriter = new PrintWriter(stage3Dir + File.separator + "stage2.cmd", "UTF-8");
+            br = new BufferedReader(new FileReader(ifgListFile));
+            String[] lines = br.lines().skip(2).toArray(String[]::new);
+
+            PrintWriter cmdWriter = new PrintWriter(stage3Dir + File.separator + "stage3.cmd", "UTF-8");
+            String masterProductDate, slaveProductDate, masterProductName, slaveProductName;
+            for (int i = 0; i < lines.length; i++) {
+                masterProductDate = lines[i].split(" ")[0].split("-")[0];
+                slaveProductDate = lines[i].split(" ")[0].split("-")[1];
+                masterProductName = date2Name.get(masterProductDate) + "_Orb.dim";
+                slaveProductName = date2Name.get(slaveProductDate) + "_Orb.dim";
+
+                graph.getNode("Read").getConfiguration().getChild("file").setValue(applyorbitfileDir + File.separator + masterProductName);
+                graph.getNode("Read(2)").getConfiguration().getChild("file").setValue(applyorbitfileDir + File.separator + slaveProductName);
+                graph.getNode("Write").getConfiguration().getChild("file")
+                        .setValue(intfDir + File.separator + masterProductDate + "_" + slaveProductDate + "_intf.dim");
+                graph.getNode("Subset").getConfiguration().getChild("geoRegion")
+                        .setValue("POLYGON((" + ((HashMap) parameters.get("Subset")).get("geoRegion").toString() + "))");
+
+                FileWriter fileWriter = new FileWriter(stage3Dir + File.separator
+                        + masterProductDate + "_" + slaveProductDate + "_intf.xml");
+                GraphIO.write(graph, fileWriter);
+                fileWriter.flush();
+                fileWriter.close();
+
+                cmdWriter.println("gpt " + stage3Dir + File.separator + masterProductDate + "_" + slaveProductDate + "_intf.xml");
+            }
+            cmdWriter.close();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -92,7 +116,7 @@ public class Stage3 {
 
             String geoRegionCoordinates = ((HashMap) jsonParameters.get("geoRegion")).get("value").toString();
             HashMap parameters = new HashMap();
-            parameters.put("geoRegionCoordinates", geoRegionCoordinates);
+            parameters.put("geoRegion", geoRegionCoordinates);
             stageParameters.put("Subset", parameters);
 
             fileReader.close();
