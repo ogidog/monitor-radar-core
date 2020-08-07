@@ -32,20 +32,18 @@ public class Stage3 {
                 return;
             }
 
-            String[] files;
-            if (!filesList.contains(",")) {
-                files = Files.walk(Paths.get(filesList)).skip(1)
-                        .map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
-            } else {
-                files = filesList.split(",");
-            }
-
             String stage3Dir = outputDir + "" + File.separator + "stage3";
             String intfDir = outputDir + File.separator + "intf";
             String applyorbitfileDir = outputDir + File.separator + "applyorbitfile";
 
             if (Files.exists(Paths.get(intfDir))) {
                 Files.walk(Paths.get(intfDir))
+                        .sorted(Comparator.reverseOrder())
+                        .map(Path::toFile)
+                        .forEach(File::delete);
+            }
+            if (Files.exists(Paths.get(stage3Dir))) {
+                Files.walk(Paths.get(stage3Dir))
                         .sorted(Comparator.reverseOrder())
                         .map(Path::toFile)
                         .forEach(File::delete);
