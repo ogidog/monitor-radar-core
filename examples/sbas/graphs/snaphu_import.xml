@@ -1,0 +1,52 @@
+<graph id="Graph">
+  <version>1.0</version>
+  <node id="SnaphuImport">
+    <operator>SnaphuImport</operator>
+    <sources>
+      <sourceProduct refid="Read"/>
+      <sourceProduct.1 refid="Read(2)"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <doNotKeepWrapped>true</doNotKeepWrapped>
+    </parameters>
+  </node>
+  <node id="Read">
+    <operator>Read</operator>
+    <sources/>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>F:\mnt\fast\dockers\monitor-radar-core\monitor_radar_usr\processing\1580805641883\filter\20180604_20190412_Orb_Stack_Ifg_Deb_DInSAR_ML_Flt.dim</file>
+    </parameters>
+  </node>
+  <node id="Read(2)">
+    <operator>Read</operator>
+    <sources/>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>F:\mnt\fast\dockers\monitor-radar-core\monitor_radar_usr\processing\1580805641883\snaphu_export\20180604_20190412_Orb_Stack_Ifg_Deb_DInSAR_ML_Flt\UnwPhase_ifg_VV_04Jun2018_12Apr2019.snaphu.hdr</file>
+    </parameters>
+  </node>
+  <node id="Write">
+    <operator>Write</operator>
+    <sources>
+      <sourceProduct refid="SnaphuImport"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>F:\mnt\fast\dockers\monitor-radar-core\monitor_radar_usr\processing\1580805641883\snaphu_import\20180604_20190412_Orb_Stack_Ifg_Deb_DInSAR_Flt_unw.dim</file>
+      <formatName>BEAM-DIMAP</formatName>
+    </parameters>
+  </node>
+  <applicationData id="Presentation">
+    <Description/>
+    <node id="SnaphuImport">
+      <displayPosition x="213.0" y="139.0"/>
+    </node>
+    <node id="Read">
+      <displayPosition x="57.0" y="84.0"/>
+    </node>
+    <node id="Read(2)">
+      <displayPosition x="57.0" y="171.0"/>
+    </node>
+    <node id="Write">
+      <displayPosition x="377.0" y="142.0"/>
+    </node>
+  </applicationData>
+</graph>
