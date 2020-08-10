@@ -10,6 +10,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -39,6 +41,15 @@ public class Stage4 {
                         .map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
             } else {
                 files = filesList.split(",");
+            }
+
+            for (int i = 0; i < files.length; i++) {
+                Path path = Paths.get(files[i]);
+                Charset charset = StandardCharsets.UTF_8;
+                String content = new String(Files.readAllBytes(path), charset);
+                content = content.replaceAll("<NO_DATA_VALUE_USED>true</NO_DATA_VALUE_USED>",
+                        "<NO_DATA_VALUE_USED>false</NO_DATA_VALUE_USED>");
+                Files.write(path, content.getBytes(charset));
             }
 
             String snaphuexportDir = outputDir + File.separator + "snaphu_export";
