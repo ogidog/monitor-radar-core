@@ -1,13 +1,21 @@
 package org.myapp.satellite.radar.sbas;
 
+import org.esa.snap.core.dataio.ProductIO;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.gpf.graph.Graph;
+import org.esa.snap.core.gpf.graph.GraphIO;
 import org.myapp.utils.ConsoleArgsReader;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 
@@ -54,6 +62,24 @@ public class Stage7 {
             }
             new File(stage7Dir).mkdirs();
             new File(prepDir).mkdirs();
+
+            String graphFile = "tc.xml";
+            FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
+            Graph graph = GraphIO.read(fileReader);
+            fileReader.close();
+
+            PrintWriter cmdWriter = new PrintWriter(stage7Dir + File.separator + "stage7.cmd", "UTF-8");
+            for (int i = 0; i < files1.length; i++) {
+                Product product = ProductIO.readProduct(files1[i]);
+                String[] bandNames = product.getBandNames();
+                String[] iqBands = Arrays.stream(bandNames).filter(name -> name.contains("i_") || name.contains("q_")).toArray(String[]::new);
+
+
+                graph.getNode("Read").getConfiguration().getChild("file").setValue(files1[i]);
+                graph.getNode("BandMaths").getConfiguration().getChild("expression").setValue(
+                        "");
+            }
+
 
         } catch (Exception e) {
 
