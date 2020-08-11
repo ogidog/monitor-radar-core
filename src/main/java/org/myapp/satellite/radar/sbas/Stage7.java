@@ -30,6 +30,7 @@ public class Stage7 {
             String filesList1 = consoleParameters.get("filesList1").toString();
             String filesList2 = consoleParameters.get("filesList2").toString();
             String graphDir = consoleParameters.get("graphDir").toString();
+            String configDir = consoleParameters.get("configDir").toString();
 
             String[] files1;
             if (!filesList1.contains(",")) {
@@ -108,9 +109,11 @@ public class Stage7 {
             fileWriter.flush();
             fileWriter.close();
 
-            cmdWriter.println("gpt " + stage7Dir + File.separator +  "dem_tc.xml");
+            cmdWriter.println("gpt " + stage7Dir + File.separator + "dem_tc.xml");
 
             cmdWriter.close();
+
+            Files.copy(Paths.get(configDir + File.separator + "smallbaselineApp.cfg"), Paths.get(prepDir + File.separator + "smallbaselineApp.cfg"));
 
         } catch (Exception e) {
             e.printStackTrace();
