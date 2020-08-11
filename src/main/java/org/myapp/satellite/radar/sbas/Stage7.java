@@ -9,6 +9,7 @@ import org.myapp.utils.ConsoleArgsReader;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -63,8 +64,7 @@ public class Stage7 {
             new File(stage7Dir).mkdirs();
             new File(prepDir).mkdirs();
 
-            String graphFile = "tc.xml";
-            FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
+            FileReader fileReader = new FileReader(graphDir + File.separator + "tc.xml");
             Graph graph = GraphIO.read(fileReader);
             fileReader.close();
 
@@ -72,17 +72,49 @@ public class Stage7 {
             for (int i = 0; i < files1.length; i++) {
                 Product product = ProductIO.readProduct(files1[i]);
                 String[] bandNames = product.getBandNames();
-                String[] iqBands = Arrays.stream(bandNames).filter(name -> name.contains("i_") || name.contains("q_")).toArray(String[]::new);
-
-
+                product.closeIO();
+                String[] iqBandNames = Arrays.stream(bandNames).filter(name -> name.contains("i_") || name.contains("q_"))
+                        .toArray(String[]::new);
+                String[] fileNameSplitted = Paths.get(files1[i]).getFileName().toString().split("_");
+                String datePair = fileNameSplitted[1] + "_" + fileNameSplitted[2];
+                String pairDir = prepDir + File.separator + datePair;
+                new File(pairDir).mkdirs();
                 graph.getNode("Read").getConfiguration().getChild("file").setValue(files1[i]);
-                graph.getNode("BandMaths").getConfiguration().getChild("expression").setValue(
-                        "");
+                graph.getNode("BandMaths").getConfiguration().getChild("targetBands").getChild("targetBand").getChild("expression").setValue(
+                        "atan2(" + iqBandNames[1] + "," + iqBandNames[0] + ")");
+                graph.getNode("Write").getConfiguration().getChild("file").setValue(pairDir + File.separator + datePair + "_filt_int_sub_tc.dim");
+                graph.getNode("Write(2)").getConfiguration().getChild("file").setValue(pairDir + File.separator + datePair + "_coh_tc.dim");
+                graph.getNode("Read(2)").getConfiguration().getChild("file").setValue(files2[i]);
+                graph.getNode("Write(4)").getConfiguration().getChild("file").setValue(pairDir + File.separator + datePair + "_unw_tc.dim");
+
+                FileWriter fileWriter = new FileWriter(stage7Dir + File.separator
+                        + datePair + "_tc.xml");
+                GraphIO.write(graph, fileWriter);
+                fileWriter.flush();
+                fileWriter.close();
+
+                cmdWriter.println("gpt " + stage7Dir + File.separator + datePair + "_tc.xml");
             }
 
+            fileReader = new FileReader(graphDir + File.separator + "tc_dem.xml");
+            graph = GraphIO.read(fileReader);
+            fileReader.close();
+
+            graph.getNode("Read").getConfiguration().getChild("file").setValue(files1[0]);
+            graph.getNode("Write").getConfiguration().getChild("file").setValue(prepDir + File.separator + "dem_tc.dim");
+            FileWriter fileWriter = new FileWriter(stage7Dir + File.separator
+                    + "dem_tc.xml");
+            GraphIO.write(graph, fileWriter);
+            fileWriter.flush();
+            fileWriter.close();
+
+            cmdWriter.println("gpt " + stage7Dir + File.separator +  "dem_tc.xml");
+
+            cmdWriter.close();
 
         } catch (Exception e) {
-
+            e.printStackTrace();
+            return;
         }
     }
 }

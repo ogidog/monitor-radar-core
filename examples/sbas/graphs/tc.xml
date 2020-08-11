@@ -31,8 +31,6 @@
       <externalDEMApplyEGM>true</externalDEMApplyEGM>
       <demResamplingMethod>BILINEAR_INTERPOLATION</demResamplingMethod>
       <imgResamplingMethod>BILINEAR_INTERPOLATION</imgResamplingMethod>
-      <pixelSpacingInMeter>0.0</pixelSpacingInMeter>
-      <pixelSpacingInDegree>0.0</pixelSpacingInDegree>
       <mapProjection>GEOGCS[&quot;WGS84(DD)&quot;, &#xd;
   DATUM[&quot;WGS84&quot;, &#xd;
     SPHEROID[&quot;WGS84&quot;, 6378137.0, 298.257223563]], &#xd;
@@ -45,7 +43,7 @@
       <standardGridOriginY>0.0</standardGridOriginY>
       <nodataValueAtSea>false</nodataValueAtSea>
       <saveDEM>false</saveDEM>
-      <saveLatLon>false</saveLatLon>
+      <saveLatLon>true</saveLatLon>
       <saveIncidenceAngleFromEllipsoid>false</saveIncidenceAngleFromEllipsoid>
       <saveLocalIncidenceAngle>false</saveLocalIncidenceAngle>
       <saveProjectedLocalIncidenceAngle>false</saveProjectedLocalIncidenceAngle>
@@ -104,8 +102,6 @@
       <externalDEMApplyEGM>true</externalDEMApplyEGM>
       <demResamplingMethod>BILINEAR_INTERPOLATION</demResamplingMethod>
       <imgResamplingMethod>BILINEAR_INTERPOLATION</imgResamplingMethod>
-      <pixelSpacingInMeter>0.0</pixelSpacingInMeter>
-      <pixelSpacingInDegree>0.0</pixelSpacingInDegree>
       <mapProjection>GEOGCS[&quot;WGS84(DD)&quot;, &#xd;
   DATUM[&quot;WGS84&quot;, &#xd;
     SPHEROID[&quot;WGS84&quot;, 6378137.0, 298.257223563]], &#xd;
@@ -144,89 +140,6 @@
       <formatName>BEAM-DIMAP</formatName>
     </parameters>
   </node>
-  <node id="BandSelect(3)">
-    <operator>BandSelect</operator>
-    <sources>
-      <sourceProduct refid="Read"/>
-    </sources>
-    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <selectedPolarisations/>
-      <sourceBands/>
-      <bandNamePattern>^elevat.*</bandNamePattern>
-    </parameters>
-  </node>
-  <node id="Terrain-Correction(3)">
-    <operator>Terrain-Correction</operator>
-    <sources>
-      <sourceProduct refid="BandMaths(2)"/>
-    </sources>
-    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <sourceBands/>
-      <demName>ACE30</demName>
-      <externalDEMFile/>
-      <externalDEMNoDataValue>0.0</externalDEMNoDataValue>
-      <externalDEMApplyEGM>true</externalDEMApplyEGM>
-      <demResamplingMethod>BILINEAR_INTERPOLATION</demResamplingMethod>
-      <imgResamplingMethod>BILINEAR_INTERPOLATION</imgResamplingMethod>
-      <pixelSpacingInMeter>0.0</pixelSpacingInMeter>
-      <pixelSpacingInDegree>0.0</pixelSpacingInDegree>
-      <mapProjection>GEOGCS[&quot;WGS84(DD)&quot;, &#xd;
-  DATUM[&quot;WGS84&quot;, &#xd;
-    SPHEROID[&quot;WGS84&quot;, 6378137.0, 298.257223563]], &#xd;
-  PRIMEM[&quot;Greenwich&quot;, 0.0], &#xd;
-  UNIT[&quot;degree&quot;, 0.017453292519943295], &#xd;
-  AXIS[&quot;Geodetic longitude&quot;, EAST], &#xd;
-  AXIS[&quot;Geodetic latitude&quot;, NORTH]]</mapProjection>
-      <alignToStandardGrid>false</alignToStandardGrid>
-      <standardGridOriginX>0.0</standardGridOriginX>
-      <standardGridOriginY>0.0</standardGridOriginY>
-      <nodataValueAtSea>false</nodataValueAtSea>
-      <saveDEM>false</saveDEM>
-      <saveLatLon>false</saveLatLon>
-      <saveIncidenceAngleFromEllipsoid>false</saveIncidenceAngleFromEllipsoid>
-      <saveLocalIncidenceAngle>false</saveLocalIncidenceAngle>
-      <saveProjectedLocalIncidenceAngle>false</saveProjectedLocalIncidenceAngle>
-      <saveSelectedSourceBand>true</saveSelectedSourceBand>
-      <outputComplex>false</outputComplex>
-      <applyRadiometricNormalization>false</applyRadiometricNormalization>
-      <saveSigmaNought>false</saveSigmaNought>
-      <saveGammaNought>false</saveGammaNought>
-      <saveBetaNought>false</saveBetaNought>
-      <incidenceAngleForSigma0>Use projected local incidence angle from DEM</incidenceAngleForSigma0>
-      <incidenceAngleForGamma0>Use projected local incidence angle from DEM</incidenceAngleForGamma0>
-      <auxFile>Latest Auxiliary File</auxFile>
-      <externalAuxFile/>
-    </parameters>
-  </node>
-  <node id="BandMaths(2)">
-    <operator>BandMaths</operator>
-    <sources>
-      <sourceProduct refid="BandSelect(3)"/>
-    </sources>
-    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <targetBands>
-        <targetBand>
-          <name>dem</name>
-          <type>float32</type>
-          <expression>elevation*1</expression>
-          <description/>
-          <unit/>
-          <noDataValue>0.0</noDataValue>
-        </targetBand>
-      </targetBands>
-      <variables/>
-    </parameters>
-  </node>
-  <node id="Write(3)">
-    <operator>Write</operator>
-    <sources>
-      <sourceProduct refid="Terrain-Correction(3)"/>
-    </sources>
-    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>I:\Temp\mintpy\interferograms\20180405_20190211\dem_tc.dim</file>
-      <formatName>BEAM-DIMAP</formatName>
-    </parameters>
-  </node>
   <node id="Read(2)">
     <operator>Read</operator>
     <sources/>
@@ -247,8 +160,6 @@
       <externalDEMApplyEGM>true</externalDEMApplyEGM>
       <demResamplingMethod>BILINEAR_INTERPOLATION</demResamplingMethod>
       <imgResamplingMethod>BILINEAR_INTERPOLATION</imgResamplingMethod>
-      <pixelSpacingInMeter>0.0</pixelSpacingInMeter>
-      <pixelSpacingInDegree>0.0</pixelSpacingInDegree>
       <mapProjection>GEOGCS[&quot;WGS84(DD)&quot;, &#xd;
   DATUM[&quot;WGS84&quot;, &#xd;
     SPHEROID[&quot;WGS84&quot;, 6378137.0, 298.257223563]], &#xd;
@@ -319,18 +230,6 @@
     </node>
     <node id="Write(2)">
       <displayPosition x="471.0" y="157.0"/>
-    </node>
-    <node id="BandSelect(3)">
-      <displayPosition x="265.0" y="38.0"/>
-    </node>
-    <node id="Terrain-Correction(3)">
-      <displayPosition x="557.0" y="37.0"/>
-    </node>
-    <node id="BandMaths(2)">
-      <displayPosition x="425.0" y="38.0"/>
-    </node>
-    <node id="Write(3)">
-      <displayPosition x="760.0" y="42.0"/>
     </node>
     <node id="Read(2)">
       <displayPosition x="386.0" y="248.0"/>
