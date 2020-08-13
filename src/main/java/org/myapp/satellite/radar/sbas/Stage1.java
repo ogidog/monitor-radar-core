@@ -35,6 +35,13 @@ public class Stage1 {
                 files = filesList.split(",");
             }
 
+            if (Files.exists(Paths.get(outputDir))) {
+                Files.walk(Paths.get(outputDir))
+                        .sorted(Comparator.reverseOrder())
+                        .map(Path::toFile)
+                        .forEach(File::delete);
+            }
+
             String networkDir = outputDir + "" + File.separator + "network";
             if (Files.exists(Paths.get(networkDir))) {
                 Files.walk(Paths.get(networkDir))
