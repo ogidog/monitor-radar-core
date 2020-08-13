@@ -157,11 +157,12 @@ public class Stage2 {
 
             fileReader.close();
 
+            return stageParameters;
+
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
-
-        return stageParameters;
     }
 
 }

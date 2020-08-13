@@ -12,6 +12,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Stage3 {
@@ -24,7 +26,6 @@ public class Stage3 {
             String outputDir = consoleParameters.get("outputDir").toString();
             String configDir = consoleParameters.get("configDir").toString();
             String graphDir = consoleParameters.get("graphDir").toString();
-            String filesList = consoleParameters.get("filesList").toString();
 
             HashMap parameters = getParameters(configDir);
             if (parameters == null) {
@@ -63,6 +64,13 @@ public class Stage3 {
             String graphFile = "filt_intf.xml";
             FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
             Graph graph = GraphIO.read(fileReader);
+
+            // Subset
+            graph.getNode("Subset").getConfiguration().getChild("geoRegion")
+                    .setValue("POLYGON((" + ((HashMap) parameters.get("Subset")).get("geoRegion").toString() + "))");
+
+            // BackGeocoding
+
             fileReader.close();
 
             br = new BufferedReader(new FileReader(ifgListFile));
@@ -80,8 +88,6 @@ public class Stage3 {
                 graph.getNode("Read(2)").getConfiguration().getChild("file").setValue(applyorbitfileDir + File.separator + slaveProductName);
                 graph.getNode("Write").getConfiguration().getChild("file")
                         .setValue(intfDir + File.separator + masterProductDate + "_" + slaveProductDate + "_intf.dim");
-                graph.getNode("Subset").getConfiguration().getChild("geoRegion")
-                        .setValue("POLYGON((" + ((HashMap) parameters.get("Subset")).get("geoRegion").toString() + "))");
 
                 FileWriter fileWriter = new FileWriter(stage3Dir + File.separator
                         + masterProductDate + "_" + slaveProductDate + "_intf.xml");
@@ -111,19 +117,62 @@ public class Stage3 {
             FileReader fileReader = new FileReader(configDir + File.separator + "subset.json");
             JSONObject jsonObject = (JSONObject) parser.parse(fileReader);
             HashMap jsonParameters = (HashMap) jsonObject.get("parameters");
-
             String geoRegionCoordinates = ((HashMap) jsonParameters.get("geoRegion")).get("value").toString();
             HashMap parameters = new HashMap();
             parameters.put("geoRegion", geoRegionCoordinates);
             stageParameters.put("Subset", parameters);
-
             fileReader.close();
+
+            // BackGeocoding
+            parser = new JSONParser();
+            fileReader = new FileReader(configDir + File.separator + "back_geocoding.json");
+            jsonObject = (JSONObject) parser.parse(fileReader);
+            jsonParameters = (HashMap) jsonObject.get("parameters");
+
+            parameters = new HashMap();
+            Iterator it = jsonParameters.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry pair = (Map.Entry) it.next();
+                parameters.put(pair.getKey().toString(), ((HashMap) jsonParameters.get(pair.getKey().toString())).get("value"));
+            }
+            stageParameters.put("BackGeocoding", parameters);
+            fileReader.close();
+
+            // Interferogram Formation
+            parser = new JSONParser();
+            fileReader = new FileReader(configDir + File.separator + "interferogram_formation.json");
+            jsonObject = (JSONObject) parser.parse(fileReader);
+            jsonParameters = (HashMap) jsonObject.get("parameters");
+
+            parameters = new HashMap();
+            it = jsonParameters.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry pair = (Map.Entry) it.next();
+                parameters.put(pair.getKey().toString(), ((HashMap) jsonParameters.get(pair.getKey().toString())).get("value"));
+            }
+            stageParameters.put("InterferogramFormation", parameters);
+            fileReader.close();
+
+            // Topo Phase Removal
+            parser = new JSONParser();
+            fileReader = new FileReader(configDir + File.separator + "topo_phase_removal.json");
+            jsonObject = (JSONObject) parser.parse(fileReader);
+            jsonParameters = (HashMap) jsonObject.get("parameters");
+
+            parameters = new HashMap();
+            it = jsonParameters.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry pair = (Map.Entry) it.next();
+                parameters.put(pair.getKey().toString(), ((HashMap) jsonParameters.get(pair.getKey().toString())).get("value"));
+            }
+            stageParameters.put("TopoPhaseRemoval", parameters);
+            fileReader.close();
+
+            return stageParameters;
 
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
-
-        return stageParameters;
     }
-
 }
