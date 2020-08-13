@@ -1,24 +1,21 @@
 package org.myapp.satellite.radar.sbas;
 
 import org.esa.snap.core.dataio.ProductIO;
-import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.myapp.utils.ConsoleArgsReader;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.PrintWriter;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
+import java.util.*;
 
 public class Stage7 {
     public static void main(String[] args) {
@@ -31,6 +28,12 @@ public class Stage7 {
             String filesList2 = consoleParameters.get("filesList2").toString();
             String graphDir = consoleParameters.get("graphDir").toString();
             String configDir = consoleParameters.get("configDir").toString();
+
+            HashMap parameters = getParameters(configDir);
+            if (parameters == null) {
+                System.out.println("Fail to read parameters.");
+                return;
+            }
 
             String[] files1;
             if (!filesList1.contains(",")) {
@@ -69,6 +72,12 @@ public class Stage7 {
             Graph graph = GraphIO.read(fileReader);
             fileReader.close();
 
+            // Terrain Correction
+            ((HashMap) parameters.get("TerrainCorrection")).forEach((key, value) -> {
+                graph.getNode("Terrain-Correction").getConfiguration().getChild(key.toString())
+                        .setValue(value.toString());
+            });
+
             PrintWriter cmdWriter = new PrintWriter(stage7Dir + File.separator + "stage7.cmd", "UTF-8");
             for (int i = 0; i < files1.length; i++) {
                 Product product = ProductIO.readProduct(files1[i]);
@@ -98,14 +107,14 @@ public class Stage7 {
             }
 
             fileReader = new FileReader(graphDir + File.separator + "tc_dem.xml");
-            graph = GraphIO.read(fileReader);
+            Graph graph1 = GraphIO.read(fileReader);
             fileReader.close();
 
-            graph.getNode("Read").getConfiguration().getChild("file").setValue(files1[0]);
-            graph.getNode("Write").getConfiguration().getChild("file").setValue(prepDir + File.separator + "dem_tc.dim");
+            graph1.getNode("Read").getConfiguration().getChild("file").setValue(files1[0]);
+            graph1.getNode("Write").getConfiguration().getChild("file").setValue(prepDir + File.separator + "dem_tc.dim");
             FileWriter fileWriter = new FileWriter(stage7Dir + File.separator
                     + "dem_tc.xml");
-            GraphIO.write(graph, fileWriter);
+            GraphIO.write(graph1, fileWriter);
             fileWriter.flush();
             fileWriter.close();
 
@@ -118,6 +127,36 @@ public class Stage7 {
         } catch (Exception e) {
             e.printStackTrace();
             return;
+        }
+    }
+
+    static HashMap getParameters(String configDir) {
+
+        HashMap<String, HashMap> stageParameters = null;
+
+        try {
+            JSONParser parser = new JSONParser();
+            stageParameters = new HashMap<>();
+
+            // TerrainCorrection
+            parser = new JSONParser();
+            FileReader fileReader = new FileReader(configDir + File.separator + "terrain_сorrection.json");
+            JSONObject jsonObject = (JSONObject) parser.parse(fileReader);
+            HashMap jsonParameters = (HashMap) jsonObject.get("parameters");
+            HashMap parameters = new HashMap();
+            Iterator it = jsonParameters.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry pair = (Map.Entry) it.next();
+                parameters.put(pair.getKey().toString(), ((HashMap) jsonParameters.get(pair.getKey().toString())).get("value"));
+            }
+            stageParameters.put("TerrainCorrection", parameters);
+            fileReader.close();
+
+            return stageParameters;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }

@@ -14,7 +14,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class Stage3 {
 
@@ -64,14 +63,32 @@ public class Stage3 {
             String graphFile = "filt_intf.xml";
             FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
             Graph graph = GraphIO.read(fileReader);
+            fileReader.close();
 
             // Subset
             graph.getNode("Subset").getConfiguration().getChild("geoRegion")
                     .setValue("POLYGON((" + ((HashMap) parameters.get("Subset")).get("geoRegion").toString() + "))");
 
             // BackGeocoding
+            ((HashMap) parameters.get("BackGeocoding")).forEach((key, value) -> {
+                graph.getNode("Back-Geocoding").getConfiguration().getChild(key.toString())
+                        .setValue(value.toString());
+            });
 
-            fileReader.close();
+            // Interferogram
+            ((HashMap) parameters.get("Interferogram")).forEach((key, value) -> {
+                graph.getNode("Interferogram").getConfiguration().getChild(key.toString())
+                        .setValue(value.toString());
+            });
+
+            // TopoPhaseRemoval
+            ((HashMap) parameters.get("TopoPhaseRemoval")).forEach((key, value) -> {
+                graph.getNode("TopoPhaseRemoval").getConfiguration().getChild(key.toString())
+                        .setValue(value.toString());
+            });
+
+            // GoldsteinPhaseFiltering
+            // TODO:GoldsteinPhaseFiltering set up parameters
 
             br = new BufferedReader(new FileReader(ifgListFile));
             String[] lines = br.lines().skip(2).toArray(String[]::new);
@@ -150,7 +167,7 @@ public class Stage3 {
                 Map.Entry pair = (Map.Entry) it.next();
                 parameters.put(pair.getKey().toString(), ((HashMap) jsonParameters.get(pair.getKey().toString())).get("value"));
             }
-            stageParameters.put("InterferogramFormation", parameters);
+            stageParameters.put("Interferogram", parameters);
             fileReader.close();
 
             // Topo Phase Removal
@@ -167,6 +184,9 @@ public class Stage3 {
             }
             stageParameters.put("TopoPhaseRemoval", parameters);
             fileReader.close();
+
+            // GoldsteinPhaseFiltering
+            // TODO:GoldsteinPhaseFiltering set up parameters
 
             return stageParameters;
 
