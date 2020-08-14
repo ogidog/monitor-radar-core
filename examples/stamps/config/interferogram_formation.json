@@ -49,6 +49,24 @@
         1001
       ]
     },
+    "demName": {
+      "index": 1,
+      "name": "demName",
+      "label": "External DEM",
+      "type": "inputTypes.select",
+      "value": "ACE30",
+      "defaultvalue": "SRTM 3Sec",
+      "options": [
+        "ACE2_5min",
+        "ACE30",
+        "CDEM",
+        "ASTER 1sec GDEM",
+        "GETASSE30",
+        "SRTM 1Sec Grid",
+        "SRTM 1Sec HGT",
+        "SRTM 3Sec"
+      ]
+    },
     "orbitDegree": {
       "index": 3,
       "name": "orbitDegree",

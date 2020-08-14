@@ -61,8 +61,6 @@ public class Stage1 {
 
             TOPSARSplitOpEnv topsarSplitOpEnv = new TOPSARSplitOpEnv();
             String graphFile = "applyorbitfile.xml";
-
-
             FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
             Graph graph = GraphIO.read(fileReader);
             fileReader.close();

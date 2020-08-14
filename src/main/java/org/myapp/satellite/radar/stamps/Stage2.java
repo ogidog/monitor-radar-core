@@ -15,9 +15,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -25,13 +23,16 @@ public class Stage2 {
 
     public static void main(String[] args) {
 
-        HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
-        String outputDir = consoleParameters.get("outputDir").toString();
-        String graphDir = consoleParameters.get("graphDir").toString();
-        String filesList = consoleParameters.get("filesList").toString();
-
-        String[] files;
         try {
+
+            HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
+            String outputDir = consoleParameters.get("outputDir").toString();
+            String graphDir = consoleParameters.get("graphDir").toString();
+            String configDir = consoleParameters.get("configDir").toString();
+            String filesList = consoleParameters.get("filesList").toString();
+
+            String[] files;
+
             files = Files.walk(Paths.get(filesList)).filter(path -> {
                 if (path.toString().endsWith(".dim")) {
                     return true;
@@ -40,65 +41,55 @@ public class Stage2 {
                 }
 
             }).map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
 
-        String esdDir = outputDir + "" + File.separator + "esd";
-        if (Files.exists(Paths.get(esdDir))) {
-            try {
+
+            String esdDir = outputDir + "" + File.separator + "esd";
+            if (Files.exists(Paths.get(esdDir))) {
+
                 Files.walk(Paths.get(esdDir))
                         .sorted(Comparator.reverseOrder())
                         .map(Path::toFile)
                         .forEach(File::delete);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return;
             }
-        }
 
-        String topophaseremovalDir = outputDir + "" + File.separator + "topophaseremoval";
-        if (Files.exists(Paths.get(topophaseremovalDir))) {
-            try {
+            String topophaseremovalDir = outputDir + "" + File.separator + "topophaseremoval";
+            if (Files.exists(Paths.get(topophaseremovalDir))) {
+
                 Files.walk(Paths.get(topophaseremovalDir))
                         .sorted(Comparator.reverseOrder())
                         .map(Path::toFile)
                         .forEach(File::delete);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return;
             }
-        }
 
-        String stage2Dir = outputDir + "" + File.separator + "stage2";
-        if (Files.exists(Paths.get(stage2Dir))) {
-            try {
+            String stage2Dir = outputDir + "" + File.separator + "stage2";
+            if (Files.exists(Paths.get(stage2Dir))) {
+
                 Files.walk(Paths.get(stage2Dir))
                         .sorted(Comparator.reverseOrder())
                         .map(Path::toFile)
                         .forEach(File::delete);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return;
             }
-        }
 
-        new File(esdDir).mkdirs();
-        new File(topophaseremovalDir).mkdirs();
-        new File(stage2Dir).mkdirs();
+            new File(esdDir).mkdirs();
+            new File(topophaseremovalDir).mkdirs();
+            new File(stage2Dir).mkdirs();
 
-        Product[] products = Arrays.stream(files).map(file -> {
-            try {
-                return ProductIO.readProduct(file);
-            } catch (Exception e) {
-                return null;
-            }
-        }).toArray(Product[]::new);
+            Product[] products = Arrays.stream(files).map(file -> {
+                try {
+                    return ProductIO.readProduct(file);
+                } catch (Exception e) {
+                    return null;
+                }
+            }).toArray(Product[]::new);
 
-        try {
             Sentinel1Utils s1u = new Sentinel1Utils(products[0]);
             int numOfBurst = s1u.getNumOfBursts(s1u.getSubSwath()[0].subSwathName);
+
+            HashMap parameters = getParameters(configDir);
+            if (parameters == null) {
+                System.out.println("Fail to read parameters.");
+                return;
+            }
 
             String graphFile;
             if (numOfBurst > 1) {
@@ -109,6 +100,28 @@ public class Stage2 {
             FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
             Graph graph = GraphIO.read(fileReader);
             fileReader.close();
+
+            // Subset
+            graph.getNode("Subset").getConfiguration().getChild("geoRegion")
+                    .setValue("POLYGON((" + ((HashMap) parameters.get("Subset")).get("geoRegion").toString() + "))");
+
+            // BackGeocoding
+            ((HashMap) parameters.get("BackGeocoding")).forEach((key, value) -> {
+                graph.getNode("Back-Geocoding").getConfiguration().getChild(key.toString())
+                        .setValue(value.toString());
+            });
+
+            // Interferogram
+            ((HashMap) parameters.get("Interferogram")).forEach((key, value) -> {
+                graph.getNode("Interferogram").getConfiguration().getChild(key.toString())
+                        .setValue(value.toString());
+            });
+
+            // TopoPhaseRemoval
+            ((HashMap) parameters.get("TopoPhaseRemoval")).forEach((key, value) -> {
+                graph.getNode("TopoPhaseRemoval").getConfiguration().getChild(key.toString())
+                        .setValue(value.toString());
+            });
 
             String masterProductName = InSARStackOverview.findOptimalMasterProduct(products).getName();
             String masterProductPath = filesList;
@@ -151,8 +164,77 @@ public class Stage2 {
             e.printStackTrace();
             return;
         }
+    }
 
+    static HashMap getParameters(String configDir) {
 
+        HashMap<String, HashMap> stageParameters = null;
+
+        try {
+            JSONParser parser = new JSONParser();
+            stageParameters = new HashMap<>();
+
+            // Subset
+            FileReader fileReader = new FileReader(configDir + File.separator + "subset.json");
+            JSONObject jsonObject = (JSONObject) parser.parse(fileReader);
+            HashMap jsonParameters = (HashMap) jsonObject.get("parameters");
+            String geoRegionCoordinates = ((HashMap) jsonParameters.get("geoRegion")).get("value").toString();
+            HashMap parameters = new HashMap();
+            parameters.put("geoRegion", geoRegionCoordinates);
+            stageParameters.put("Subset", parameters);
+            fileReader.close();
+
+            // BackGeocoding
+            parser = new JSONParser();
+            fileReader = new FileReader(configDir + File.separator + "back_geocoding.json");
+            jsonObject = (JSONObject) parser.parse(fileReader);
+            jsonParameters = (HashMap) jsonObject.get("parameters");
+
+            parameters = new HashMap();
+            Iterator it = jsonParameters.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry pair = (Map.Entry) it.next();
+                parameters.put(pair.getKey().toString(), ((HashMap) jsonParameters.get(pair.getKey().toString())).get("value"));
+            }
+            stageParameters.put("BackGeocoding", parameters);
+            fileReader.close();
+
+            // Interferogram Formation
+            parser = new JSONParser();
+            fileReader = new FileReader(configDir + File.separator + "interferogram_formation.json");
+            jsonObject = (JSONObject) parser.parse(fileReader);
+            jsonParameters = (HashMap) jsonObject.get("parameters");
+
+            parameters = new HashMap();
+            it = jsonParameters.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry pair = (Map.Entry) it.next();
+                parameters.put(pair.getKey().toString(), ((HashMap) jsonParameters.get(pair.getKey().toString())).get("value"));
+            }
+            stageParameters.put("Interferogram", parameters);
+            fileReader.close();
+
+            // Topo Phase Removal
+            parser = new JSONParser();
+            fileReader = new FileReader(configDir + File.separator + "topo_phase_removal.json");
+            jsonObject = (JSONObject) parser.parse(fileReader);
+            jsonParameters = (HashMap) jsonObject.get("parameters");
+
+            parameters = new HashMap();
+            it = jsonParameters.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry pair = (Map.Entry) it.next();
+                parameters.put(pair.getKey().toString(), ((HashMap) jsonParameters.get(pair.getKey().toString())).get("value"));
+            }
+            stageParameters.put("TopoPhaseRemoval", parameters);
+            fileReader.close();
+
+            return stageParameters;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 }
