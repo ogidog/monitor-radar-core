@@ -1,15 +1,66 @@
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class TestJarsPath {
 
     public static void main(String[] args) {
 
-        System.getProperty("os.name");
+        long startTime = System.nanoTime();
+
+        // Создаем рандомный массив
+        int N = 100000000;
+        int[] in = new int[N];
+        Random r = new Random();
+        for (int i = 0; i < N; i++) {
+            in[i] = r.nextInt(N);
+        }
+
+        int dupCounter[] = new int[N];
+        long endTime = System.nanoTime();
+        long execTime = (endTime - startTime) / 1000000000;
+        System.out.println("Время создания рандомного массива: " + Long.toString(execTime) + " c.");
+
+        startTime = System.nanoTime();
+        for (int i = 0; i < N; i++) {
+            dupCounter[in[i]] += 1;
+        }
+
+        endTime = System.nanoTime();
+        execTime = (endTime - startTime) / 1000000000;
+        System.out.println("Время посчета дубликатов: " + Long.toString(execTime) + " c.");
+
+
+        startTime = System.nanoTime();
+        int out[][] = new int[N][];
+        for (int i = 0; i < N; i++) {
+            if (dupCounter[i] > 1) {
+                out[i] = new int[dupCounter[i]];
+            }
+        }
+        endTime = System.nanoTime();
+        execTime = (endTime - startTime) / 1000000000;
+        System.out.println("Время создание выходного массива: " + Long.toString(execTime) + " c.");
+
+        startTime = System.nanoTime();
+        int value;
+        for (int i = 0; i < N; i++) {
+            value = in[i];
+            if (out[value] != null) {
+                out[value][dupCounter[value] - 1] = i;
+                dupCounter[value] -= 1;
+            }
+        }
+        endTime = System.nanoTime();
+        execTime = (endTime - startTime) / 1000000000;
+        System.out.println("Время поиска повторяющихся элементов и их индексов: " + Long.toString(execTime) + " c.");
+
+        return;
+
+
+        /*System.getProperty("os.name");
         try {
             HashSet<String> classPath = new HashSet<>();
             HashSet<String> libNames = new HashSet<>();
@@ -64,6 +115,6 @@ public class TestJarsPath {
             return;
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
     }
 }

@@ -104,6 +104,8 @@ public class Stage2 {
             // Subset
             graph.getNode("Subset").getConfiguration().getChild("geoRegion")
                     .setValue("POLYGON((" + ((HashMap) parameters.get("Subset")).get("geoRegion").toString() + "))");
+            graph.getNode("Subset(2)").getConfiguration().getChild("geoRegion")
+                    .setValue("POLYGON((" + ((HashMap) parameters.get("Subset")).get("geoRegion").toString() + "))");
 
             // BackGeocoding
             ((HashMap) parameters.get("BackGeocoding")).forEach((key, value) -> {
