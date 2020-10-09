@@ -16,6 +16,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class Stage7 {
     public static void main(String[] args) {
@@ -79,6 +82,7 @@ public class Stage7 {
             });
 
             PrintWriter cmdWriter = new PrintWriter(stage7Dir + File.separator + "stage7.cmd", "UTF-8");
+            Pattern p = Pattern.compile("[\\d]{1,}");
             for (int i = 0; i < files1.length; i++) {
                 Product product = ProductIO.readProduct(files1[i]);
                 String[] bandNames = product.getBandNames();
@@ -86,7 +90,14 @@ public class Stage7 {
                 String[] iqBandNames = Arrays.stream(bandNames).filter(name -> name.contains("i_") || name.contains("q_"))
                         .toArray(String[]::new);
                 String[] fileNameSplitted = Paths.get(files1[i]).getFileName().toString().split("_");
-                String datePair = fileNameSplitted[1] + "_" + fileNameSplitted[2];
+                String datePair = Arrays.stream(fileNameSplitted).filter(str -> {
+                    Matcher m = p.matcher(str);
+                    if (m.matches()) {
+                        return (true);
+                    } else {
+                        return (false);
+                    }
+                }).collect(Collectors.joining("_"));
                 String pairDir = prepDir + File.separator + datePair;
                 new File(pairDir).mkdirs();
                 graph.getNode("Read").getConfiguration().getChild("file").setValue(files1[i]);
