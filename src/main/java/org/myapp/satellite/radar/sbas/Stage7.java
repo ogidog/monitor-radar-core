@@ -79,6 +79,10 @@ public class Stage7 {
             ((HashMap) parameters.get("TerrainCorrection")).forEach((key, value) -> {
                 graph.getNode("Terrain-Correction").getConfiguration().getChild(key.toString())
                         .setValue(value.toString());
+                graph.getNode("Terrain-Correction(2)").getConfiguration().getChild(key.toString())
+                        .setValue(value.toString());
+                graph.getNode("Terrain-Correction(4)").getConfiguration().getChild(key.toString())
+                        .setValue(value.toString());
             });
 
             PrintWriter cmdWriter = new PrintWriter(stage7Dir + File.separator + "stage7.cmd", "UTF-8");
