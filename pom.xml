@@ -15,12 +15,23 @@
     <description>Pre-processing radar data</description>
 
     <properties>
-        <snap.version>8.0.0-SNAPSHOT</snap.version>
-        <s1tbx.version>8.0.0-SNAPSHOT</s1tbx.version>
+        <snap.version>9.0.0-SNAPSHOT</snap.version>
+        <s1tbx.version>9.0.0-SNAPSHOT</s1tbx.version>
         <netcdf.version>4.3.22</netcdf.version>
     </properties>
 
+
     <dependencies>
+        <dependency>
+            <groupId>org.esa.snap</groupId>
+            <artifactId>snap-engine-utilities</artifactId>
+            <version>${s1tbx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>edu.emory.mathcs</groupId>
+            <artifactId>jtransforms</artifactId>
+            <version>2.4</version>
+        </dependency>
         <dependency>
             <groupId>org.esa.s1tbx</groupId>
             <artifactId>s1tbx-op-sar-processing</artifactId>
