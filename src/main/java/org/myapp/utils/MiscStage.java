@@ -36,7 +36,7 @@ public class MiscStage {
             int idx;
             int nanCounter = 0;
             int nanTreshhold = (int) (product.getSceneRasterWidth() * 0.1);
-            int subsetY0 = 0;
+            int subsetY0 = -1;
 
             int width = product.getSceneRasterWidth();
             int height = product.getSceneRasterHeight();
