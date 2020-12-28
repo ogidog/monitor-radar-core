@@ -36,11 +36,12 @@ public class MiscStage {
             int idx;
             int nanCounter = 0;
             int nanTreshhold = (int) (product.getSceneRasterWidth() * 0.1);
-            int subsetY0 = -1;
+            int subsetY0 = -1, subsetY1 = -1, subsetX0 = -1, subsetX1 = -1;
 
             int width = product.getSceneRasterWidth();
             int height = product.getSceneRasterHeight();
 
+            // by width
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
                     idx = width * y + x;
@@ -48,12 +49,41 @@ public class MiscStage {
                         nanCounter += 1;
                     }
                 }
-                if (nanCounter < nanTreshhold) {
+                if (nanCounter < nanTreshhold && subsetY0 == -1) {
                     subsetY0 = y;
-                    break;
-                } else {
-                    nanCounter = 0;
                 }
+                if (nanCounter > nanTreshhold && subsetY0 != -1) {
+                    subsetY1 = y - 1;
+                    break;
+                }
+                nanCounter = 0;
+            }
+
+            if (subsetY1 == -1) {
+                subsetY1 = height;
+            }
+
+            // by height
+            nanCounter = 0;
+            for (int x = 0; x < width; x++) {
+                for (int y = 0; y < height; y++) {
+                    idx = width * y + x;
+                    if (data[idx] == 0) {
+                        nanCounter += 1;
+                    }
+                }
+                if (nanCounter < nanTreshhold && subsetX0 == -1) {
+                    subsetX0 = x;
+                }
+                if (nanCounter > nanTreshhold && subsetX0 != -1) {
+                    subsetX1 = x - 1;
+                    break;
+                }
+                nanCounter = 0;
+            }
+
+            if (subsetX1 == -1) {
+                subsetX1 = width;
             }
 
             return;
