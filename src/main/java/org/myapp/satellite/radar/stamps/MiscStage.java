@@ -1,14 +1,16 @@
-package org.myapp.utils;
+package org.myapp.satellite.radar.stamps;
 
 import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
+import org.myapp.utils.ConsoleArgsReader;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -22,11 +24,15 @@ public class MiscStage {
         try {
             HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
             String outputDir = consoleParameters.get("outputDir").toString();
+            String outputDir1 = consoleParameters.get("outputDir1").toString();
+
             String graphDir = consoleParameters.get("graphDir").toString();
+            String stageDir = consoleParameters.get("stageDir").toString();
+            String stageDir1 = consoleParameters.get("stageDir1").toString();
             String filesList = consoleParameters.get("filesList").toString();
+            String filesList1 = consoleParameters.get("filesList1").toString();
 
-            String[] files;
-
+            String[] files, files1;
             files = Files.walk(Paths.get(filesList)).filter(path -> {
                 if (path.toString().endsWith(".dim")) {
                     return true;
@@ -35,41 +41,51 @@ public class MiscStage {
                 }
 
             }).map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
+            files1 = Files.walk(Paths.get(filesList1)).filter(path -> {
+                if (path.toString().endsWith(".dim")) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }).map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
 
-            String subsetEsdDir = outputDir + "" + File.separator + "subset_esd";
-            if (Files.exists(Paths.get(subsetEsdDir))) {
-
-                Files.walk(Paths.get(subsetEsdDir))
+            String subsetDir = outputDir;
+            if (Files.exists(Paths.get(subsetDir))) {
+                Files.walk(Paths.get(subsetDir))
                         .sorted(Comparator.reverseOrder())
                         .map(Path::toFile)
                         .forEach(File::delete);
             }
-
-            String subsetTopophaseremovalDir = outputDir + "" + File.separator + "subset_topophaseremoval";
-            if (Files.exists(Paths.get(subsetTopophaseremovalDir))) {
-
-                Files.walk(Paths.get(subsetTopophaseremovalDir))
+            if (Files.exists(Paths.get(stageDir))) {
+                Files.walk(Paths.get(stageDir))
                         .sorted(Comparator.reverseOrder())
                         .map(Path::toFile)
                         .forEach(File::delete);
             }
+            new File(subsetDir).mkdirs();
+            new File(stageDir).mkdirs();
 
-            String miscStageDir = outputDir + "" + File.separator + "miscstage";
-            if (Files.exists(Paths.get(miscStageDir))) {
-
-                Files.walk(Paths.get(miscStageDir))
+            String subsetDir1 = outputDir1;
+            if (Files.exists(Paths.get(subsetDir1))) {
+                Files.walk(Paths.get(subsetDir1))
                         .sorted(Comparator.reverseOrder())
                         .map(Path::toFile)
                         .forEach(File::delete);
             }
+            if (Files.exists(Paths.get(stageDir1))) {
+                Files.walk(Paths.get(stageDir1))
+                        .sorted(Comparator.reverseOrder())
+                        .map(Path::toFile)
+                        .forEach(File::delete);
+            }
+            new File(subsetDir1).mkdirs();
+            new File(stageDir1).mkdirs();
 
-            new File(subsetEsdDir).mkdirs();
-            new File(subsetTopophaseremovalDir).mkdirs();
-            new File(miscStageDir).mkdirs();
 
             Product product = ProductIO.readProduct(files[0]);
             product.getBandAt(0).readRasterDataFully();
             short[] data = ((ProductData.Short) product.getBandAt(0).getData()).getArray();
+            product.closeIO();
 
             int idx;
             int nanCounter = 0;
@@ -100,6 +116,9 @@ public class MiscStage {
             if (subsetY1 == -1) {
                 subsetY1 = height;
             }
+            if (subsetY0 == -1) {
+                subsetY0 = 0;
+            }
 
             // by height
             nanCounter = 0;
@@ -123,8 +142,14 @@ public class MiscStage {
             if (subsetX1 == -1) {
                 subsetX1 = width;
             }
+            if (subsetX0 == -1) {
+                subsetX0 = 0;
+            }
 
-            String graphFile = "Subset.xml";
+            PrintWriter cmdWriter = new PrintWriter(stageDir + File.separator + "miscstage.cmd", "UTF-8");
+            PrintWriter cmdWriter1 = new PrintWriter(stageDir1 + File.separator + "miscstage1.cmd", "UTF-8");
+
+            String graphFile = "Subset1.xml";
             FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
             Graph graph = GraphIO.read(fileReader);
             fileReader.close();
@@ -133,12 +158,31 @@ public class MiscStage {
                     .setValue(subsetX0 + "," + subsetY0 + "," + subsetX1 + "," + subsetY1);
 
             for (int i = 0; i < files.length; i++) {
-                String fileName = Paths.get(files[i]).getFileName().toString().replace(".dim","");
-                FileWriter fileWriter = new FileWriter(miscStageDir + File.separator + fileName + ".xml");
+                String fileName = Paths.get(files[i]).getFileName().toString().replace(".dim", "");
+
+                graph.getNode("Read").getConfiguration().getChild("file").setValue(files[i]);
+                graph.getNode("Write").getConfiguration().getChild("file")
+                        .setValue(subsetDir + File.separator + "Subset_" + fileName + ".dim");
+                FileWriter fileWriter = new FileWriter(stageDir + File.separator + fileName + ".xml");
                 GraphIO.write(graph, fileWriter);
                 fileWriter.flush();
                 fileWriter.close();
+                cmdWriter.println("gpt " + stageDir + File.separator + fileName + ".xml");
+
+                fileName = Paths.get(files1[i]).getFileName().toString().replace(".dim", "");
+                graph.getNode("Read").getConfiguration().getChild("file").setValue(files1[i]);
+                graph.getNode("Write").getConfiguration().getChild("file")
+                        .setValue(subsetDir + File.separator + "Subset_" + fileName + ".dim");
+                fileWriter = new FileWriter(stageDir1 + File.separator + fileName + ".xml");
+                GraphIO.write(graph, fileWriter);
+                fileWriter.flush();
+                fileWriter.close();
+
+                cmdWriter1.println("gpt " + stageDir1 + File.separator + fileName + ".xml");
             }
+
+            cmdWriter.close();
+            cmdWriter1.close();
 
             return;
 
