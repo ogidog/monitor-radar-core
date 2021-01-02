@@ -172,7 +172,7 @@ public class MiscStage {
                 fileName = Paths.get(files1[i]).getFileName().toString().replace(".dim", "");
                 graph.getNode("Read").getConfiguration().getChild("file").setValue(files1[i]);
                 graph.getNode("Write").getConfiguration().getChild("file")
-                        .setValue(subsetDir + File.separator + "Subset_" + fileName + ".dim");
+                        .setValue(subsetDir1 + File.separator + "Subset_" + fileName + ".dim");
                 fileWriter = new FileWriter(stageDir1 + File.separator + fileName + ".xml");
                 GraphIO.write(graph, fileWriter);
                 fileWriter.flush();
