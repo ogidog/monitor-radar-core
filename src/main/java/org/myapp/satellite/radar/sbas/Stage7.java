@@ -155,7 +155,7 @@ public class Stage7 {
 
             // TerrainCorrection
             parser = new JSONParser();
-            FileReader fileReader = new FileReader(configDir + File.separator + "terrain_сorrection.json");
+            FileReader fileReader = new FileReader(configDir + File.separator + "terrain_correction.json");
             JSONObject jsonObject = (JSONObject) parser.parse(fileReader);
             HashMap jsonParameters = (HashMap) jsonObject.get("parameters");
             HashMap parameters = new HashMap();
