@@ -92,7 +92,7 @@ public class Stage2 {
 
     static void runGraphParallel(String masterProductFile, String[] slaveProductFiles, String tmpDir, String outputDir, String snapDir, int sourceProductIndex) {
 
-        IntStream.range(0, slaveProductFiles.length).parallel().forEach(index -> {
+        IntStream.range(0, slaveProductFiles.length).forEach(index -> {
             try {
 
                 FileReader fileReader1 = new FileReader(tmpDir + File.separator + "Subset.xml");
@@ -109,7 +109,7 @@ public class Stage2 {
 
                 ProcessBuilder processBuilder = new ProcessBuilder(System.getenv("SNAP_HOME") + File.separator + "bin" + File.separator + "gpt" +
                         (System.getProperty("os.name").toLowerCase().contains("windows") ? ".exe" : ""),
-                        tmpDir + File.separator + "Subset" + (index) + ".xml"
+                        tmpDir + File.separator + "Subset" + (index) + ".xml", "-Dsnap.userdir=" + snapDir
                 ).inheritIO();
                 Process p = processBuilder.start();
                 p.waitFor();

@@ -47,7 +47,7 @@ public class Stage4 {
                     fileReader.close();
 
                     graph.getNode("Read").getConfiguration().getChild("file").setValue(path + File.separator + "subset_master_Stack_Deb.dim");
-                    graph.getNode("Read(2)").getConfiguration().getChild("file").setValue(path.replace("subset","topophaseremoval") + File.separator + "subset_master_Stack_Deb_ifg_dinsar.dim");
+                    graph.getNode("Read(2)").getConfiguration().getChild("file").setValue(path.replace("subset", "topophaseremoval") + File.separator + "subset_master_Stack_Deb_ifg_dinsar.dim");
                     graph.getNode("StampsExport").getConfiguration().getChild("targetFolder").setValue(outputDir);
 
                     FileWriter fileWriter = new FileWriter(tmpDir + File.separator + "PSExport.xml");
@@ -58,7 +58,7 @@ public class Stage4 {
                     ProcessBuilder processBuilder =
                             new ProcessBuilder(System.getenv("SNAP_HOME") + File.separator + "bin" + File.separator + "gpt" +
                                     (System.getProperty("os.name").toLowerCase().contains("windows") ? ".exe" : ""),
-                                    tmpDir + File.separator + "PSExport.xml"
+                                    tmpDir + File.separator + "PSExport.xml", "-Dsnap.userdir=" + snapDir
                             ).inheritIO();
                     Process p = processBuilder.start();
                     p.waitFor();
