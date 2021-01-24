@@ -1,5 +1,6 @@
 package org.myapp.satellite.radar.sbas;
 
+import org.apache.hadoop.util.hash.Hash;
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
 import org.myapp.utils.ConsoleArgsReader;
@@ -13,6 +14,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class Stage6 {
 
@@ -42,6 +44,17 @@ public class Stage6 {
                 files2 = filesList1.split(",");
             }
 
+            String[][] pairs = new String[files1.length][2];
+            for (int i = 0; i < files1.length; i++) {
+                String date = Paths.get(files1[i]).getFileName().toString().substring(0, 13);
+                for (int j = 0; j < files2.length; j++) {
+                    if (files2[j].contains(date)) {
+                        pairs[i][0] = files1[i];
+                        pairs[i][1] = files2[j];
+                        break;
+                    }
+                }
+            }
 
             String snaphuimportDir = outputDir + File.separator + "snaphu_import";
             String stage6Dir = outputDir + "" + File.separator + "stage6";
@@ -67,8 +80,8 @@ public class Stage6 {
 
             PrintWriter cmdWriter = new PrintWriter(stage6Dir + File.separator + "stage6.cmd", "UTF-8");
             for (int i = 0; i < files1.length; i++) {
-                graph.getNode("Read").getConfiguration().getChild("file").setValue(files1[i]);
-                graph.getNode("Read(2)").getConfiguration().getChild("file").setValue(files2[i]);
+                graph.getNode("Read").getConfiguration().getChild("file").setValue(pairs[i][0]);
+                graph.getNode("Read(2)").getConfiguration().getChild("file").setValue(pairs[i][1]);
                 graph.getNode("Write").getConfiguration().getChild("file").setValue(snaphuimportDir
                         + File.separator + Paths.get(files1[i]).getFileName().toString().replace(".dim", "_unw.dim"));
 

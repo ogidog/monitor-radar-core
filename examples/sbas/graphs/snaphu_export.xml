@@ -11,9 +11,9 @@
       <initMethod>MST</initMethod>
       <numberOfTileRows>10</numberOfTileRows>
       <numberOfTileCols>10</numberOfTileCols>
-      <numberOfProcessors>8</numberOfProcessors>
-      <rowOverlap>10</rowOverlap>
-      <colOverlap>10</colOverlap>
+      <numberOfProcessors>4</numberOfProcessors>
+      <rowOverlap>5</rowOverlap>
+      <colOverlap>5</colOverlap>
       <tileCostThreshold>500</tileCostThreshold>
     </parameters>
   </node>
