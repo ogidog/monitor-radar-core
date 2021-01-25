@@ -46,7 +46,8 @@ public class Stage6 {
 
             String[][] pairs = new String[files1.length][2];
             for (int i = 0; i < files1.length; i++) {
-                String date = Paths.get(files1[i]).getFileName().toString().substring(0, 13);
+                String date = Paths.get(files1[i]).getFileName().toString();
+                date = date.substring(0, date.length() - 4);
                 for (int j = 0; j < files2.length; j++) {
                     if (files2[j].contains(date)) {
                         pairs[i][0] = files1[i];

@@ -54,6 +54,19 @@ public class Stage7 {
                 files2 = filesList1.split(",");
             }
 
+            String[][] pairs = new String[files1.length][2];
+            for (int i = 0; i < files1.length; i++) {
+                String date = Paths.get(files1[i]).getFileName().toString();
+                date = date.substring(0, date.length() - 4);
+                for (int j = 0; j < files2.length; j++) {
+                    if (files2[j].contains(date)) {
+                        pairs[i][0] = files1[i];
+                        pairs[i][1] = files2[j];
+                        break;
+                    }
+                }
+            }
+
             String prepDir = outputDir + File.separator + "prep";
             String stage7Dir = outputDir + "" + File.separator + "stage7";
             if (Files.exists(Paths.get(stage7Dir))) {
@@ -104,12 +117,12 @@ public class Stage7 {
                 }).collect(Collectors.joining("_"));
                 String pairDir = prepDir + File.separator + datePair;
                 new File(pairDir).mkdirs();
-                graph.getNode("Read").getConfiguration().getChild("file").setValue(files1[i]);
+                graph.getNode("Read").getConfiguration().getChild("file").setValue(pairs[i][0]);
                 graph.getNode("BandMaths").getConfiguration().getChild("targetBands").getChild("targetBand").getChild("expression").setValue(
                         "atan2(" + iqBandNames[1] + "," + iqBandNames[0] + ")");
                 graph.getNode("Write").getConfiguration().getChild("file").setValue(pairDir + File.separator + datePair + "_filt_int_sub_tc.dim");
                 graph.getNode("Write(2)").getConfiguration().getChild("file").setValue(pairDir + File.separator + datePair + "_coh_tc.dim");
-                graph.getNode("Read(2)").getConfiguration().getChild("file").setValue(files2[i]);
+                graph.getNode("Read(2)").getConfiguration().getChild("file").setValue(pairs[i][1]);
                 graph.getNode("Write(4)").getConfiguration().getChild("file").setValue(pairDir + File.separator + datePair + "_unw_tc.dim");
 
                 FileWriter fileWriter = new FileWriter(stage7Dir + File.separator
