@@ -1,9 +1,9 @@
-selectNetwork.method = delaunay
+selectNetwork.method = sequential
 selectNetwork.referenceFile = no
 
 # Baseline Info
-selectNetwork.perpBaseMax   = 500.
-selectNetwork.tempBaseMax   = 500.
+selectNetwork.perpBaseMax   = 50.
+selectNetwork.tempBaseMax   = 65.
 selectNetwork.tempBaseMin   = 0.
 selectNetwork.keepSeasonal  = no
 selectNetwork.dopOverlapMin = 15.
@@ -13,5 +13,7 @@ selectNetwork.masterDate    = no
 selectNetwork.startDate     = no
 selectNetwork.endDate       = no
 selectNetwork.excludeDate   = no
+
+selectNetwork.connNum       = 2
 
 mintpy.compute.cluster 		= no

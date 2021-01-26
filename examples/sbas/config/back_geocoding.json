@@ -8,7 +8,7 @@
       "name": "demName",
       "label": "Digital Elevation Model",
       "type": "inputTypes.select",
-      "value": "ACE30",
+      "value": "SRTM 3Sec",
       "defaultvalue": "SRTM 3Sec",
       "options": [
         "ACE2_5min",

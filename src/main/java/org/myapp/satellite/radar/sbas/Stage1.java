@@ -62,17 +62,25 @@ public class Stage1 {
                 } catch (Exception e) {
                     return null;
                 }
-            }).toArray(Product[]::new);
+            }).sorted((e1, e2) -> e1.getStartTime().getAsDate().compareTo(e2.getStartTime().getAsDate())).toArray(Product[]::new);
 
             InSARStackOverview.IfgPair[] masterSlavePairs;
             InSARStackOverview.IfgStack[] stackOverview;
             InSARStackOverview.IfgPair masterSlavePair;
 
+            String optimalMasterName = products[0].getName();
             String masterProductName, slaveProductName;
             String masterProductDate = "", slaveProductDate;
             String blList = "", dateToProductName = "";
 
-            String optimalMasterName = InSARStackOverview.findOptimalMasterProduct(products).getName();
+
+            String content = new String(Files.readAllBytes(Paths.get(configDir + File.separator + "selectNetwork.template")));
+            if (content.contains("sequential")) {
+                optimalMasterName = products[0].getName();
+            }
+            if (content.contains("delaunay")) {
+                optimalMasterName = InSARStackOverview.findOptimalMasterProduct(products).getName();
+            }
 
             stackOverview = InSARStackOverview.calculateInSAROverview(products);
 

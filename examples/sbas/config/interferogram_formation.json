@@ -54,7 +54,7 @@
       "name": "demName",
       "label": "External DEM",
       "type": "inputTypes.select",
-      "value": "ACE30",
+      "value": "SRTM 3Sec",
       "defaultvalue": "SRTM 3Sec",
       "options": [
         "ACE2_5min",

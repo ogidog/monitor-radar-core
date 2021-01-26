@@ -98,6 +98,9 @@ public class Stage3 {
             for (int i = 0; i < lines.length; i++) {
                 masterProductDate = lines[i].split(" ")[0].split("-")[0];
                 slaveProductDate = lines[i].split(" ")[0].split("-")[1];
+                if (masterProductDate.equals(slaveProductDate)) {
+                    continue;
+                }
                 masterProductName = date2Name.get(masterProductDate) + "_Orb.dim";
                 slaveProductName = date2Name.get(slaveProductDate) + "_Orb.dim";
 
