@@ -11,7 +11,6 @@ import java.io.FileReader;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
-
 public class Stage1 {
 
     public static void main(String[] args) {
