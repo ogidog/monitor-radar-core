@@ -1,12 +1,10 @@
 
 package org.myapp.satellite.radar.sbas;
 
-import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.myapp.satellite.radar.sbas.TOPSARSplitOpEnv;
 import org.myapp.utils.ConsoleArgsReader;
 
 import java.io.File;
