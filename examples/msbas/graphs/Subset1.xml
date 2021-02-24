@@ -1,0 +1,49 @@
+<graph id="Graph">
+  <version>1.0</version>
+  <node id="Subset">
+    <operator>Subset</operator>
+    <sources>
+      <sourceProduct refid="Read"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <sourceBands/>
+      <region>0,23,2611,662</region>
+      <referenceBand/>
+      <geoRegion/>
+      <subSamplingX>1</subSamplingX>
+      <subSamplingY>1</subSamplingY>
+      <fullSwath>false</fullSwath>
+      <tiePointGridNames/>
+      <copyMetadata>true</copyMetadata>
+    </parameters>
+  </node>
+  <node id="Read">
+    <operator>Read</operator>
+    <sources/>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>D:\Temp\test1\kazyr_sug_PS\esd\S1B_IW_SLC__1SDV_20200110T000354_20200110T000421_019747_02555E_9AEC_Orb_Stack_Deb.dim</file>
+    </parameters>
+  </node>
+  <node id="Write">
+    <operator>Write</operator>
+    <sources>
+      <sourceProduct refid="Subset"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>D:\Temp\test1\123456789123\subset_topophaseremoval\Subset_S1B_IW_SLC__1SDV_20200110T000354_20200110T000421_019747_02555E_9AEC_Orb_Stack_Deb.dim</file>
+      <formatName>BEAM-DIMAP</formatName>
+    </parameters>
+  </node>
+  <applicationData id="Presentation">
+    <Description/>
+    <node id="Subset">
+      <displayPosition x="237.0" y="136.0"/>
+    </node>
+    <node id="Read">
+      <displayPosition x="84.0" y="131.0"/>
+    </node>
+    <node id="Write">
+      <displayPosition x="385.0" y="143.0"/>
+    </node>
+  </applicationData>
+</graph>

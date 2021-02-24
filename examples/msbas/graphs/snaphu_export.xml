@@ -1,0 +1,36 @@
+<graph id="Graph">
+  <version>1.0</version>
+  <node id="SnaphuExport">
+    <operator>SnaphuExport</operator>
+    <sources>
+      <sourceProduct refid="Read"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <targetFolder>F:\mnt\fast\dockers\monitor-radar-core\monitor_radar_usr\processing\1580805641883\snaphu_export</targetFolder>
+      <statCostMode>DEFO</statCostMode>
+      <initMethod>MST</initMethod>
+      <numberOfTileRows>10</numberOfTileRows>
+      <numberOfTileCols>10</numberOfTileCols>
+      <numberOfProcessors>4</numberOfProcessors>
+      <rowOverlap>5</rowOverlap>
+      <colOverlap>5</colOverlap>
+      <tileCostThreshold>500</tileCostThreshold>
+    </parameters>
+  </node>
+  <node id="Read">
+    <operator>Read</operator>
+    <sources/>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>F:\mnt\fast\dockers\monitor-radar-core\monitor_radar_usr\processing\1580805641883\filter\20180604_20190412_Orb_Stack_Ifg_Deb_DInSAR_ML_Flt.dim</file>
+    </parameters>
+  </node>
+  <applicationData id="Presentation">
+    <Description/>
+    <node id="SnaphuExport">
+      <displayPosition x="179.0" y="112.0"/>
+    </node>
+    <node id="Read">
+      <displayPosition x="37.0" y="113.0"/>
+    </node>
+  </applicationData>
+</graph>
