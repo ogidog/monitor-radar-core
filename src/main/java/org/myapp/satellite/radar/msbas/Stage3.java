@@ -1,6 +1,5 @@
 package org.myapp.satellite.radar.msbas;
 
-import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
 import org.json.simple.JSONObject;

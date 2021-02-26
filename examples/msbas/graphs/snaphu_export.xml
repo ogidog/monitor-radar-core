@@ -12,8 +12,8 @@
       <numberOfTileRows>10</numberOfTileRows>
       <numberOfTileCols>10</numberOfTileCols>
       <numberOfProcessors>4</numberOfProcessors>
-      <rowOverlap>5</rowOverlap>
-      <colOverlap>5</colOverlap>
+      <rowOverlap>10</rowOverlap>
+      <colOverlap>10</colOverlap>
       <tileCostThreshold>500</tileCostThreshold>
     </parameters>
   </node>
