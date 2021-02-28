@@ -66,14 +66,14 @@ public class Stage7 {
                 String productName = Paths.get(files[i]).getFileName().toString();
                 graph.getNode("Read").getConfiguration().getChild("file").setValue(files[i]);
                 graph.getNode("Write").getConfiguration().getChild("file")
-                        .setValue(phase2dispDir + File.separator + productName.replace(".dim",".dsp.dim"));
+                        .setValue(phase2dispDir + File.separator + productName.replace(".dim",".disp.geo.dim"));
 
-                FileWriter fileWriter = new FileWriter(stage7Dir + File.separator + productName.replace(".dim", ".dsp.xml"));
+                FileWriter fileWriter = new FileWriter(stage7Dir + File.separator + productName.replace(".dim", ".disp.geo.xml"));
                 GraphIO.write(graph, fileWriter);
                 fileWriter.flush();
                 fileWriter.close();
 
-                cmdWriter.println("gpt " + stage7Dir + File.separator + productName.replace(".dim", ".dsp.xml"));
+                cmdWriter.println("gpt " + stage7Dir + File.separator + productName.replace(".dim", ".disp.geo.xml"));
             }
 
             cmdWriter.close();
@@ -83,47 +83,6 @@ public class Stage7 {
         } catch (Exception e) {
             e.printStackTrace();
             return;
-        }
-    }
-
-    static HashMap getParameters(String configDir) {
-
-        HashMap<String, HashMap> stageParameters = null;
-
-        try {
-            JSONParser parser = new JSONParser();
-            stageParameters = new HashMap<>();
-
-            // Subset
-            FileReader fileReader = new FileReader(configDir + File.separator + "subset.json");
-            JSONObject jsonObject = (JSONObject) parser.parse(fileReader);
-            HashMap jsonParameters = (HashMap) jsonObject.get("parameters");
-            String geoRegionCoordinates = ((HashMap) jsonParameters.get("geoRegion")).get("value").toString();
-            HashMap parameters = new HashMap();
-            parameters.put("geoRegion", geoRegionCoordinates);
-            stageParameters.put("Subset", parameters);
-            fileReader.close();
-
-            // Interferogram Formation
-            parser = new JSONParser();
-            fileReader = new FileReader(configDir + File.separator + "interferogram_formation.json");
-            jsonObject = (JSONObject) parser.parse(fileReader);
-            jsonParameters = (HashMap) jsonObject.get("parameters");
-
-            parameters = new HashMap();
-            Iterator it = jsonParameters.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry pair = (Map.Entry) it.next();
-                parameters.put(pair.getKey().toString(), ((HashMap) jsonParameters.get(pair.getKey().toString())).get("value"));
-            }
-            stageParameters.put("Interferogram", parameters);
-            fileReader.close();
-
-            return stageParameters;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
         }
     }
 }
