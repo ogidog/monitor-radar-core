@@ -5,6 +5,7 @@
     <sources/>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <file>D:\Temp\maiskoe2\snaphuimport\20200524_VV_20200101_VV.dim</file>
+      <formatName>BEAM-DIMAP</formatName>
     </parameters>
   </node>
   <node id="PhaseToDisplacement">
@@ -61,8 +62,8 @@
       <sourceProduct refid="Terrain-Correction"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>D:\Temp\maiskoe2\20200524_VV_20200101_VV_Disp_TC.dim</file>
-      <formatName>BEAM-DIMAP</formatName>
+      <file>D:\Temp\maiskoe2\20200524_VV_20200101_VV_Disp_TC.tif</file>
+      <formatName>GeoTIFF</formatName>
     </parameters>
   </node>
   <applicationData id="Presentation">

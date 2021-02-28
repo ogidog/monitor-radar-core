@@ -1,5 +1,7 @@
 package org.myapp.satellite.radar.msbas;
 
+import org.esa.snap.core.dataio.ProductIO;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
 import org.json.simple.JSONObject;
@@ -30,7 +32,7 @@ public class Stage7 {
 
             String stage7Dir = outputDir + "" + File.separator + "stage7";
             String snaphuimportDir = outputDir + File.separator + "snaphuimport";
-            String phase2dispDir = outputDir + File.separator + "phase2disp";
+            String geotiffDir = outputDir + File.separator + "geotiff";
 
             String[] files;
             files = Files.walk(Paths.get(snaphuimportDir)).filter(path -> {
@@ -41,8 +43,17 @@ public class Stage7 {
                 }
             }).map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
 
-            if (Files.exists(Paths.get(phase2dispDir))) {
-                Files.walk(Paths.get(phase2dispDir))
+            Product product = ProductIO.readProduct(files[0]);
+            String pass = product.getMetadataRoot().getElement("Abstracted_Metadata").getAttribute("PASS").getData().toString();
+            product.closeIO();
+            if (pass.equals("DESCENDING")) {
+                geotiffDir = geotiffDir + File.separator + "dsc";
+            } else {
+                geotiffDir = geotiffDir + File.separator + "asc";
+            }
+
+            if (Files.exists(Paths.get(geotiffDir))) {
+                Files.walk(Paths.get(geotiffDir))
                         .sorted(Comparator.reverseOrder())
                         .map(Path::toFile)
                         .forEach(File::delete);
@@ -53,7 +64,7 @@ public class Stage7 {
                         .map(Path::toFile)
                         .forEach(File::delete);
             }
-            new File(phase2dispDir).mkdirs();
+            new File(geotiffDir).mkdirs();
             new File(stage7Dir).mkdirs();
 
             String graphFile = "phase2disp.xml";
@@ -66,7 +77,7 @@ public class Stage7 {
                 String productName = Paths.get(files[i]).getFileName().toString();
                 graph.getNode("Read").getConfiguration().getChild("file").setValue(files[i]);
                 graph.getNode("Write").getConfiguration().getChild("file")
-                        .setValue(phase2dispDir + File.separator + productName.replace(".dim",".disp.geo.dim"));
+                        .setValue(geotiffDir + File.separator + productName.replace(".dim", ".disp.geo.tif"));
 
                 FileWriter fileWriter = new FileWriter(stage7Dir + File.separator + productName.replace(".dim", ".disp.geo.xml"));
                 GraphIO.write(graph, fileWriter);
