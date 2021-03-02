@@ -1,6 +1,7 @@
 package org.myapp.satellite.radar.msbas;
 
 import org.esa.snap.core.dataio.ProductIO;
+import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
@@ -15,10 +16,7 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 public class Stage7 {
 
@@ -67,13 +65,29 @@ public class Stage7 {
             new File(geotiffDir).mkdirs();
             new File(stage7Dir).mkdirs();
 
-            String graphFile = "phase2disp.xml";
+            String graphFile = "createtiff.xml";
             FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
             Graph graph = GraphIO.read(fileReader);
             fileReader.close();
 
             PrintWriter cmdWriter = new PrintWriter(stage7Dir + File.separator + "stage7.cmd", "UTF-8");
             for (int i = 0; i < files.length; i++) {
+                product = ProductIO.readProduct(files[i]);
+                Band[] bands = product.getBands();
+                String cohBand = "", unwBand = "";
+                for (Band band : bands) {
+                    if (band.getName().toString().contains("coh_")) {
+                        cohBand = band.getName().toString();
+                    }
+                    if (band.getName().toString().contains("Unw_")) {
+                        unwBand = band.getName().toString();
+                    }
+                }
+                product.closeIO();
+                String expression = "if " + cohBand + ">0.5 then " + unwBand + " else NaN";
+                graph.getNode("BandMaths").getConfiguration().getChild("targetBands").getChild("targetBand")
+                        .getChild("expression").setValue(expression);
+
                 String productName = Paths.get(files[i]).getFileName().toString();
                 graph.getNode("Read").getConfiguration().getChild("file").setValue(files[i]);
                 graph.getNode("Write").getConfiguration().getChild("file")
