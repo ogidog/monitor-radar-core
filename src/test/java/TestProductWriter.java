@@ -94,7 +94,6 @@ public class TestProductWriter {
                         false,
                         ProgressMonitor.NULL);
                 products[i].closeIO();
-
             }
 
             return;
