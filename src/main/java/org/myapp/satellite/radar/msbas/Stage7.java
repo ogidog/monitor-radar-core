@@ -65,6 +65,9 @@ public class Stage7 {
             new File(geotiffDir).mkdirs();
             new File(stage7Dir).mkdirs();
 
+            //TODO: добавить сюда код из TestProductWriter
+            // из createtiff.xml убрать BandMaths
+
             String graphFile = "createtiff.xml";
             FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
             Graph graph = GraphIO.read(fileReader);
@@ -72,6 +75,8 @@ public class Stage7 {
 
             PrintWriter cmdWriter = new PrintWriter(stage7Dir + File.separator + "stage7.cmd", "UTF-8");
             for (int i = 0; i < files.length; i++) {
+                //TODO: убрать
+                //########################################
                 product = ProductIO.readProduct(files[i]);
                 Band[] bands = product.getBands();
                 String cohBand = "", unwBand = "";
@@ -87,6 +92,7 @@ public class Stage7 {
                 String expression = "if " + cohBand + ">0.5 then " + unwBand + " else NaN";
                 graph.getNode("BandMaths").getConfiguration().getChild("targetBands").getChild("targetBand")
                         .getChild("expression").setValue(expression);
+                //####################################################
 
                 String productName = Paths.get(files[i]).getFileName().toString();
                 graph.getNode("Read").getConfiguration().getChild("file").setValue(files[i]);

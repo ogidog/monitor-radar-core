@@ -18,6 +18,7 @@ public class Stage8 {
         try {
             HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
             String outputDir = consoleParameters.get("outputDir").toString();
+            String configDir = consoleParameters.get("configDir").toString();
             String geotiffDir = outputDir + File.separator + "geotiff";
 
             String cmd = "";
@@ -96,7 +97,9 @@ public class Stage8 {
             minWidth = Math.min(dscWidth, ascWidth) - 1;
             minHeight = Math.min(dscHeight, ascHeight) - 1;
 
-            String[] header = Files.readAllLines(Paths.get(geotiffDir + File.separator + "header.txt")).stream().toArray(String[]::new);
+            //TODO: Сделать поиск когерентных областей, используя coh файлы из snaphu import
+
+            String[] header = Files.readAllLines(Paths.get(configDir + File.separator + "header.txt")).stream().toArray(String[]::new);
             PrintWriter headerWriter = new PrintWriter(geotiffDir + File.separator + "header.txt");
             cmd = "";
             for (int i = 0; i < header.length; i++) {
