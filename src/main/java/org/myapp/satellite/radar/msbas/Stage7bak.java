@@ -1,15 +1,10 @@
 package org.myapp.satellite.radar.msbas;
 
-import com.bc.ceres.core.ProgressMonitor;
 import org.esa.snap.core.dataio.ProductIO;
-import org.esa.snap.core.dataio.dimap.DimapProductConstants;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.myapp.utils.ConsoleArgsReader;
 
 import java.io.File;
@@ -19,9 +14,10 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
 
-public class Stage7 {
+public class Stage7bak {
 
     public static void main(String[] args) {
 
@@ -68,63 +64,8 @@ public class Stage7 {
             new File(geotiffDir).mkdirs();
             new File(stage7Dir).mkdirs();
 
-
-            Product[] products = Arrays.stream(files).map(file -> {
-                try {
-                    return ProductIO.readProduct(file);
-                } catch (Exception ex) {
-                    return null;
-                }
-            }).toArray(Product[]::new);
-
-            int cohBandIndex = -1, unwBandIndex = -1;
-            for (int i = 0; i < products[0].getBands().length; i++) {
-                if (products[0].getBandAt(i).getName().toLowerCase().contains("coh")) {
-                    cohBandIndex = i;
-                }
-                if (products[0].getBandAt(i).getName().toLowerCase().contains("unw")) {
-                    unwBandIndex = i;
-                }
-            }
-
-            int minWidth = 999999999, minHeight = 999999999;
-            for (int i = 0; i < products.length; i++) {
-                if (products[i].getSceneRasterWidth() < minWidth) {
-                    minWidth = products[i].getSceneRasterWidth();
-                }
-                if (products[i].getSceneRasterHeight() < minHeight) {
-                    minHeight = products[i].getSceneRasterHeight();
-                }
-            }
-
-            boolean[] mask = new boolean[minHeight * minWidth];
-            Arrays.fill(mask, false);
-
-            ProductData pd = ProductData.createInstance(30, minHeight * minWidth);
-            for (int i = 0; i < products.length; i++) {
-                products[i].getBandAt(cohBandIndex).readRasterData(0, 0, minWidth - 1, minHeight - 1, pd);
-                for (int j = 0; j < pd.getNumElems(); j++) {
-                    if (pd.getElemFloatAt(j) > 0.5) {
-                        mask[j] = true;
-                    }
-                }
-            }
-
-            for (int i = 0; i < products.length; i++) {
-                products[i].getBandAt(unwBandIndex).readRasterDataFully();
-                for (int j = 0; j < mask.length; j++) {
-                    if (!mask[j]) {
-                        products[i].getBandAt(unwBandIndex).getRasterData().setElemFloatAt(j, Float.NaN);
-                    }
-                }
-                File file = new File(snaphuimportDir + File.separator + products[i].getName() + ".dim");
-                ProductIO.writeProduct(products[i],
-                        file,
-                        DimapProductConstants.DIMAP_FORMAT_NAME,
-                        false,
-                        ProgressMonitor.NULL);
-                products[i].closeIO();
-            }
+            //TODO: добавить сюда код из TestProductWriter
+            // из createtiff.xml убрать BandMaths
 
             String graphFile = "createtiff.xml";
             FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
@@ -133,6 +74,25 @@ public class Stage7 {
 
             PrintWriter cmdWriter = new PrintWriter(stage7Dir + File.separator + "stage7.cmd", "UTF-8");
             for (int i = 0; i < files.length; i++) {
+                //TODO: убрать
+                //########################################
+                product = ProductIO.readProduct(files[i]);
+                Band[] bands = product.getBands();
+                String cohBand = "", unwBand = "";
+                for (Band band : bands) {
+                    if (band.getName().toString().contains("coh_")) {
+                        cohBand = band.getName().toString();
+                    }
+                    if (band.getName().toString().contains("Unw_")) {
+                        unwBand = band.getName().toString();
+                    }
+                }
+                product.closeIO();
+                String expression = "if " + cohBand + ">0.5 then " + unwBand + " else NaN";
+                graph.getNode("BandMaths").getConfiguration().getChild("targetBands").getChild("targetBand")
+                        .getChild("expression").setValue(expression);
+                //####################################################
+
                 String productName = Paths.get(files[i]).getFileName().toString();
                 graph.getNode("Read").getConfiguration().getChild("file").setValue(files[i]);
                 graph.getNode("Write").getConfiguration().getChild("file")

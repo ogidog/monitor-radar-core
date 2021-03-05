@@ -7,10 +7,29 @@
       <file>D:\Temp\maiskoe2\snaphuimport\20200524_VV_20200605_VV.dim</file>
     </parameters>
   </node>
+  <node id="BandMaths">
+    <operator>BandMaths</operator>
+    <sources>
+      <sourceProduct refid="Read"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <targetBands>
+        <targetBand>
+          <name>Unw</name>
+          <type>float32</type>
+          <expression>if coh_IW1_VV_24May2020_05Jun2020&gt;0.5 then Unw_Phase_ifg_24May2020_05Jun2020 else NaN</expression>
+          <description/>
+          <unit/>
+          <noDataValue>0.0</noDataValue>
+        </targetBand>
+      </targetBands>
+      <variables/>
+    </parameters>
+  </node>
   <node id="PhaseToDisplacement">
     <operator>PhaseToDisplacement</operator>
     <sources>
-      <sourceProduct refid="Read"/>
+      <sourceProduct refid="BandMaths"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement"/>
   </node>
@@ -27,8 +46,6 @@
       <externalDEMApplyEGM>true</externalDEMApplyEGM>
       <demResamplingMethod>BILINEAR_INTERPOLATION</demResamplingMethod>
       <imgResamplingMethod>BILINEAR_INTERPOLATION</imgResamplingMethod>
-      <pixelSpacingInMeter>25.36</pixelSpacingInMeter>
-      <pixelSpacingInDegree>2.2781275605271062E-4</pixelSpacingInDegree>
       <mapProjection>GEOGCS[&quot;WGS84(DD)&quot;, &#xd;
   DATUM[&quot;WGS84&quot;, &#xd;
     SPHEROID[&quot;WGS84&quot;, 6378137.0, 298.257223563]], &#xd;
@@ -63,7 +80,7 @@
       <sourceProduct refid="Terrain-Correction"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>D:\Temp\maiskoe2\test\20200524_VV_20200605_VV_Disp_TC.tif</file>
+      <file>D:\Temp\maiskoe2\test\20200524_VV_20200605_VV_BandMath_Disp_TC.tif</file>
       <formatName>GeoTIFF</formatName>
     </parameters>
   </node>
@@ -71,6 +88,9 @@
     <Description/>
     <node id="Read">
             <displayPosition x="24.0" y="108.0"/>
+    </node>
+    <node id="BandMaths">
+      <displayPosition x="129.0" y="105.0"/>
     </node>
     <node id="PhaseToDisplacement">
       <displayPosition x="239.0" y="106.0"/>
