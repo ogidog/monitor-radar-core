@@ -87,28 +87,31 @@ public class Stage7 {
                 }
             }
 
-            int minWidth = 999999999, minHeight = 999999999;
-            for (int i = 0; i < products.length; i++) {
-                if (products[i].getSceneRasterWidth() < minWidth) {
-                    minWidth = products[i].getSceneRasterWidth();
-                }
-                if (products[i].getSceneRasterHeight() < minHeight) {
-                    minHeight = products[i].getSceneRasterHeight();
-                }
-            }
-
-            boolean[] mask = new boolean[minHeight * minWidth];
+            int height = products[0].getSceneRasterWidth();
+            int width = products[0].getSceneRasterWidth();
+            boolean[] mask = new boolean[height * width];
             Arrays.fill(mask, false);
-
-            ProductData pd = ProductData.createInstance(30, minHeight * minWidth);
+            ProductData pd = ProductData.createInstance(30, height * width);
             for (int i = 0; i < products.length; i++) {
-                products[i].getBandAt(cohBandIndex).readRasterData(0, 0, minWidth - 1, minHeight - 1, pd);
+                products[i].getBandAt(cohBandIndex).readRasterData(0, 0, width, height, pd);
                 for (int j = 0; j < pd.getNumElems(); j++) {
                     if (pd.getElemFloatAt(j) > 0.5) {
                         mask[j] = true;
                     }
                 }
             }
+
+            for (int i = 0; i < products.length; i++) {
+                products[i].closeIO();
+            }
+
+            products = Arrays.stream(files).map(file -> {
+                try {
+                    return ProductIO.readProduct(file);
+                } catch (Exception ex) {
+                    return null;
+                }
+            }).toArray(Product[]::new);
 
             for (int i = 0; i < products.length; i++) {
                 products[i].getBandAt(unwBandIndex).readRasterDataFully();
