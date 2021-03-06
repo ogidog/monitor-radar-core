@@ -87,7 +87,7 @@ public class Stage7 {
                 }
             }
 
-            int height = products[0].getSceneRasterWidth();
+            int height = products[0].getSceneRasterHeight();
             int width = products[0].getSceneRasterWidth();
             boolean[] mask = new boolean[height * width];
             Arrays.fill(mask, false);
@@ -121,11 +121,11 @@ public class Stage7 {
                     }
                 }
                 File file = new File(snaphuimportDir + File.separator + products[i].getName() + ".dim");
-                ProductIO.writeProduct(products[i],
+                /*ProductIO.writeProduct(products[i],
                         file,
                         DimapProductConstants.DIMAP_FORMAT_NAME,
                         false,
-                        ProgressMonitor.NULL);
+                        ProgressMonitor.NULL);*/
                 products[i].closeIO();
             }
 
