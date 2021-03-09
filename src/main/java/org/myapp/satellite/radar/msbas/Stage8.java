@@ -42,6 +42,14 @@ public class Stage8 {
                 }
                 cmdWriter.print(cmd.trim());
                 cmdWriter.close();
+
+                if (Files.exists(Paths.get(geotiffDir + File.separator + "sbas_dsc"))) {
+                    Files.walk(Paths.get(geotiffDir + File.separator + "sbas_dsc"))
+                            .sorted(Comparator.reverseOrder())
+                            .map(Path::toFile)
+                            .forEach(File::delete);
+                }
+                new File(geotiffDir + File.separator + "sbas_dsc").mkdirs();
             }
             if (Files.exists(Paths.get(geotiffDir + File.separator + "asc"))) {
                 ascFiles = Files.walk(Paths.get(geotiffDir + File.separator + "asc")).filter(path -> {
@@ -62,15 +70,23 @@ public class Stage8 {
                 }
                 cmdWriter.print(cmd.trim());
                 cmdWriter.close();
+
+                if (Files.exists(Paths.get(geotiffDir + File.separator + "sbas_asc"))) {
+                    Files.walk(Paths.get(geotiffDir + File.separator + "sbas_asc"))
+                            .sorted(Comparator.reverseOrder())
+                            .map(Path::toFile)
+                            .forEach(File::delete);
+                }
+                new File(geotiffDir + File.separator + "sbas_asc").mkdirs();
             }
 
-            if (Files.exists(Paths.get(geotiffDir + File.separator + "out"))) {
-                Files.walk(Paths.get(geotiffDir + File.separator + "out"))
+            if (Files.exists(Paths.get(geotiffDir + File.separator + "msbas"))) {
+                Files.walk(Paths.get(geotiffDir + File.separator + "msbas"))
                         .sorted(Comparator.reverseOrder())
                         .map(Path::toFile)
                         .forEach(File::delete);
             }
-            new File(geotiffDir + File.separator + "out").mkdirs();
+            new File(geotiffDir + File.separator + "msbas").mkdirs();
 
             int dscWidth = 999999999, dscHeight = 999999999, ascWidth = 999999999, ascHeight = 999999999, minWidth = 999999999, minHeight = 999999999;
             for (int i = 0; i < dscFiles.length; i++) {
