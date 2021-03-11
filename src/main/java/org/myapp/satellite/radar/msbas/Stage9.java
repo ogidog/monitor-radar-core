@@ -27,7 +27,8 @@ public class Stage9 {
             HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
             String outputDir = consoleParameters.get("outputDir").toString();
 
-            String msbasoutDir = outputDir + File.separator + "geotiff" + File.separator + "out";
+            String sbasDscDir = outputDir + File.separator + "geotiff" + File.separator + "sbas_dsc";
+            String sbasAscDir = outputDir + File.separator + "geotiff" + File.separator + "sbas_asc";
             String geodimapDir = outputDir + File.separator + "geodimap" + File.separator + "dsc";
 
             String[] files = Files.walk(Paths.get(geodimapDir)).filter(path -> {
@@ -65,21 +66,41 @@ public class Stage9 {
                 products[i].closeIO();
             }
 
-            Product product = ProductIO.readProduct(msbasoutDir + File.separator + "MSBAS_LINEAR_RATE_LOS.tif");
+            if (Files.exists(Paths.get(sbasDscDir))) {
+                Product product = ProductIO.readProduct(sbasDscDir + File.separator + "MSBAS_LINEAR_RATE_LOS.tif");
 
-            product.getBandAt(0).readRasterDataFully();
-            for (int j = 0; j < mask.length; j++) {
-                if (!mask[j]) {
-                    product.getBandAt(0).getRasterData().setElemFloatAt(j, Float.NaN);
+                product.getBandAt(0).readRasterDataFully();
+                for (int j = 0; j < mask.length; j++) {
+                    if (!mask[j]) {
+                        product.getBandAt(0).getRasterData().setElemFloatAt(j, Float.NaN);
+                    }
                 }
+                File file = new File(sbasDscDir + File.separator + "MSBAS_LINEAR_RATE_LOS_coh_filt.tif");
+                ProductIO.writeProduct(product,
+                        file,
+                        "GeoTiff",
+                        false,
+                        ProgressMonitor.NULL);
+                product.closeIO();
             }
-            File file = new File(msbasoutDir + File.separator +  "MSBAS_LINEAR_RATE_LOS_coh_filt.tif");
-            ProductIO.writeProduct(product,
-                    file,
-                    "GeoTiff",
-                    false,
-                    ProgressMonitor.NULL);
-            product.closeIO();
+
+            if (Files.exists(Paths.get(sbasAscDir))) {
+                Product product = ProductIO.readProduct(sbasAscDir + File.separator + "MSBAS_LINEAR_RATE_LOS.tif");
+
+                product.getBandAt(0).readRasterDataFully();
+                for (int j = 0; j < mask.length; j++) {
+                    if (!mask[j]) {
+                        product.getBandAt(0).getRasterData().setElemFloatAt(j, Float.NaN);
+                    }
+                }
+                File file = new File(sbasAscDir + File.separator + "MSBAS_LINEAR_RATE_LOS_coh_filt.tif");
+                ProductIO.writeProduct(product,
+                        file,
+                        "GeoTiff",
+                        false,
+                        ProgressMonitor.NULL);
+                product.closeIO();
+            }
 
             return;
 

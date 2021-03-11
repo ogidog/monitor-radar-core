@@ -88,30 +88,9 @@ public class Stage8 {
             }
             new File(geotiffDir + File.separator + "msbas").mkdirs();
 
-            int dscWidth = 999999999, dscHeight = 999999999, ascWidth = 999999999, ascHeight = 999999999, minWidth = 999999999, minHeight = 999999999;
-            for (int i = 0; i < dscFiles.length; i++) {
-                Product product = ProductIO.readProduct(dscFiles[i]);
-                if (product.getSceneRasterWidth() < dscWidth) {
-                    dscWidth = product.getSceneRasterWidth();
-                }
-                if (product.getSceneRasterHeight() < dscHeight) {
-                    dscHeight = product.getSceneRasterHeight();
-                }
-                product.closeIO();
-            }
-            for (int i = 0; i < ascFiles.length; i++) {
-                Product product = ProductIO.readProduct(ascFiles[i]);
-                if (product.getSceneRasterWidth() < ascWidth) {
-                    ascWidth = product.getSceneRasterWidth();
-                }
-                if (product.getSceneRasterHeight() < ascHeight) {
-                    ascHeight = product.getSceneRasterHeight();
-                }
-                product.closeIO();
-            }
-
-            minWidth = Math.min(dscWidth, ascWidth) - 1;
-            minHeight = Math.min(dscHeight, ascHeight) - 1;
+            Product product = ProductIO.readProduct(dscFiles[0]);
+            int tiffWidth = product.getSceneRasterWidth();
+            int tiffHeight = product.getSceneRasterHeight();
 
             //TODO: Сделать поиск когерентных областей, используя coh файлы из snaphu import
 
@@ -120,10 +99,10 @@ public class Stage8 {
             cmd = "";
             for (int i = 0; i < header.length; i++) {
                 if (header[i].contains("FILE_SIZE")) {
-                    header[i] = "FILE_SIZE=" + String.valueOf(minWidth) + ", " + String.valueOf(minHeight);
+                    header[i] = "FILE_SIZE=" + String.valueOf(tiffWidth) + ", " + String.valueOf(tiffHeight);
                 }
                 if (header[i].contains("WINDOW_SIZE")) {
-                    header[i] = "WINDOW_SIZE=0, " + String.valueOf(minWidth - 1) + ", 0, " + String.valueOf(minHeight - 1);
+                    header[i] = "WINDOW_SIZE=0, " + String.valueOf(tiffWidth - 1) + ", 0, " + String.valueOf(tiffHeight - 1);
                 }
                 cmd = cmd + header[i] + "\n";
             }
