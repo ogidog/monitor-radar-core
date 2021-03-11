@@ -16,7 +16,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class Stage2 {
+public class Stage2bak {
 
     public static void main(String[] args) {
 
@@ -90,12 +90,6 @@ public class Stage2 {
                 graph.getNode("Back-Geocoding").getConfiguration().getChild(key.toString())
                         .setValue(value.toString());
             });
-
-            for (int i = 0; i < products.length; i++) {
-                for (int j = i; j < products.length; j++) {
-
-                }
-            }
 
             String masterProductName = InSARStackOverview.findOptimalMasterProduct(products).getName();
             String masterProductPath = applyorbitfileDir;
