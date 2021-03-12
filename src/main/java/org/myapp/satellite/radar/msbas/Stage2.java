@@ -96,6 +96,7 @@ public class Stage2 {
             for (int i = 0; i < products.length; i++) {
                 int masterDate = Integer.valueOf(products[i].getName().split("_")[5].split("T")[0].trim());
                 //network.addEdge(i, masterDate);
+                сделать номера вместо дат
                 for (int j = i + 1; j < products.length; j++) {
                     spi = new BackGeocodingOp.Spi();
                     op = (BackGeocodingOp) spi.createOperator();
