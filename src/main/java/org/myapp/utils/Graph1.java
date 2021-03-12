@@ -3,21 +3,14 @@ package org.myapp.utils;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-public class Network {
-
-    public static void main(String[] args) {
-
-    }
-}
-
-class Graph {
+public class Graph1 {
     private int V;   // No. of vertices
 
     // Array  of lists for Adjacency List Representation
     private LinkedList<Integer> adj[];
 
     // Constructor
-    Graph(int v) {
+    public Graph1(int v) {
         V = v;
         adj = new LinkedList[v];
         for (int i = 0; i < v; ++i)
@@ -25,15 +18,14 @@ class Graph {
     }
 
     //Function to add an edge into the graph
-    void addEdge(int v, int w) {
+    public void addEdge(int v, int w) {
         adj[v].add(w);  // Add w to v's list.
     }
 
     // A function used by DFS
-    void DFSUtil(int v, boolean visited[]) {
+    public void DFSUtil(int v, boolean visited[]) {
         // Mark the current node as visited and print it
         visited[v] = true;
-        System.out.print(v + " ");
 
         // Recur for all the vertices adjacent to this vertex
         Iterator<Integer> i = adj[v].listIterator();
@@ -45,12 +37,13 @@ class Graph {
     }
 
     // The function to do DFS traversal. It uses recursive DFSUtil()
-    void DFS(int v) {
+    public boolean[] DFS(int v) {
         // Mark all the vertices as not visited(set as
         // false by default in java)
         boolean visited[] = new boolean[V];
 
         // Call the recursive helper function to print DFS traversal
         DFSUtil(v, visited);
+        return visited;
     }
 }

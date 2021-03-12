@@ -2,18 +2,23 @@ package org.myapp.satellite.radar.msbas;
 
 import org.esa.s1tbx.commons.Sentinel1Utils;
 import org.esa.s1tbx.insar.gpf.InSARStackOverview;
+import org.esa.s1tbx.sar.gpf.orbits.ApplyOrbitFileOp;
+import org.esa.s1tbx.sentinel1.gpf.BackGeocodingOp;
 import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.gpf.OperatorSpi;
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.myapp.utils.ConsoleArgsReader;
+import org.myapp.utils.Graph1;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Stage2 {
@@ -64,11 +69,8 @@ public class Stage2 {
             } else {
                 graphFile = "backgeocoding.xml";
             }
-            FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
-            Graph graph = GraphIO.read(fileReader);
-            fileReader.close();
 
-            if (Files.exists(Paths.get(backgeocodingDir))) {
+            /*if (Files.exists(Paths.get(backgeocodingDir))) {
                 Files.walk(Paths.get(backgeocodingDir))
                         .sorted(Comparator.reverseOrder())
                         .map(Path::toFile)
@@ -83,19 +85,41 @@ public class Stage2 {
                         .map(Path::toFile)
                         .forEach(File::delete);
             }
-            new File(stage2Dir).mkdirs();
+            new File(stage2Dir).mkdirs();*/
+
+            OperatorSpi spi;
+            BackGeocodingOp op;
+            Product targetProduct;
+            float modelledCoherenceThreshold = 0.93f;
+
+            Graph1 network = new Graph1(products.length);
+            for (int i = 0; i < products.length; i++) {
+                int masterDate = Integer.valueOf(products[i].getName().split("_")[5].split("T")[0].trim());
+                network.addEdge(i, masterDate);
+                for (int j = i + 1; j < products.length; j++) {
+                    spi = new BackGeocodingOp.Spi();
+                    op = (BackGeocodingOp) spi.createOperator();
+                    op.setSourceProducts(new Product[]{products[i], products[j]});
+                    targetProduct = op.getTargetProduct();
+                    int slaveDate = Integer.valueOf(products[j].getName().split("_")[5].split("T")[0].trim());
+                    float modelledCoherence = Float.valueOf(targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getElement("Baselines").getElementAt(0).getElementAt(1).getAttribute("Modelled Coherence").getData().toString());
+                    if (modelledCoherence > modelledCoherenceThreshold) {
+                        network.addEdge(i, slaveDate);
+                    }
+                }
+            }
+            boolean visited[] = network.DFS(products.length-1);
+
+
+            /*FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
+            Graph graph = GraphIO.read(fileReader);
+            fileReader.close();
 
             // BackGeocoding
             ((HashMap) parameters.get("BackGeocoding")).forEach((key, value) -> {
                 graph.getNode("Back-Geocoding").getConfiguration().getChild(key.toString())
                         .setValue(value.toString());
             });
-
-            for (int i = 0; i < products.length; i++) {
-                for (int j = i; j < products.length; j++) {
-
-                }
-            }
 
             String masterProductName = InSARStackOverview.findOptimalMasterProduct(products).getName();
             String masterProductPath = applyorbitfileDir;
@@ -130,7 +154,7 @@ public class Stage2 {
                 }
             });
 
-            cmdWriter.close();
+            cmdWriter.close();*/
 
             return;
 
