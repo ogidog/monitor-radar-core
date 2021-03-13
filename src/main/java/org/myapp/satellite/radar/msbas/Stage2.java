@@ -1,8 +1,6 @@
 package org.myapp.satellite.radar.msbas;
 
 import org.esa.s1tbx.commons.Sentinel1Utils;
-import org.esa.s1tbx.insar.gpf.InSARStackOverview;
-import org.esa.s1tbx.sar.gpf.orbits.ApplyOrbitFileOp;
 import org.esa.s1tbx.sentinel1.gpf.BackGeocodingOp;
 import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.datamodel.Product;
@@ -18,7 +16,6 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Stage2 {
@@ -59,18 +56,7 @@ public class Stage2 {
                 }
             }).toArray(Product[]::new);
 
-            Sentinel1Utils s1u = new Sentinel1Utils(products[0]);
-            int numOfBurst = s1u.getNumOfBursts(s1u.getSubSwath()[0].subSwathName);
-            String polarization = s1u.getPolarizations()[0].toString();
-
-            String graphFile;
-            if (numOfBurst > 1) {
-                graphFile = "esd.xml";
-            } else {
-                graphFile = "backgeocoding.xml";
-            }
-
-            /*if (Files.exists(Paths.get(backgeocodingDir))) {
+            if (Files.exists(Paths.get(backgeocodingDir))) {
                 Files.walk(Paths.get(backgeocodingDir))
                         .sorted(Comparator.reverseOrder())
                         .map(Path::toFile)
@@ -85,34 +71,79 @@ public class Stage2 {
                         .map(Path::toFile)
                         .forEach(File::delete);
             }
-            new File(stage2Dir).mkdirs();*/
+            new File(stage2Dir).mkdirs();
 
             OperatorSpi spi;
             BackGeocodingOp op;
             Product targetProduct;
             float modelledCoherenceThreshold = 0.93f;
 
-            Graph1 network = new Graph1(products.length);
+            String[] productNames = new String[products.length];
             for (int i = 0; i < products.length; i++) {
-                int masterDate = Integer.valueOf(products[i].getName().split("_")[5].split("T")[0].trim());
-                //network.addEdge(i, masterDate);
-                сделать номера вместо дат
-                for (int j = i + 1; j < products.length; j++) {
-                    spi = new BackGeocodingOp.Spi();
-                    op = (BackGeocodingOp) spi.createOperator();
-                    op.setSourceProducts(new Product[]{products[i], products[j]});
-                    targetProduct = op.getTargetProduct();
-                    int slaveDate = Integer.valueOf(products[j].getName().split("_")[5].split("T")[0].trim());
-                    float modelledCoherence = Float.valueOf(targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getElement("Baselines").getElementAt(0).getElementAt(1).getAttribute("Modelled Coherence").getData().toString());
-                    if (modelledCoherence > modelledCoherenceThreshold) {
-                        network.addEdge(i, slaveDate);
+                productNames[i] = products[i].getName();
+            }
+
+            boolean visited[] = new boolean[products.length];
+            Arrays.fill(visited, false);
+            visited[0] = true;
+            visited[1] = true;
+            Graph1 network = null;
+
+            Product[] sourceProducts;
+
+            while (!verifyAllEqual(visited)) {
+                network = new Graph1(products.length);
+                for (int i = 0; i < products.length; i++) {
+                    for (int j = i + 1; j < products.length; j++) {
+                        spi = new BackGeocodingOp.Spi();
+                        op = (BackGeocodingOp) spi.createOperator();
+                        sourceProducts = new Product[]{products[i], products[j]};
+                        op.setSourceProducts(sourceProducts);
+                        targetProduct = op.getTargetProduct();
+                        float modelledCoherence = Float.valueOf(targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getElement("Baselines").getElementAt(0).getElementAt(1).getAttribute("Modelled Coherence").getData().toString());
+                        if (modelledCoherence > modelledCoherenceThreshold) {
+                            network.addEdge(i, j);
+                        }
+                        targetProduct.closeIO();
+                        targetProduct = null;
+                        sourceProducts = null;
+                        op.dispose();
+                        op = null;
                     }
                 }
+                visited = network.DFS(0);
+                modelledCoherenceThreshold -= 0.01f;
             }
-            boolean visited[] = network.DFS(products.length-1);
 
+            for (int i = 0; i < products.length; i++) {
+                products[i].closeIO();
+            }
 
-            /*FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
+            Iterator<LinkedList<Integer>> masterIter = Arrays.stream(network.adj).iterator();
+            int k = 0;
+            ArrayList<String[]> pairs = new ArrayList<>();
+            while (masterIter.hasNext()) {
+                String masterName = productNames[k];
+                Iterator<Integer> slaveIter = masterIter.next().iterator();
+                while (slaveIter.hasNext()) {
+                    String slaveName = productNames[slaveIter.next()];
+                    pairs.add(new String[]{masterName, slaveName});
+                }
+                k += 1;
+            }
+
+            Sentinel1Utils s1u = new Sentinel1Utils(products[0]);
+            int numOfBurst = s1u.getNumOfBursts(s1u.getSubSwath()[0].subSwathName);
+            String polarization = s1u.getPolarizations()[0].toString();
+
+            String graphFile;
+            if (numOfBurst > 1) {
+                graphFile = "esd.xml";
+            } else {
+                graphFile = "backgeocoding.xml";
+            }
+
+            FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
             Graph graph = GraphIO.read(fileReader);
             fileReader.close();
 
@@ -122,42 +153,24 @@ public class Stage2 {
                         .setValue(value.toString());
             });
 
-            String masterProductName = InSARStackOverview.findOptimalMasterProduct(products).getName();
-            String masterProductPath = applyorbitfileDir;
-            String masterProductDate = masterProductName.split("_")[5].split("T")[0];
-            String slaveProductDate;
-
             PrintWriter cmdWriter = new PrintWriter(stage2Dir + File.separator + "stage2.cmd", "UTF-8");
-            graph.getNode("Read").getConfiguration().getChild("file").setValue(masterProductPath + File.separator + masterProductName + ".dim");
-            for (int i = 0; i < products.length; i++) {
-                Product product = products[i];
-                String slaveProductName = product.getName();
-                if (!masterProductName.equals(slaveProductName)) {
-                    slaveProductDate = slaveProductName.split("_")[5].split("T")[0];
-                    graph.getNode("Read(2)").getConfiguration().getChild("file").setValue(masterProductPath + File.separator + slaveProductName + ".dim");
-                    graph.getNode("Write").getConfiguration().getChild("file")
-                            .setValue(backgeocodingDir + File.separator + masterProductDate + "_" + polarization + "_" + slaveProductDate + "_" + polarization + ".dim");
+            for (int i = 0; i < pairs.size(); i++) {
+                String masterProductDate = pairs.get(i)[0].split("_")[5].split("T")[0];
+                String slaveProductDate = pairs.get(i)[1].split("_")[5].split("T")[0];
+                graph.getNode("Read").getConfiguration().getChild("file").setValue(applyorbitfileDir + File.separator + pairs.get(i)[0] + ".dim");
+                graph.getNode("Read(2)").getConfiguration().getChild("file").setValue(applyorbitfileDir + File.separator + pairs.get(i)[1] + ".dim");
+                graph.getNode("Write").getConfiguration().getChild("file")
+                        .setValue(backgeocodingDir + File.separator + masterProductDate + "_" + polarization + "_" + slaveProductDate + "_" + polarization + ".dim");
 
-                    FileWriter fileWriter = new FileWriter(stage2Dir + File.separator + masterProductDate + "_" + polarization + "_" + slaveProductDate + "_" + polarization + ".xml");
-                    GraphIO.write(graph, fileWriter);
-                    fileWriter.flush();
-                    fileWriter.close();
+                FileWriter fileWriter = new FileWriter(stage2Dir + File.separator + masterProductDate + "_" + polarization + "_" + slaveProductDate + "_" + polarization + ".xml");
+                GraphIO.write(graph, fileWriter);
+                fileWriter.flush();
+                fileWriter.close();
 
-                    cmdWriter.println("gpt " + stage2Dir + File.separator + masterProductDate + "_" + polarization + "_" + slaveProductDate + "_" + polarization + ".xml");
-                }
+                cmdWriter.println("gpt " + stage2Dir + File.separator + masterProductDate + "_" + polarization + "_" + slaveProductDate + "_" + polarization + ".xml");
             }
 
-            Arrays.stream(products).forEach(product -> {
-                try {
-                    product.closeIO();
-                } catch (IOException e) {
-                    System.out.println(e);
-                }
-            });
-
-            cmdWriter.close();*/
-
-            return;
+            cmdWriter.close();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -198,5 +211,14 @@ public class Stage2 {
             e.printStackTrace();
             return null;
         }
+    }
+
+    static boolean verifyAllEqual(boolean[] array1) {
+        boolean firstElem = array1[0];
+        for (int i = 0; i < array1.length; i++) {
+            if (firstElem != array1[i])
+                return false;
+        }
+        return true;
     }
 }

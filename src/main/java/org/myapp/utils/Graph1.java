@@ -7,7 +7,7 @@ public class Graph1 {
     private int V;   // No. of vertices
 
     // Array  of lists for Adjacency List Representation
-    private LinkedList<Integer> adj[];
+    public LinkedList<Integer> adj[];
 
     // Constructor
     public Graph1(int v) {

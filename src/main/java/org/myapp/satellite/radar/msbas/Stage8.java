@@ -88,9 +88,18 @@ public class Stage8 {
             }
             new File(geotiffDir + File.separator + "msbas").mkdirs();
 
-            Product product = ProductIO.readProduct(dscFiles[0]);
-            int tiffWidth = product.getSceneRasterWidth();
-            int tiffHeight = product.getSceneRasterHeight();
+            int tiffWidth = 99999999, tiffHeight = 99999999;
+            for (int i = 0; i < dscFiles.length; i++) {
+                Product product = ProductIO.readProduct(dscFiles[i]);
+                if (product.getSceneRasterWidth() < tiffWidth) {
+                    tiffWidth = product.getSceneRasterWidth();
+                }
+                if (product.getSceneRasterHeight() < tiffHeight) {
+                    tiffHeight = product.getSceneRasterHeight();
+                }
+                product.closeIO();
+            }
+            сделать подрезку geotiff и geodimap
 
             //TODO: Сделать поиск когерентных областей, используя coh файлы из snaphu import
 

@@ -39,7 +39,7 @@ public class Stage9 {
             }
 
             if (Files.exists(Paths.get(geodimapAscDir))) {
-                maskDsc = coherence.getCohMask(geodimapAscDir);
+                maskAsc = coherence.getCohMask(geodimapAscDir);
             }
 
             if (Files.exists(Paths.get(sbasDscDir))) {

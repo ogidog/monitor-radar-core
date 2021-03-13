@@ -33,8 +33,17 @@ public class Coherence {
                 }
             }).toArray(Product[]::new);
 
-            int height = products[0].getSceneRasterHeight();
-            int width = products[0].getSceneRasterWidth();
+
+            int width = 99999999, height = 99999999;
+            for (int i = 0; i < products.length; i++) {
+                if (products[i].getSceneRasterWidth() < width) {
+                    width = products[i].getSceneRasterWidth();
+                }
+                if (products[i].getSceneRasterHeight() < height) {
+                    height = products[i].getSceneRasterHeight();
+                }
+            }
+
             mask = new boolean[height * width];
             Arrays.fill(mask, false);
             ProductData pd = ProductData.createInstance(30, height * width);
