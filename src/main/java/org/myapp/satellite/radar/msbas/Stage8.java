@@ -52,7 +52,7 @@ public class Stage8 {
                     String bperp = product.getMetadataRoot().getElement("Abstracted_Metadata").getElement("Baselines").getElementAt(0).getElementAt(1)
                             .getAttribute("Perp Baseline").getData().toString();
                     product.closeIO();
-                    cmd = cmd + "../dsc/" + Paths.get(dscTiffFiles[i]).getFileName() + " " + bperp + " " + product.getName().split("_")[0] + " " + product.getName().split("_")[2] + "\n";
+                    cmd = cmd + "../dsc/" + Paths.get(dscTiffFiles[i]).getFileName().toString().replace(".tif",".sub.tif") + " " + bperp + " " + product.getName().split("_")[0] + " " + product.getName().split("_")[2] + "\n";
                 }
                 cmdWriter.print(cmd.trim());
                 cmdWriter.close();
@@ -87,7 +87,7 @@ public class Stage8 {
                     String bperp = product.getMetadataRoot().getElement("Abstracted_Metadata").getElement("Baselines").getElementAt(0).getElementAt(1)
                             .getAttribute("Perp Baseline").getData().toString();
                     product.closeIO();
-                    cmd = cmd + "../asc/" + Paths.get(dscTiffFiles[i]).getFileName() + " " + bperp + " " + product.getName().split("_")[0] + " " + product.getName().split("_")[2] + "\n";
+                    cmd = cmd + "../asc/" + Paths.get(dscTiffFiles[i]).getFileName().toString().replace(".tif",".sub.tif") + " " + bperp + " " + product.getName().split("_")[0] + " " + product.getName().split("_")[2] + "\n";
                 }
                 cmdWriter.print(cmd.trim());
                 cmdWriter.close();

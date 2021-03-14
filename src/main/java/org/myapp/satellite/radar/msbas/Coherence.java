@@ -17,7 +17,7 @@ public class Coherence {
 
         try {
             String[] files = Files.walk(Paths.get(cohFilesDir)).filter(path -> {
-                if (path.toString().endsWith(".dim")) {
+                if (path.toString().endsWith(".dim" исправить на sub)) {
                     return true;
                 } else {
                     return false;
