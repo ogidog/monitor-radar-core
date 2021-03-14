@@ -1,7 +1,12 @@
 package org.myapp.satellite.radar.msbas;
 
+import com.bc.ceres.core.ProgressMonitor;
+import org.esa.s1tbx.sentinel1.gpf.TOPSARSplitOp;
 import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.gpf.OperatorSpi;
+import org.esa.snap.core.gpf.common.SubsetOp;
+import org.esa.snap.core.gpf.common.WriteOp;
 import org.myapp.utils.ConsoleArgsReader;
 
 import java.io.File;
@@ -105,7 +110,6 @@ public class Stage8 {
             new File(geotiffDir + File.separator + "msbas").mkdirs();
 
             int tiffWidth = 99999999, tiffHeight = 99999999;
-
             if (Files.exists(Paths.get(geotiffDir + File.separator + "dsc"))) {
                 for (int i = 0; i < dscTiffFiles.length; i++) {
                     Product product = ProductIO.readProduct(dscTiffFiles[i]);
@@ -125,6 +129,63 @@ public class Stage8 {
                     if (product.getSceneRasterHeight() < tiffHeight) {
                         tiffHeight = product.getSceneRasterHeight();
                     }
+                    product.closeIO();
+                }
+            }
+            if (Files.exists(Paths.get(geotiffDir + File.separator + "asc"))) {
+                for (int i = 0; i < ascTiffFiles.length; i++) {
+                    Product product = ProductIO.readProduct(ascTiffFiles[i]);
+                    if (product.getSceneRasterWidth() < tiffWidth) {
+                        tiffWidth = product.getSceneRasterWidth();
+                    }
+                    if (product.getSceneRasterHeight() < tiffHeight) {
+                        tiffHeight = product.getSceneRasterHeight();
+                    }
+                    product.closeIO();
+                }
+                for (int i = 0; i < ascDimapFiles.length; i++) {
+                    Product product = ProductIO.readProduct(ascDimapFiles[i]);
+                    if (product.getSceneRasterWidth() < tiffWidth) {
+                        tiffWidth = product.getSceneRasterWidth();
+                    }
+                    if (product.getSceneRasterHeight() < tiffHeight) {
+                        tiffHeight = product.getSceneRasterHeight();
+                    }
+                    product.closeIO();
+                }
+            }
+
+            if (Files.exists(Paths.get(geotiffDir + File.separator + "dsc"))) {
+                for (int i = 0; i < dscTiffFiles.length; i++) {
+                    OperatorSpi subsetSpi = new SubsetOp.Spi();
+                    SubsetOp subsetOp = (SubsetOp) subsetSpi.createOperator();
+                    Product product = ProductIO.readProduct(dscTiffFiles[i]);
+                    subsetOp.setSourceProduct(product);
+                    subsetOp.setParameter("region", "0,0," + tiffWidth + "," + tiffHeight);
+                    Product targetProduct = subsetOp.getTargetProduct();
+
+                    File file = new File(dscTiffFiles[i].replace(".tif",".sub.tif"));
+                    ProductIO.writeProduct(targetProduct, file,
+                            "GeoTiff",
+                            false,
+                            ProgressMonitor.NULL);
+                    targetProduct.closeIO();
+                    product.closeIO();
+                }
+                for (int i = 0; i < dscDimapFiles.length; i++) {
+                    OperatorSpi subsetSpi = new SubsetOp.Spi();
+                    SubsetOp subsetOp = (SubsetOp) subsetSpi.createOperator();
+                    Product product = ProductIO.readProduct(dscDimapFiles[i]);
+                    subsetOp.setSourceProduct(product);
+                    subsetOp.setParameter("region", "0,0," + tiffWidth + "," + tiffHeight);
+                    Product targetProduct = subsetOp.getTargetProduct();
+
+                    File file = new File(dscDimapFiles[i].replace(".dim",".sub.dim"));
+                    ProductIO.writeProduct(targetProduct, file,
+                            "BEAM-DIMAP",
+                            false,
+                            ProgressMonitor.NULL);
+                    targetProduct.closeIO();
                     product.closeIO();
                 }
             }
