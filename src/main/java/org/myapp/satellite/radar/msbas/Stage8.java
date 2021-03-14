@@ -189,6 +189,40 @@ public class Stage8 {
                     product.closeIO();
                 }
             }
+            if (Files.exists(Paths.get(geotiffDir + File.separator + "asc"))) {
+                for (int i = 0; i < ascTiffFiles.length; i++) {
+                    OperatorSpi subsetSpi = new SubsetOp.Spi();
+                    SubsetOp subsetOp = (SubsetOp) subsetSpi.createOperator();
+                    Product product = ProductIO.readProduct(ascTiffFiles[i]);
+                    subsetOp.setSourceProduct(product);
+                    subsetOp.setParameter("region", "0,0," + tiffWidth + "," + tiffHeight);
+                    Product targetProduct = subsetOp.getTargetProduct();
+
+                    File file = new File(ascTiffFiles[i].replace(".tif",".sub.tif"));
+                    ProductIO.writeProduct(targetProduct, file,
+                            "GeoTiff",
+                            false,
+                            ProgressMonitor.NULL);
+                    targetProduct.closeIO();
+                    product.closeIO();
+                }
+                for (int i = 0; i < ascDimapFiles.length; i++) {
+                    OperatorSpi subsetSpi = new SubsetOp.Spi();
+                    SubsetOp subsetOp = (SubsetOp) subsetSpi.createOperator();
+                    Product product = ProductIO.readProduct(ascDimapFiles[i]);
+                    subsetOp.setSourceProduct(product);
+                    subsetOp.setParameter("region", "0,0," + tiffWidth + "," + tiffHeight);
+                    Product targetProduct = subsetOp.getTargetProduct();
+
+                    File file = new File(ascDimapFiles[i].replace(".dim",".sub.dim"));
+                    ProductIO.writeProduct(targetProduct, file,
+                            "BEAM-DIMAP",
+                            false,
+                            ProgressMonitor.NULL);
+                    targetProduct.closeIO();
+                    product.closeIO();
+                }
+            }
 
             //TODO: Сделать поиск когерентных областей, используя coh файлы из snaphu import
 

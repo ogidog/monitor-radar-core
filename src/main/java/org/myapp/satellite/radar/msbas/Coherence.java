@@ -17,7 +17,7 @@ public class Coherence {
 
         try {
             String[] files = Files.walk(Paths.get(cohFilesDir)).filter(path -> {
-                if (path.toString().endsWith(".dim" исправить на sub)) {
+                if (path.toString().endsWith(".sub.dim")) {
                     return true;
                 } else {
                     return false;
@@ -50,7 +50,7 @@ public class Coherence {
             for (int i = 0; i < products.length; i++) {
                 products[i].getBandAt(2).readRasterData(0, 0, width, height, pd);
                 for (int j = 0; j < pd.getNumElems(); j++) {
-                    if (pd.getElemFloatAt(j) > 0.5) {
+                    if (pd.getElemFloatAt(j) > 0.6) {
                         mask[j] = true;
                     }
                 }
