@@ -33,6 +33,7 @@ public class Graph1 {
             int n = i.next();
             if (!visited[n])
                 DFSUtil(n, visited);
+
         }
     }
 

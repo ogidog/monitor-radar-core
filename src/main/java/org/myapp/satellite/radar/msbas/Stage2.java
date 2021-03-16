@@ -89,31 +89,32 @@ public class Stage2 {
             visited[1] = true;
             Graph1 network = null;
 
-            Product[] sourceProducts;
-
+            Product[] sourceProducts = new Product[2];
             while (!verifyAllEqual(visited)) {
                 network = new Graph1(products.length);
                 for (int i = 0; i < products.length; i++) {
                     for (int j = i + 1; j < products.length; j++) {
                         spi = new BackGeocodingOp.Spi();
                         op = (BackGeocodingOp) spi.createOperator();
-                        sourceProducts = new Product[]{products[i], products[j]};
+                        sourceProducts[0] = products[i];
+                        sourceProducts[1] = products[j];
                         op.setSourceProducts(sourceProducts);
                         targetProduct = op.getTargetProduct();
                         float modelledCoherence = Float.valueOf(targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getElement("Baselines").getElementAt(0).getElementAt(1).getAttribute("Modelled Coherence").getData().toString());
                         if (modelledCoherence > modelledCoherenceThreshold) {
                             network.addEdge(i, j);
                         }
+                        targetProduct.closeProductReader();
+                        targetProduct.closeProductWriter();
                         targetProduct.closeIO();
-                        targetProduct = null;
-                        sourceProducts = null;
+                        targetProduct.dispose();
                         op.dispose();
-                        op = null;
                     }
                 }
                 visited = network.DFS(0);
                 modelledCoherenceThreshold -= 0.01f;
             }
+            System.out.println("Modelled coherence: " + String.valueOf(modelledCoherenceThreshold + 0.01f));
 
             for (int i = 0; i < products.length; i++) {
                 products[i].closeIO();
