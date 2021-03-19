@@ -90,11 +90,13 @@ public class Stage2 {
             Graph1 network = null;
 
             Product[] sourceProducts = new Product[2];
-            while (!verifyAllEqual(visited)) {
-                network = new Graph1(products.length);
-                for (int i = 0; i < products.length; i++) {
-                    for (int j = i + 1; j < products.length; j++) {
-                        spi = new BackGeocodingOp.Spi();
+            ArrayList<String[]> pairs = new ArrayList<>();
+            //while (!verifyAllEqual(visited)) {
+            //    network = new Graph1(products.length);
+                for (int i = 0; i < products.length-3; i++) {
+                    for (int j = i + 1; j < i + 3; j++) {
+                        pairs.add(new String[]{products[i].getName(), products[j].getName()});
+                        /*spi = new BackGeocodingOp.Spi();
                         op = (BackGeocodingOp) spi.createOperator();
                         sourceProducts[0] = products[i];
                         sourceProducts[1] = products[j];
@@ -108,21 +110,20 @@ public class Stage2 {
                         targetProduct.closeProductWriter();
                         targetProduct.closeIO();
                         targetProduct.dispose();
-                        op.dispose();
+                        op.dispose();*/
                     }
                 }
-                visited = network.DFS(0);
-                modelledCoherenceThreshold -= 0.01f;
-            }
-            System.out.println("Modelled coherence: " + String.valueOf(modelledCoherenceThreshold + 0.01f));
+                //visited = network.DFS(0);
+                //modelledCoherenceThreshold -= 0.01f;
+            //}
+            //System.out.println("Modelled coherence: " + String.valueOf(modelledCoherenceThreshold + 0.01f));
 
             for (int i = 0; i < products.length; i++) {
                 products[i].closeIO();
             }
 
-            Iterator<LinkedList<Integer>> masterIter = Arrays.stream(network.adj).iterator();
+            /*Iterator<LinkedList<Integer>> masterIter = Arrays.stream(network.adj).iterator();
             int k = 0;
-            ArrayList<String[]> pairs = new ArrayList<>();
             while (masterIter.hasNext()) {
                 String masterName = productNames[k];
                 Iterator<Integer> slaveIter = masterIter.next().iterator();
@@ -131,7 +132,7 @@ public class Stage2 {
                     pairs.add(new String[]{masterName, slaveName});
                 }
                 k += 1;
-            }
+            }*/
 
             Sentinel1Utils s1u = new Sentinel1Utils(products[0]);
             int numOfBurst = s1u.getNumOfBursts(s1u.getSubSwath()[0].subSwathName);
