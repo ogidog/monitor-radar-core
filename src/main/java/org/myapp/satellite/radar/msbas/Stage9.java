@@ -36,10 +36,12 @@ public class Stage9 {
             Coherence coherence = new Coherence();
             if (Files.exists(Paths.get(geodimapDscDir))) {
                 maskDsc = coherence.getCohMask(geodimapDscDir);
+                //maskDsc = coherence.getMeanCohMask(geodimapDscDir);
             }
 
             if (Files.exists(Paths.get(geodimapAscDir))) {
                 maskAsc = coherence.getCohMask(geodimapAscDir);
+                //maskAsc = coherence.getMeanCohMask(geodimapDscDir);
             }
 
             if (Files.exists(Paths.get(sbasDscDir))) {
