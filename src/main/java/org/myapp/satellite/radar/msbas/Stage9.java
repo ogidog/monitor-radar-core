@@ -35,13 +35,13 @@ public class Stage9 {
             boolean[] maskDsc = null, maskAsc = null;
             Coherence coherence = new Coherence();
             if (Files.exists(Paths.get(geodimapDscDir))) {
-                maskDsc = coherence.getCohMask(geodimapDscDir);
-                //maskDsc = coherence.getMeanCohMask(geodimapDscDir);
+                //maskDsc = coherence.getCohMask(geodimapDscDir);
+                maskDsc = coherence.getMeanCohMask(geodimapDscDir);
             }
 
             if (Files.exists(Paths.get(geodimapAscDir))) {
-                maskAsc = coherence.getCohMask(geodimapAscDir);
-                //maskAsc = coherence.getMeanCohMask(geodimapDscDir);
+                //maskAsc = coherence.getCohMask(geodimapAscDir);
+                maskAsc = coherence.getMeanCohMask(geodimapDscDir);
             }
 
             if (Files.exists(Paths.get(sbasDscDir))) {
