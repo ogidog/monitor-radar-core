@@ -127,10 +127,6 @@ public class Stage1 {
             out.println(dateToProductName);
             out.close();
 
-            out = new PrintWriter(stage1Dir + File.separator + "stage1.cmd");
-            out.println("docker run -it -v " + outputDir + File.separator + "network" + ":/home/work/ ogidog/mintpy:latest python /home/python/MintPy/mintpy/legacy/select_network.py /home/work/selectNetwork.template -b /home/work/blList.txt -o /home/work/ifg_list.txt");
-            out.close();
-
             Files.copy(Paths.get(configDir + File.separator + "selectNetwork.template"),
                     Paths.get(outputDir + File.separator + "network" + File.separator + "selectNetwork.template"));
 
