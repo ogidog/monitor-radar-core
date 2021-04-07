@@ -24,29 +24,20 @@ public class Stage6 {
 
             HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
             String outputDir = consoleParameters.get("outputDir").toString();
-            String filesList1 = consoleParameters.get("filesList1").toString();
-            String filesList2 = consoleParameters.get("filesList2").toString();
             String graphDir = consoleParameters.get("graphDir").toString();
 
-            String[] files1;
-            if (!filesList1.contains(",")) {
-                files1 = Files.walk(Paths.get(filesList1)).filter(file -> file.toString().endsWith(".dim"))
-                        .map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
-            } else {
-                files1 = filesList1.split(",");
-            }
+            String snaphuexportDir = outputDir + File.separator + "snaphuexport";
+            String intfDir = outputDir + File.separator + "intf";
 
-            String[] files2;
-            if (!filesList1.contains(",")) {
-                files2 = Files.walk(Paths.get(filesList2)).filter(file -> file.toString().endsWith(".hdr") && file.toString().contains("UnwPhase"))
-                        .map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
-            } else {
-                files2 = filesList1.split(",");
-            }
+            String[] files1 = Files.walk(Paths.get(intfDir)).filter(file -> file.toString().endsWith(".dim"))
+                    .map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
+
+            String[] files2 = Files.walk(Paths.get(snaphuexportDir)).filter(file -> file.toString().endsWith(".hdr") && file.toString().contains("UnwPhase"))
+                    .map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
 
             String[][] pairs = new String[files1.length][2];
             for (int i = 0; i < files1.length; i++) {
-                String date = Paths.get(files1[i]).getFileName().toString();
+                String date = Paths.get(files1[i]).getFileName().toString().replace(".dim", "");
                 date = date.substring(0, date.length() - 4);
                 for (int j = 0; j < files2.length; j++) {
                     if (files2[j].contains(date)) {
@@ -57,7 +48,7 @@ public class Stage6 {
                 }
             }
 
-            String snaphuimportDir = outputDir + File.separator + "snaphu_import";
+            String snaphuimportDir = outputDir + File.separator + "snaphuimport";
             String stage6Dir = outputDir + "" + File.separator + "stage6";
             if (Files.exists(Paths.get(stage6Dir))) {
                 Files.walk(Paths.get(stage6Dir))
@@ -84,7 +75,7 @@ public class Stage6 {
                 graph.getNode("Read").getConfiguration().getChild("file").setValue(pairs[i][0]);
                 graph.getNode("Read(2)").getConfiguration().getChild("file").setValue(pairs[i][1]);
                 graph.getNode("Write").getConfiguration().getChild("file").setValue(snaphuimportDir
-                        + File.separator + Paths.get(files1[i]).getFileName().toString().replace(".dim", "_unw.dim"));
+                        + File.separator + Paths.get(files1[i]).getFileName().toString().replace(".dim", ".dim"));
 
                 FileWriter fileWriter = new FileWriter(stage6Dir + File.separator
                         + Paths.get(files1[i]).getFileName().toString().replace(".dim", ".xml"));
@@ -96,10 +87,10 @@ public class Stage6 {
             }
 
             cmdWriter.close();
+
         } catch (Exception e) {
             e.printStackTrace();
             return;
         }
     }
-
 }

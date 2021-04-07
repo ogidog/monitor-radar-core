@@ -20,19 +20,12 @@ public class Stage5 {
 
             HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
             String outputDir = consoleParameters.get("outputDir").toString();
-            String filesList = consoleParameters.get("filesList").toString();
 
-            String[] files;
-            if (!filesList.contains(",")) {
-                files = Files.walk(Paths.get(filesList)).filter(file -> file.toString().endsWith(".conf"))
-                        .map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
-            } else {
-                files = filesList.split(",");
-            }
-
-
-            String snaphuexportDir = outputDir + File.separator + "snaphu_export";
+            String snaphuexportDir = outputDir + File.separator + "snaphuexport";
             String stage5Dir = outputDir + "" + File.separator + "stage5";
+
+            String[] files = Files.walk(Paths.get(snaphuexportDir)).filter(file -> file.toString().endsWith(".conf"))
+                    .map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
 
             if (Files.exists(Paths.get(stage5Dir))) {
                 Files.walk(Paths.get(stage5Dir))
@@ -49,7 +42,7 @@ public class Stage5 {
                     if (line.contains("snaphu.conf")) {
                         String snaphuConfDir = Paths.get(files[i]).getParent().toString().trim();
                         cmdWriter.println("cd " + snaphuConfDir);
-                        cmdWriter.println(line.replace("#","").trim());
+                        cmdWriter.println(line.replace("#", "").trim());
                         break;
                     }
                 }

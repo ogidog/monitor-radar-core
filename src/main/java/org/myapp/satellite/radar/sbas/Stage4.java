@@ -20,14 +20,12 @@ import java.util.HashMap;
 
 public class Stage4 {
     public static void main(String[] args) {
-
         try {
 
             HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
             String outputDir = consoleParameters.get("outputDir").toString();
             String configDir = consoleParameters.get("configDir").toString();
             String graphDir = consoleParameters.get("graphDir").toString();
-            String filesList = consoleParameters.get("filesList").toString();
 
             HashMap parameters = getParameters(configDir);
             if (parameters == null) {
@@ -35,13 +33,12 @@ public class Stage4 {
                 return;
             }
 
-            String[] files;
-            if (!filesList.contains(",")) {
-                files = Files.walk(Paths.get(filesList)).filter(file -> file.toString().endsWith(".dim"))
-                        .map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
-            } else {
-                files = filesList.split(",");
-            }
+            String stage4Dir = outputDir + "" + File.separator + "stage4";
+            String snaphuexportDir = outputDir + File.separator + "snaphuexport";
+            String intfDir = outputDir + File.separator + "intf";
+
+            String[] files = Files.walk(Paths.get(intfDir)).filter(file -> file.toString().endsWith(".dim"))
+                    .map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
 
             for (int i = 0; i < files.length; i++) {
                 Path path = Paths.get(files[i]);
@@ -51,9 +48,6 @@ public class Stage4 {
                         "<NO_DATA_VALUE_USED>false</NO_DATA_VALUE_USED>");
                 Files.write(path, content.getBytes(charset));
             }
-
-            String snaphuexportDir = outputDir + File.separator + "snaphu_export";
-            String stage4Dir = outputDir + "" + File.separator + "stage4";
 
             if (Files.exists(Paths.get(snaphuexportDir))) {
                 Files.walk(Paths.get(snaphuexportDir))
@@ -109,4 +103,5 @@ public class Stage4 {
 
         return stageParameters;
     }
+
 }
