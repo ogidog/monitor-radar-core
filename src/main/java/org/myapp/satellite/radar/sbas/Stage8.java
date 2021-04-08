@@ -17,6 +17,7 @@ public class Stage8 {
         try {
             HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
             String outputDir = consoleParameters.get("outputDir").toString();
+            String dockerOutputDir = "/mnt/output";
 
             String prepDir = outputDir + File.separator + "prep";
             String stage8Dir = outputDir + "" + File.separator + "stage8";
@@ -31,8 +32,9 @@ public class Stage8 {
 
             PrintWriter cmdWriter = new PrintWriter(stage8Dir + File.separator + "stage8.cmd", "UTF-8");
             cmdWriter.println("cd " + prepDir);
-            cmdWriter.println("docker run -it -v " + prepDir + ":/home/work/ ogidog/mintpy:latest python /home/python/MintPy/mintpy/smallbaselineApp.py /home/work/smallbaselineApp.cfg");
-            cmdWriter.println("docker run -it -v " + prepDir + ":/home/work/ ogidog/mintpy:latest python /home/python/MintPy/mintpy/save_qgis.py -g /home/work/inputs/geometryGeo.h5 -o /home/work/velocity.shp /home/work/timeseries.h5");
+            cmdWriter.println("docker run --entrypoint python -v " + prepDir + ":" + dockerOutputDir + " -it mintpy_prep:1.0 /home/python/MintPy/mintpy/smallbaselineApp.py " + dockerOutputDir + "/smallbaselineApp.cfg");
+            cmdWriter.println("docker run --entrypoint python -v " + prepDir + ":" + dockerOutputDir + " -it mintpy_prep:1.0 /home/python/MintPy/mintpy/save_qgis.py -g "
+                    + dockerOutputDir + "/inputs/geometryGeo.h5 -o " + dockerOutputDir + "/velocity.shp " + dockerOutputDir + "/timeseries.h5");
             cmdWriter.close();
 
         } catch (Exception e) {

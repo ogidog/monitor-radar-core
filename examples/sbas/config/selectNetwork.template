@@ -1,4 +1,4 @@
-selectNetwork.method = sequential
+selectNetwork.method = delaunay
 selectNetwork.referenceFile = no
 
 # Baseline Info
@@ -16,4 +16,4 @@ selectNetwork.excludeDate   = no
 
 selectNetwork.connNum       = 2
 
-mintpy.compute.cluster 		= no
+mintpy.compute.cluster = no

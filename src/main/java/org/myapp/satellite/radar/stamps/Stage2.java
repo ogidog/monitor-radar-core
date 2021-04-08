@@ -81,15 +81,14 @@ public class Stage2 {
                 }
             }).toArray(Product[]::new);
 
-            Sentinel1Utils s1u = new Sentinel1Utils(products[0]);
-            int numOfBurst = s1u.getNumOfBursts(s1u.getSubSwath()[0].subSwathName);
-
             HashMap parameters = getParameters(configDir);
             if (parameters == null) {
                 System.out.println("Fail to read parameters.");
                 return;
             }
 
+            Sentinel1Utils s1u = new Sentinel1Utils(products[0]);
+            int numOfBurst = s1u.getNumOfBursts(s1u.getSubSwath()[0].subSwathName);
             String graphFile;
             if (numOfBurst > 1) {
                 graphFile = "stamps_prep.xml";
