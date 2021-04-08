@@ -55,7 +55,7 @@ public class Coherence {
             Arrays.fill(mask, false);
             for (int i = 0; i < coh.length; i++) {
                 coh[i] = coh[i] / products.length;
-                if (coh[i] > 0.5f) {
+                if (coh[i] > 0.4f) {
                     mask[i] = true;
                 }
             }
@@ -108,7 +108,7 @@ public class Coherence {
             for (int i = 0; i < products.length; i++) {
                 products[i].getBandAt(2).readRasterData(0, 0, width, height, pd);
                 for (int j = 0; j < pd.getNumElems(); j++) {
-                    if (pd.getElemFloatAt(j) > 0.6) {
+                    if (pd.getElemFloatAt(j) > 0.5f) {
                         mask[j] = true;
                     }
                 }
