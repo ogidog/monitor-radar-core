@@ -1,1 +1,74 @@
-{"name":"dataset","description":"DataSet settings are used for the processing.","label":"DataSet","parameters":{"filesList":{"name":"filesList","options":[""],"index":1,"defaultvalue":"","label":"DataSet","type":"inputTypes.select","value":"/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200101T002803_20200101T002831_019616_02512C_8D24.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200113T002803_20200113T002831_019791_0256B4_2279.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200206T002802_20200206T002830_020141_0261FB_8025.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200218T002802_20200218T002830_020316_02679D_4640.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200301T002802_20200301T002830_020491_026D3D_B813.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200313T002802_20200313T002830_020666_0272C8_E584.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200325T002802_20200325T002830_020841_02784F_A2BA.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200406T002802_20200406T002830_021016_027DD8_B5C1.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200418T002803_20200418T002831_021191_028362_BC5E.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200430T002803_20200430T002831_021366_0288E6_3BB1.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200512T002804_20200512T002832_021541_028E5D_2589.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200524T002805_20200524T002833_021716_029380_4651.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200605T002806_20200605T002833_021891_0298C0_42C8.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200617T002806_20200617T002834_022066_029E0B_6064.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200629T002807_20200629T002835_022241_02A364_1215.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200828T002811_20200828T002838_023116_02BE3C_EFC1.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200711T002808_20200711T002835_022416_02A8B7_FFA2.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200921T002811_20200921T002839_023466_02C934_BE6D.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200816T002810_20200816T002838_022941_02B8B9_0B9B.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200909T002811_20200909T002839_023291_02C3BB_011F.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200804T002809_20200804T002837_022766_02B353_5CC2.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200723T002808_20200723T002836_022591_02AE08_C77F.zip"},"masterName":{"name":"masterName","options":[""],"index":2,"defaultvalue":"","label":"Select master","type":"inputTypes.select","value":"S1B_IW_SLC__1SDV_20200711T002808_20200711T002835_022416_02A8B7_FFA2"},"databaseIp":{"name":"databaseIp","index":5,"defaultvalue":"10.101.80.252","label":"Database IP","type":"inputTypes.text","value":"10.101.80.252"},"databaseLogin":{"name":"databaseLogin","index":6,"defaultvalue":"satimg_adm","label":"Database Login","type":"inputTypes.text","value":"satimg_adm"},"databasePasswd":{"name":"databasePasswd","index":7,"defaultvalue":"rfnfkjucybvrjd","label":"Database Password","type":"inputTypes.text","value":"rfnfkjucybvrjd"},"databaseName":{"name":"databaseName","index":8,"defaultvalue":"satimgdb","label":"Database Name","type":"inputTypes.text","value":"satimgdb"},"networkModel":{"name":"networkModel","options":["Sequential:NetworkModel2","Delaunay:NetworkModel2","Single Master:NetworkModel1"],"index":9,"defaultvalue":"Sequential:NetworkModel2","label":"Network Model","type":"inputTypes.select","value":"Sequential:NetworkModel2"}}}
+{
+  "name": "dataset",
+  "description": "DataSet settings are used for the processing.",
+  "label": "DataSet",
+  "parameters": {
+    "filesList": {
+      "name": "filesList",
+      "options": [
+        ""
+      ],
+      "index": 1,
+      "defaultvalue": "",
+      "label": "DataSet",
+      "type": "inputTypes.select",
+      "value": "/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200101T002803_20200101T002831_019616_02512C_8D24.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200113T002803_20200113T002831_019791_0256B4_2279.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200206T002802_20200206T002830_020141_0261FB_8025.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200218T002802_20200218T002830_020316_02679D_4640.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200301T002802_20200301T002830_020491_026D3D_B813.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200313T002802_20200313T002830_020666_0272C8_E584.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200325T002802_20200325T002830_020841_02784F_A2BA.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200406T002802_20200406T002830_021016_027DD8_B5C1.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200418T002803_20200418T002831_021191_028362_BC5E.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200430T002803_20200430T002831_021366_0288E6_3BB1.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200512T002804_20200512T002832_021541_028E5D_2589.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200524T002805_20200524T002833_021716_029380_4651.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200605T002806_20200605T002833_021891_0298C0_42C8.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200617T002806_20200617T002834_022066_029E0B_6064.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200629T002807_20200629T002835_022241_02A364_1215.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200828T002811_20200828T002838_023116_02BE3C_EFC1.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200711T002808_20200711T002835_022416_02A8B7_FFA2.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200921T002811_20200921T002839_023466_02C934_BE6D.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200816T002810_20200816T002838_022941_02B8B9_0B9B.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200909T002811_20200909T002839_023291_02C3BB_011F.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200804T002809_20200804T002837_022766_02B353_5CC2.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200723T002808_20200723T002836_022591_02AE08_C77F.zip"
+    },
+    "masterName": {
+      "name": "masterName",
+      "options": [
+        ""
+      ],
+      "index": 2,
+      "defaultvalue": "",
+      "label": "Select master",
+      "type": "inputTypes.select",
+      "value": "S1B_IW_SLC__1SDV_20200711T002808_20200711T002835_022416_02A8B7_FFA2"
+    },
+    "databaseIp": {
+      "name": "databaseIp",
+      "index": 5,
+      "defaultvalue": "10.101.80.252",
+      "label": "Database IP",
+      "type": "inputTypes.text",
+      "value": "10.101.80.252"
+    },
+    "databaseLogin": {
+      "name": "databaseLogin",
+      "index": 6,
+      "defaultvalue": "satimg_adm",
+      "label": "Database Login",
+      "type": "inputTypes.text",
+      "value": "satimg_adm"
+    },
+    "databasePasswd": {
+      "name": "databasePasswd",
+      "index": 7,
+      "defaultvalue": "rfnfkjucybvrjd",
+      "label": "Database Password",
+      "type": "inputTypes.text",
+      "value": "rfnfkjucybvrjd"
+    },
+    "databaseName": {
+      "name": "databaseName",
+      "index": 8,
+      "defaultvalue": "satimgdb",
+      "label": "Database Name",
+      "type": "inputTypes.text",
+      "value": "satimgdb"
+    },
+    "networkModel": {
+      "name": "networkModel",
+      "options": [
+        "Sequential:NetworkModel2",
+        "Delaunay:NetworkModel2",
+        "Single Master:NetworkModel1"
+      ],
+      "index": 9,
+      "defaultvalue": "Sequential:NetworkModel2",
+      "label": "Network Model",
+      "type": "inputTypes.select",
+      "value": "Sequential:NetworkModel2"
+    }
+  }
+}
