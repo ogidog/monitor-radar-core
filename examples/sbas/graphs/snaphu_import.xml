@@ -7,7 +7,7 @@
       <sourceProduct.1 refid="Read(2)"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <doNotKeepWrapped>false</doNotKeepWrapped>
+      <doNotKeepWrapped>True</doNotKeepWrapped>
     </parameters>
   </node>
   <node id="Read">
