@@ -46,11 +46,14 @@ public class Stage9 {
 
             if (Files.exists(Paths.get(sbasDscDir))) {
                 Product product = ProductIO.readProduct(sbasDscDir + File.separator + "MSBAS_LINEAR_RATE_LOS.tif");
+                Product product_norm = ProductIO.readProduct(sbasDscDir + File.separator + "MSBAS_NORM_X.tif");
 
                 product.getBandAt(0).readRasterDataFully();
+                product_norm.getBandAt(0).readRasterDataFully();
                 for (int j = 0; j < maskDsc.length; j++) {
                     if (!maskDsc[j]) {
                         product.getBandAt(0).getRasterData().setElemFloatAt(j, Float.NaN);
+                        product_norm.getBandAt(0).getRasterData().setElemFloatAt(j, Float.NaN);
                     }
                 }
                 File file = new File(sbasDscDir + File.separator + "MSBAS_LINEAR_RATE_LOS_coh_filt.tif");
@@ -60,15 +63,25 @@ public class Stage9 {
                         false,
                         ProgressMonitor.NULL);
                 product.closeIO();
+                file = new File(sbasDscDir + File.separator + "MSBAS_NORM_X_coh_filt.tif");
+                ProductIO.writeProduct(product_norm,
+                        file,
+                        "GeoTiff",
+                        false,
+                        ProgressMonitor.NULL);
+                product_norm.closeIO();
             }
 
             if (Files.exists(Paths.get(sbasAscDir))) {
                 Product product = ProductIO.readProduct(sbasAscDir + File.separator + "MSBAS_LINEAR_RATE_LOS.tif");
+                Product product_norm = ProductIO.readProduct(sbasAscDir + File.separator + "MSBAS_NORM_X.tif");
 
                 product.getBandAt(0).readRasterDataFully();
+                product_norm.getBandAt(0).readRasterDataFully();
                 for (int j = 0; j < maskAsc.length; j++) {
                     if (!maskAsc[j]) {
                         product.getBandAt(0).getRasterData().setElemFloatAt(j, Float.NaN);
+                        product_norm.getBandAt(0).getRasterData().setElemFloatAt(j, Float.NaN);
                     }
                 }
                 File file = new File(sbasAscDir + File.separator + "MSBAS_LINEAR_RATE_LOS_coh_filt.tif");
@@ -78,6 +91,13 @@ public class Stage9 {
                         false,
                         ProgressMonitor.NULL);
                 product.closeIO();
+                file = new File(sbasAscDir + File.separator + "MSBAS_NORM_X_coh_filt.tif");
+                ProductIO.writeProduct(product_norm,
+                        file,
+                        "GeoTiff",
+                        false,
+                        ProgressMonitor.NULL);
+                product_norm.closeIO();
             }
 
             return;
