@@ -15,15 +15,12 @@ import java.util.HashMap;
 
 public class TOPSARSplitOpEnv {
 
-    Connection connection = null;
-
     HashMap subsetParameters, topSarSplitParameters, dataSetParameters;
 
-    String intersectionGeoRegion = "";
     int firstBurstIndex, lastBurstIndex;
     String subSwathName;
 
-    public Boolean getSplitParameters(String file, HashMap stageParameters) {
+    public Boolean initSplitParameters(String file, HashMap stageParameters) {
 
         try {
 
@@ -34,7 +31,7 @@ public class TOPSARSplitOpEnv {
             String dbms = dataSetParameters.get("databaseIp").toString(); // "172.16.1.4"; // "10.101.80.252";
 
             Class.forName("org.postgresql.Driver");
-            connection = DriverManager
+            Connection connection = DriverManager
                     .getConnection(
                             "jdbc:postgresql://" + dbms + ":5432/" + dataSetParameters.get("databaseName").toString(),
                             dataSetParameters.get("databaseLogin").toString(), dataSetParameters.get("databasePasswd").toString());
@@ -45,14 +42,18 @@ public class TOPSARSplitOpEnv {
             Sentinel1Utils.SubSwathInfo[] subSwathInfos = s1u.getSubSwath();
             sourceProduct1.closeIO();
             sourceProduct1.dispose();
-            sourceProduct1 = null;
+
+            HashMap subSwathInfo = new HashMap<String, Integer>();
+            for (int i = 0; i < subSwathInfos.length; i++) {
+                subSwathInfo.put(subSwathInfos[i].subSwathName, subSwathInfos[i].numOfBursts);
+            }
 
             int numOfBurst = 0;
             String splittedSwathGeoRegionWKT = "", splittedBurstOfSwathGeoRegionWKT = "";
             String subsetGeoRegionWKT = "POLYGON((" + subsetParameters.get("geoRegion").toString() + "))";
             String sql = "";
 
-            for (int i = 0; i < subSwathInfos.length; i++) {
+            for (int i = 0; i < subSwathInfo.keySet().size(); i++) {
 
                 Product sourceProduct = ProductIO.readProduct(new File(file));
 
@@ -85,10 +86,10 @@ public class TOPSARSplitOpEnv {
                     if (!resultColumn.contains("EMPTY")) {
 
                         resultColumn = resultColumn.replace("POLYGON((", "").replace("))", "");
-                        intersectionGeoRegion = resultColumn + resultColumn.substring(resultColumn.lastIndexOf(","));
+                        String intersectionGeoRegion = resultColumn + resultColumn.substring(resultColumn.lastIndexOf(","));
 
-                        subSwathName = subSwathInfos[i].subSwathName;
-                        numOfBurst = subSwathInfos[i].numOfBursts;
+                        subSwathName = subSwathInfo.keySet().toArray()[i].toString();
+                        numOfBurst = (int)subSwathInfo.get(subSwathName);
 
                         statement.close();
                         rs.close();
@@ -102,15 +103,10 @@ public class TOPSARSplitOpEnv {
 
                 sourceProduct.closeIO();
                 sourceProduct.dispose();
-                sourceProduct = null;
                 targetProduct.closeIO();
                 targetProduct.dispose();
-                targetProduct = null;
 
                 op.dispose();
-                op = null;
-                spi = null;
-
             }
 
             firstBurstIndex = -1;
@@ -163,18 +159,15 @@ public class TOPSARSplitOpEnv {
 
                 sourceProduct.closeIO();
                 sourceProduct.dispose();
-                sourceProduct = null;
                 targetProduct.closeIO();
                 targetProduct.dispose();
-                targetProduct = null;
 
                 op.dispose();
-                op = null;
-                spi = null;
 
                 statement.close();
                 rs.close();
             }
+            connection.close();
 
             if (firstBurstIndex != -1 && lastBurstIndex != -1) {
                 return true;
@@ -199,30 +192,6 @@ public class TOPSARSplitOpEnv {
 
     public String getLastBurstIndex() {
         return String.valueOf(lastBurstIndex);
-    }
-
-    public void Dispose() {
-        try {
-
-            //this.targetProduct.closeIO();
-            //targetProduct = null;
-
-            //this.sourceProduct.closeIO();
-            //sourceProduct = null;
-
-            //op.dispose();
-            //op = null;
-            //spi = null;
-
-            //s1u = null;
-
-            //subSwathInfos = null;
-
-            connection.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
 }
