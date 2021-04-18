@@ -17,9 +17,6 @@ public class TOPSARSplitOpEnv {
 
     Connection connection = null;
 
-    Product targetProduct;
-    OperatorSpi spi;
-    TOPSARSplitOp op;
     HashMap subsetParameters, topSarSplitParameters, dataSetParameters;
 
     String intersectionGeoRegion = "";
@@ -59,8 +56,8 @@ public class TOPSARSplitOpEnv {
 
                 Product sourceProduct = ProductIO.readProduct(new File(file));
 
-                spi = new TOPSARSplitOp.Spi();
-                op = (TOPSARSplitOp) spi.createOperator();
+                OperatorSpi spi = new TOPSARSplitOp.Spi();
+                TOPSARSplitOp op = (TOPSARSplitOp) spi.createOperator();
                 op.setSourceProduct(sourceProduct);
 
                 op.setParameter("selectedPolarisations", topSarSplitParameters.get("selectedPolarisations"));
@@ -68,7 +65,7 @@ public class TOPSARSplitOpEnv {
                 op.setParameter("firstBurstIndex", 1);
                 op.setParameter("lastBurstIndex", subSwathInfos[i].numOfSamples);
 
-                targetProduct = op.getTargetProduct();
+                Product targetProduct = op.getTargetProduct();
                 splittedSwathGeoRegionWKT = "POLYGON((" + targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeString("first_near_long") + ' '
                         + targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeString("first_near_lat") + ','
                         + targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeString("first_far_long") + ' '
@@ -106,6 +103,13 @@ public class TOPSARSplitOpEnv {
                 sourceProduct.closeIO();
                 sourceProduct.dispose();
                 sourceProduct = null;
+                targetProduct.closeIO();
+                targetProduct.dispose();
+                targetProduct = null;
+
+                op.dispose();
+                op = null;
+                spi = null;
 
             }
 
@@ -116,8 +120,8 @@ public class TOPSARSplitOpEnv {
 
                 Product sourceProduct = ProductIO.readProduct(new File(file));
 
-                spi = new TOPSARSplitOp.Spi();
-                op = (TOPSARSplitOp) spi.createOperator();
+                OperatorSpi spi = new TOPSARSplitOp.Spi();
+                TOPSARSplitOp op = (TOPSARSplitOp) spi.createOperator();
                 op.setSourceProduct(sourceProduct);
 
                 op.setParameter("selectedPolarisations", topSarSplitParameters.get("selectedPolarisations"));
@@ -125,7 +129,7 @@ public class TOPSARSplitOpEnv {
                 op.setParameter("firstBurstIndex", burst);
                 op.setParameter("lastBurstIndex", burst);
 
-                targetProduct = op.getTargetProduct();
+                Product targetProduct = op.getTargetProduct();
 
                 splittedBurstOfSwathGeoRegionWKT = "POLYGON((" + targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeString("first_near_long") + ' '
                         + targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeString("first_near_lat") + ','
@@ -146,26 +150,30 @@ public class TOPSARSplitOpEnv {
                     String resultColumn = rs.getString(1);
 
                     if (!resultColumn.contains("EMPTY")) {
-
                         if (firstBurstIndex == -1) {
                             firstBurstIndex = burst;
                             lastBurstIndex = burst;
-                            targetProduct.closeIO();
-                            op.dispose();
                             continue;
                         } else {
                             lastBurstIndex = burst;
-                            targetProduct.closeIO();
-                            op.dispose();
                             continue;
                         }
                     }
                 }
 
-                statement.close();
-                rs.close();
+                sourceProduct.closeIO();
+                sourceProduct.dispose();
+                sourceProduct = null;
+                targetProduct.closeIO();
+                targetProduct.dispose();
+                targetProduct = null;
 
                 op.dispose();
+                op = null;
+                spi = null;
+
+                statement.close();
+                rs.close();
             }
 
             if (firstBurstIndex != -1 && lastBurstIndex != -1) {
@@ -196,15 +204,15 @@ public class TOPSARSplitOpEnv {
     public void Dispose() {
         try {
 
-            this.targetProduct.closeIO();
-            targetProduct = null;
+            //this.targetProduct.closeIO();
+            //targetProduct = null;
 
             //this.sourceProduct.closeIO();
             //sourceProduct = null;
 
-            op.dispose();
-            op = null;
-            spi = null;
+            //op.dispose();
+            //op = null;
+            //spi = null;
 
             //s1u = null;
 
