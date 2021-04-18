@@ -1,10 +1,11 @@
 
-package org.myapp.satellite.radar.stamps;
+package org.myapp.satellite.radar.squeesar;
 
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.myapp.satellite.radar.squeesar.TOPSARSplitOpEnv;
 import org.myapp.utils.ConsoleArgsReader;
 
 import java.io.File;
@@ -58,7 +59,6 @@ public class Stage1 {
             new File(outputDir + File.separator + "applyorbitfile").mkdirs();
             new File(stage1Dir).mkdirs();
 
-            TOPSARSplitOpEnv topsarSplitOpEnv = new TOPSARSplitOpEnv();
             String graphFile = "applyorbitfile.xml";
             FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
             Graph graph = GraphIO.read(fileReader);
@@ -68,6 +68,7 @@ public class Stage1 {
 
             for (int i = 0; i < files.length; i++) {
 
+                TOPSARSplitOpEnv topsarSplitOpEnv = new TOPSARSplitOpEnv();
                 topsarSplitOpEnv.getSplitParameters(files[i], parameters);
 
                 graph.getNode("Read").getConfiguration().getChild("file").setValue(files[i]);
@@ -86,10 +87,11 @@ public class Stage1 {
 
                 cmdWriter.println("gpt " + stage1Dir + File.separator
                         + Paths.get(files[i]).getFileName().toString().replace(".zip", "") + ".xml");
+
+                topsarSplitOpEnv.Dispose();
             }
 
             cmdWriter.close();
-            topsarSplitOpEnv.Dispose();
 
         } catch (Exception e) {
             e.printStackTrace();
