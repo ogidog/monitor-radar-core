@@ -1,8 +1,6 @@
 
 package org.myapp.satellite.radar.sbas;
 
-import org.esa.snap.core.dataio.ProductIO;
-import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
 import org.json.simple.JSONObject;
@@ -16,14 +14,12 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
 
-public class Stage2 {
+public class Stage2bak {
 
     public static void main(String[] args) {
 
@@ -33,6 +29,7 @@ public class Stage2 {
             String outputDir = consoleParameters.get("outputDir").toString();
             String configDir = consoleParameters.get("configDir").toString();
             String graphDir = consoleParameters.get("graphDir").toString();
+            String filesList = consoleParameters.get("filesList").toString();
 
             HashMap parameters = getParameters(configDir);
             if (parameters == null) {
@@ -40,54 +37,26 @@ public class Stage2 {
                 return;
             }
 
-            String stage2Dir = outputDir + "" + File.separator + "stage2";
-            String backgeocodingDir = outputDir + File.separator + "backgeocoding";
-            String applyorbitfileDir = outputDir + File.separator + "applyorbitfile";
-
             String[] files;
-            files = Files.walk(Paths.get(applyorbitfileDir)).filter(path -> {
-                if (path.toString().endsWith(".dim")) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }).map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
+            if (!filesList.contains(",")) {
+                files = Files.walk(Paths.get(filesList)).skip(1)
+                        .map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
+            } else {
+                files = filesList.split(",");
+            }
 
-            Product[] products = Arrays.stream(files).map(file -> {
-                try {
-                    return ProductIO.readProduct(file);
-                } catch (Exception e) {
-                    return null;
-                }
-            }).toArray(Product[]::new);
-
-            if (Files.exists(Paths.get(backgeocodingDir))) {
-                Files.walk(Paths.get(backgeocodingDir))
+            String applyorbitfileDir = outputDir+ File.separator + "applyorbitfile";
+            if (Files.exists(Paths.get(applyorbitfileDir))) {
+                Files.walk(Paths.get(applyorbitfileDir))
                         .sorted(Comparator.reverseOrder())
                         .map(Path::toFile)
                         .forEach(File::delete);
             }
-            new File(backgeocodingDir).mkdirs();
 
+            String stage2Dir = outputDir + "" + File.separator + "stage2";
 
-            if (Files.exists(Paths.get(stage2Dir))) {
-                Files.walk(Paths.get(stage2Dir))
-                        .sorted(Comparator.reverseOrder())
-                        .map(Path::toFile)
-                        .forEach(File::delete);
-            }
+            new File(applyorbitfileDir).mkdirs();
             new File(stage2Dir).mkdirs();
-
-            ArrayList<String[]> pairs = new ArrayList<>();
-            String content = new String(Files.readAllBytes(Paths.get(configDir + File.separator + "selectNetwork.template")));
-            if (content.contains("sequential")) {
-                for (int i = 0; i < products.length - 3; i++) {
-                    for (int j = i + 1; j < i + 3; j++) {
-                        pairs.add(new String[]{products[i].getName(), products[j].getName()});
-                    }
-                }
-            }
-
 
             TOPSARSplitOpEnv topsarSplitOpEnv = new TOPSARSplitOpEnv();
             String graphFile = "applyorbitfile.xml";

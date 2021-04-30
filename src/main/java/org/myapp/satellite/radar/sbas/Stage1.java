@@ -1,20 +1,22 @@
 package org.myapp.satellite.radar.sbas;
 
-import org.esa.s1tbx.insar.gpf.InSARStackOverview;
-import org.esa.snap.core.dataio.ProductIO;
-import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.gpf.graph.Graph;
+import org.esa.snap.core.gpf.graph.GraphIO;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.myapp.satellite.radar.sbas.TOPSARSplitOpEnv;
 import org.myapp.utils.ConsoleArgsReader;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class Stage1 {
 
@@ -25,7 +27,14 @@ public class Stage1 {
             HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
             String outputDir = consoleParameters.get("outputDir").toString();
             String configDir = consoleParameters.get("configDir").toString();
+            String graphDir = consoleParameters.get("graphDir").toString();
             String filesList = consoleParameters.get("filesList").toString();
+
+            HashMap parameters = getParameters(configDir);
+            if (parameters == null) {
+                System.out.println("Fail to read parameters.");
+                return;
+            }
 
             String[] files;
             if (!filesList.contains(",")) {
@@ -42,99 +51,111 @@ public class Stage1 {
                         .forEach(File::delete);
             }
 
-            String networkDir = outputDir + "" + File.separator + "network";
-            if (Files.exists(Paths.get(networkDir))) {
-                Files.walk(Paths.get(networkDir))
-                        .sorted(Comparator.reverseOrder())
-                        .map(Path::toFile)
-                        .forEach(File::delete);
-            }
-
             String stage1Dir = outputDir + "" + File.separator + "stage1";
 
             new File(outputDir).mkdirs();
-            new File(outputDir + File.separator + "network").mkdirs();
+            new File(outputDir + File.separator + "applyorbitfile").mkdirs();
             new File(stage1Dir).mkdirs();
 
-            Product[] products = Arrays.stream(files).map(file -> {
-                try {
-                    return ProductIO.readProduct(file);
-                } catch (Exception e) {
-                    return null;
-                }
-            }).sorted((e1, e2) -> e1.getStartTime().getAsDate().compareTo(e2.getStartTime().getAsDate())).toArray(Product[]::new);
+            TOPSARSplitOpEnv topsarSplitOpEnv = new TOPSARSplitOpEnv();
+            String graphFile = "applyorbitfile.xml";
+            FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
+            Graph graph = GraphIO.read(fileReader);
+            fileReader.close();
 
-            InSARStackOverview.IfgPair[] masterSlavePairs;
-            InSARStackOverview.IfgStack[] stackOverview;
-            InSARStackOverview.IfgPair masterSlavePair;
+            PrintWriter cmdWriter = new PrintWriter(stage1Dir + File.separator + "stage1.cmd", "UTF-8");
 
-            String optimalMasterName = products[0].getName();
-            String masterProductName, slaveProductName;
-            String masterProductDate = "", slaveProductDate;
-            String blList = "", dateToProductName = "";
+            for (int i = 0; i < files.length; i++) {
 
+                topsarSplitOpEnv.getSplitParameters(files[i], parameters);
 
-            String content = new String(Files.readAllBytes(Paths.get(configDir + File.separator + "selectNetwork.template")));
-            if (content.contains("sequential")) {
-                optimalMasterName = products[0].getName();
+                graph.getNode("Read").getConfiguration().getChild("file").setValue(files[i]);
+                graph.getNode("Write").getConfiguration().getChild("file")
+                        .setValue(outputDir + File.separator + "applyorbitfile" + File.separator
+                                + Paths.get(files[i]).getFileName().toString().replace(".zip", "") + "_Orb.dim");
+                graph.getNode("TOPSAR-Split").getConfiguration().getChild("subswath").setValue(topsarSplitOpEnv.getSubSwath());
+                graph.getNode("TOPSAR-Split").getConfiguration().getChild("firstBurstIndex").setValue(topsarSplitOpEnv.getFirstBurstIndex());
+                graph.getNode("TOPSAR-Split").getConfiguration().getChild("lastBurstIndex").setValue(topsarSplitOpEnv.getLastBurstIndex());
+
+                FileWriter fileWriter = new FileWriter(stage1Dir + File.separator
+                        + Paths.get(files[i]).getFileName().toString().replace(".zip", "") + ".xml");
+                GraphIO.write(graph, fileWriter);
+                fileWriter.flush();
+                fileWriter.close();
+
+                cmdWriter.println("gpt " + stage1Dir + File.separator
+                        + Paths.get(files[i]).getFileName().toString().replace(".zip", "") + ".xml");
             }
-            if (content.contains("delaunay")) {
-                optimalMasterName = InSARStackOverview.findOptimalMasterProduct(products).getName();
-            }
 
-            stackOverview = InSARStackOverview.calculateInSAROverview(products);
-
-            Pattern datePattern = Pattern.compile("(\\d\\d\\d\\d\\d\\d\\d\\d)");
-
-            for (int i = 0; i < stackOverview.length; i++) {
-                masterSlavePairs = stackOverview[i].getMasterSlave();
-                for (int j = 0; j < masterSlavePairs.length; j++) {
-                    masterSlavePair = masterSlavePairs[j];
-
-                    masterProductName = masterSlavePair.getMasterMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString();
-                    slaveProductName = masterSlavePair.getSlaveMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString();
-
-                    if (optimalMasterName.equals(masterProductName) && !optimalMasterName.equals(slaveProductName)) {
-
-                        double bPerp = masterSlavePair.getPerpendicularBaseline();
-                        double dopplerDiff = masterSlavePair.getDopplerDifference();
-
-                        Matcher dateMatcher = datePattern.matcher(masterSlavePair.getMasterMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString());
-                        dateMatcher.find();
-                        masterProductDate = dateMatcher.group().substring(2);
-
-                        dateMatcher = datePattern.matcher(masterSlavePair.getSlaveMetadata().getAbstractedMetadata().getAttribute("PRODUCT").getData().toString());
-                        dateMatcher.find();
-                        slaveProductDate = dateMatcher.group().substring(2);
-
-                        blList = blList + slaveProductDate + " " + bPerp + " " + dopplerDiff + "\n";
-
-                        dateToProductName = dateToProductName + slaveProductDate + ";" + slaveProductName + "\n";
-                    }
-                }
-            }
-            blList = masterProductDate + " 0.0 0.0\n" + blList;
-            blList = blList.trim();
-
-            dateToProductName = masterProductDate + ";" + optimalMasterName + "\n" + dateToProductName;
-            dateToProductName = dateToProductName.trim();
-
-            PrintWriter out = new PrintWriter(outputDir + File.separator + "network" + File.separator + "blList.txt");
-            out.println(blList);
-            out.close();
-
-            out = new PrintWriter(outputDir + File.separator + "network" + File.separator + "date2Name.txt");
-            out.println(dateToProductName);
-            out.close();
-
-            Files.copy(Paths.get(configDir + File.separator + "selectNetwork.template"),
-                    Paths.get(outputDir + File.separator + "network" + File.separator + "selectNetwork.template"));
-
+            cmdWriter.close();
+            topsarSplitOpEnv.Dispose();
 
         } catch (Exception e) {
             e.printStackTrace();
             return;
         }
+    }
 
+    static HashMap getParameters(String configDir) {
+
+        HashMap<String, HashMap> stageParameters = null;
+
+        try {
+            stageParameters = new HashMap<>();
+
+            // DataSet
+            JSONParser parser = new JSONParser();
+            FileReader fileReader = new FileReader(configDir + File.separator + "dataset.json");
+            JSONObject jsonObject = (JSONObject) parser.parse(fileReader);
+            HashMap<String, HashMap> jsonParameters1 = (HashMap) jsonObject.get("parameters");
+
+            stageParameters.put("DataSet",
+                    (HashMap) jsonParameters1.entrySet().stream
+                            ().collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue().get("value")))
+            );
+
+            // TOPSARSplit
+            fileReader = new FileReader(configDir + File.separator + "s1_tops_split.json");
+            jsonObject = (JSONObject) parser.parse(fileReader);
+            HashMap jsonParameters = (HashMap) jsonObject.get("parameters");
+            jsonParameters1 = (HashMap) jsonObject.get("parameters");
+
+            stageParameters.put("TOPSARSplit",
+                    (HashMap) jsonParameters1.entrySet().stream
+                            ().collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue().get("value")))
+            );
+
+            fileReader.close();
+
+            // ApplyOrbitFile
+            fileReader = new FileReader(configDir + File.separator + "apply_orbit_file.json");
+            jsonObject = (JSONObject) parser.parse(fileReader);
+            jsonParameters = (HashMap) jsonObject.get("parameters");
+
+            HashMap parameters = new HashMap();
+            parameters.put("polyDegree", Integer.valueOf(((HashMap) jsonParameters.get("polyDegree")).get("value").toString()));
+            parameters.put("continueOnFail", Boolean.valueOf(((HashMap) jsonParameters.get("continueOnFail")).get("value").toString()));
+            parameters.put("orbitType", ((HashMap) jsonParameters.get("orbitType")).get("value"));
+            stageParameters.put("ApplyOrbitFile", parameters);
+
+            fileReader.close();
+
+            // Subset
+            fileReader = new FileReader(configDir + File.separator + "subset.json");
+            jsonObject = (JSONObject) parser.parse(fileReader);
+            jsonParameters = (HashMap) jsonObject.get("parameters");
+
+            String geoRegionCoordinates = ((HashMap) jsonParameters.get("geoRegion")).get("value").toString();
+            parameters = new HashMap();
+            parameters.put("geoRegion", geoRegionCoordinates);
+            stageParameters.put("Subset", parameters);
+
+            fileReader.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return stageParameters;
     }
 }

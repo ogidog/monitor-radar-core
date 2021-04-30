@@ -28,10 +28,10 @@
     "databaseIp": {
       "name": "databaseIp",
       "index": 5,
-      "defaultvalue": "10.101.80.252",
+      "defaultvalue": "localhost",
       "label": "Database IP",
       "type": "inputTypes.text",
-      "value": "localhost"
+      "value": "10.101.80.252"
     },
     "databaseLogin": {
       "name": "databaseLogin",

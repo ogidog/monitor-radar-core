@@ -27,11 +27,12 @@ public class DBManager {
             String imageNames = args[1];
             String imageRealDir = args[2];
             String imageDirInDBRecord = args[3];
-            addNewImageToDB(imageNames, imageRealDir, imageDirInDBRecord);
+            String fileNameFilter = args[4]; // задается через запятую список строк (или без запятой если толькоодин фильтр), которые должны входит в имя файла, например _2020,_2021 или _2021
+            addNewImageToDB(imageNames, imageRealDir, imageDirInDBRecord, fileNameFilter.split(","));
         }
     }
 
-    private static void addNewImageToDB(String imageNames, String imageRealDir, String imageDirInDBRecord) {
+    private static void addNewImageToDB(String imageNames, String imageRealDir, String imageDirInDBRecord, String[] fileNameFilter) {
 
         if (imageNames.length() == 0) {
             try {
@@ -64,7 +65,17 @@ public class DBManager {
 
         if (connection != null) {
 
+            boolean filterResult = false;
             for (String imageName : imageNames.split(",")) {
+
+                for (String filter : fileNameFilter) {
+                    if (imageName.contains(filter)) {
+                        filterResult = true;
+                        break;
+                    }
+                }
+
+                if (!filterResult) continue;
 
                 HashMap productMetadata = getMetadata(imageRealDir + imageName);
                 if (productMetadata != null) {
