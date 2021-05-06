@@ -42,7 +42,7 @@ public class Stage2 {
             }
 
             String stage2Dir = outputDir + "" + File.separator + "stage2";
-            String backgeocodingDir = outputDir + File.separator + "backgeocoding";
+            String intfDir = outputDir + File.separator + "intf";
             String applyorbitfileDir = outputDir + File.separator + "applyorbitfile";
 
             String[] files;
@@ -62,13 +62,13 @@ public class Stage2 {
                 }
             }).toArray(Product[]::new);
 
-            if (Files.exists(Paths.get(backgeocodingDir))) {
-                Files.walk(Paths.get(backgeocodingDir))
+            if (Files.exists(Paths.get(intfDir))) {
+                Files.walk(Paths.get(intfDir))
                         .sorted(Comparator.reverseOrder())
                         .map(Path::toFile)
                         .forEach(File::delete);
             }
-            new File(backgeocodingDir).mkdirs();
+            new File(intfDir).mkdirs();
 
             if (Files.exists(Paths.get(stage2Dir))) {
                 Files.walk(Paths.get(stage2Dir))
@@ -151,7 +151,6 @@ public class Stage2 {
                     System.out.println("Not fully connected graph. You should increase bPerpMax and/or bTempMax parameters");
                     return;
                 }
-
             }
 
             if (content.contains("sequential")) {
@@ -162,41 +161,54 @@ public class Stage2 {
                 }
             }
 
-
-            /*TOPSARSplitOpEnv topsarSplitOpEnv = new TOPSARSplitOpEnv();
-            String graphFile = "applyorbitfile.xml";
-
-
+            String graphFile = "filt_intf.xml";
             FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
             Graph graph = GraphIO.read(fileReader);
             fileReader.close();
 
+            // Subset
+            graph.getNode("Subset").getConfiguration().getChild("geoRegion")
+                    .setValue("POLYGON((" + ((HashMap) parameters.get("Subset")).get("geoRegion").toString() + "))");
+
+            // BackGeocoding
+            ((HashMap) parameters.get("BackGeocoding")).forEach((key, value) -> {
+                graph.getNode("Back-Geocoding").getConfiguration().getChild(key.toString())
+                        .setValue(value.toString());
+            });
+
+            // Interferogram
+            ((HashMap) parameters.get("Interferogram")).forEach((key, value) -> {
+                graph.getNode("Interferogram").getConfiguration().getChild(key.toString())
+                        .setValue(value.toString());
+            });
+
+            // TopoPhaseRemoval
+            ((HashMap) parameters.get("TopoPhaseRemoval")).forEach((key, value) -> {
+                graph.getNode("TopoPhaseRemoval").getConfiguration().getChild(key.toString())
+                        .setValue(value.toString());
+            });
+
             PrintWriter cmdWriter = new PrintWriter(stage2Dir + File.separator + "stage2.cmd", "UTF-8");
+            String masterProductDate, slaveProductDate, masterProductName, slaveProductName;
 
-            for (int i = 0; i < files.length; i++) {
+            for (String[] pair : pairs) {
+                masterProductDate = pair[0].split(" ")[0].split("T")[0].split("_")[5];
+                slaveProductDate = pair[1].split(" ")[0].split("T")[0].split("_")[5];
 
-                topsarSplitOpEnv.getSplitParameters(files[i], parameters);
-
-                graph.getNode("Read").getConfiguration().getChild("file").setValue(files[i]);
+                graph.getNode("Read").getConfiguration().getChild("file").setValue(applyorbitfileDir + File.separator + pair[0] + ".dim");
+                graph.getNode("Read(2)").getConfiguration().getChild("file").setValue(applyorbitfileDir + File.separator + pair[1] + ".dim");
                 graph.getNode("Write").getConfiguration().getChild("file")
-                        .setValue(applyorbitfileDir + File.separator
-                                + Paths.get(files[i]).getFileName().toString().replace(".zip", "") + "_Orb.dim");
-                graph.getNode("TOPSAR-Split").getConfiguration().getChild("subswath").setValue(topsarSplitOpEnv.getSubSwath());
-                graph.getNode("TOPSAR-Split").getConfiguration().getChild("firstBurstIndex").setValue(topsarSplitOpEnv.getFirstBurstIndex());
-                graph.getNode("TOPSAR-Split").getConfiguration().getChild("lastBurstIndex").setValue(topsarSplitOpEnv.getLastBurstIndex());
+                        .setValue(intfDir + File.separator + masterProductDate + "_" + slaveProductDate + ".dim");
 
                 FileWriter fileWriter = new FileWriter(stage2Dir + File.separator
-                        + Paths.get(files[i]).getFileName().toString().replace(".zip", "") + ".xml");
+                        + masterProductDate + "_" + slaveProductDate + ".xml");
                 GraphIO.write(graph, fileWriter);
                 fileWriter.flush();
                 fileWriter.close();
 
-                cmdWriter.println("gpt " + stage2Dir + File.separator
-                        + Paths.get(files[i]).getFileName().toString().replace(".zip", "") + ".xml");
+                cmdWriter.println("gpt " + stage2Dir + File.separator + masterProductDate + "_" + slaveProductDate + "_intf.xml");
             }
-
             cmdWriter.close();
-            topsarSplitOpEnv.Dispose();*/
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -258,6 +270,51 @@ public class Stage2 {
             parameters.put("geoRegion", geoRegionCoordinates);
             stageParameters.put("Subset", parameters);
 
+            fileReader.close();
+
+            // BackGeocoding
+            parser = new JSONParser();
+            fileReader = new FileReader(configDir + File.separator + "back_geocoding.json");
+            jsonObject = (JSONObject) parser.parse(fileReader);
+            jsonParameters = (HashMap) jsonObject.get("parameters");
+
+            parameters = new HashMap();
+            Iterator it = jsonParameters.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry pair = (Map.Entry) it.next();
+                parameters.put(pair.getKey().toString(), ((HashMap) jsonParameters.get(pair.getKey().toString())).get("value"));
+            }
+            stageParameters.put("BackGeocoding", parameters);
+            fileReader.close();
+
+            // Interferogram Formation
+            parser = new JSONParser();
+            fileReader = new FileReader(configDir + File.separator + "interferogram_formation.json");
+            jsonObject = (JSONObject) parser.parse(fileReader);
+            jsonParameters = (HashMap) jsonObject.get("parameters");
+
+            parameters = new HashMap();
+            it = jsonParameters.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry pair = (Map.Entry) it.next();
+                parameters.put(pair.getKey().toString(), ((HashMap) jsonParameters.get(pair.getKey().toString())).get("value"));
+            }
+            stageParameters.put("Interferogram", parameters);
+            fileReader.close();
+
+            // Topo Phase Removal
+            parser = new JSONParser();
+            fileReader = new FileReader(configDir + File.separator + "topo_phase_removal.json");
+            jsonObject = (JSONObject) parser.parse(fileReader);
+            jsonParameters = (HashMap) jsonObject.get("parameters");
+
+            parameters = new HashMap();
+            it = jsonParameters.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry pair = (Map.Entry) it.next();
+                parameters.put(pair.getKey().toString(), ((HashMap) jsonParameters.get(pair.getKey().toString())).get("value"));
+            }
+            stageParameters.put("TopoPhaseRemoval", parameters);
             fileReader.close();
 
             return stageParameters;

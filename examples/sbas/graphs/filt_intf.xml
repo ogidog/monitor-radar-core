@@ -49,19 +49,6 @@
       <outputLatLonBands>true</outputLatLonBands>
     </parameters>
   </node>
-  <node id="GoldsteinPhaseFiltering">
-    <operator>GoldsteinPhaseFiltering</operator>
-    <sources>
-      <sourceProduct refid="TopoPhaseRemoval"/>
-    </sources>
-    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <alpha>1.0</alpha>
-      <FFTSizeString>64</FFTSizeString>
-      <windowSizeString>3</windowSizeString>
-      <useCoherenceMask>false</useCoherenceMask>
-      <coherenceThreshold>0.2</coherenceThreshold>
-    </parameters>
-  </node>
   <node id="Subset">
     <operator>Subset</operator>
     <sources>
@@ -111,6 +98,32 @@
       <disableReramp>false</disableReramp>
     </parameters>
   </node>
+  <node id="Multilook">
+    <operator>Multilook</operator>
+    <sources>
+      <sourceProduct refid="TopoPhaseRemoval"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <sourceBands/>
+      <nRgLooks>4</nRgLooks>
+      <nAzLooks>1</nAzLooks>
+      <outputIntensity>false</outputIntensity>
+      <grSquarePixel>false</grSquarePixel>
+    </parameters>
+  </node>
+  <node id="GoldsteinPhaseFiltering">
+    <operator>GoldsteinPhaseFiltering</operator>
+    <sources>
+      <sourceProduct refid="Multilook"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <alpha>1.0</alpha>
+      <FFTSizeString>64</FFTSizeString>
+      <windowSizeString>3</windowSizeString>
+      <useCoherenceMask>false</useCoherenceMask>
+      <coherenceThreshold>0.2</coherenceThreshold>
+    </parameters>
+  </node>
   <node id="Write">
     <operator>Write</operator>
     <sources>
@@ -130,10 +143,7 @@
       <displayPosition x="412.0" y="100.0"/>
     </node>
     <node id="TopoPhaseRemoval">
-      <displayPosition x="554.0" y="103.0"/>
-    </node>
-    <node id="GoldsteinPhaseFiltering">
-      <displayPosition x="539.0" y="193.0"/>
+      <displayPosition x="568.0" y="95.0"/>
     </node>
     <node id="Subset">
       <displayPosition x="577.0" y="261.0"/>
@@ -146,6 +156,12 @@
     </node>
     <node id="Back-Geocoding">
       <displayPosition x="139.0" y="100.0"/>
+    </node>
+    <node id="Multilook">
+      <displayPosition x="601.0" y="158.0"/>
+    </node>
+    <node id="GoldsteinPhaseFiltering">
+      <displayPosition x="542.0" y="204.0"/>
     </node>
     <node id="Write">
       <displayPosition x="576.0" y="320.0"/>
