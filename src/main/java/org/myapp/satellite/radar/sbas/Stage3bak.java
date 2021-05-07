@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class Stage3 {
+public class Stage3bak {
 
     public static void main(String[] args) {
 

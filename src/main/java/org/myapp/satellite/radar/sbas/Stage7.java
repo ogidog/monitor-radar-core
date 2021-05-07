@@ -27,8 +27,6 @@ public class Stage7 {
 
             HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
             String outputDir = consoleParameters.get("outputDir").toString();
-            String filesList1 = consoleParameters.get("filesList1").toString();
-            String filesList2 = consoleParameters.get("filesList2").toString();
             String graphDir = consoleParameters.get("graphDir").toString();
             String configDir = consoleParameters.get("configDir").toString();
 
@@ -38,21 +36,14 @@ public class Stage7 {
                 return;
             }
 
-            String[] files1;
-            if (!filesList1.contains(",")) {
-                files1 = Files.walk(Paths.get(filesList1)).filter(file -> file.toString().endsWith(".dim"))
-                        .map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
-            } else {
-                files1 = filesList1.split(",");
-            }
+            String intfDir = outputDir + File.separator + "intf";
+            String snaphuimportDir = outputDir + File.separator + "snaphuimport";
 
-            String[] files2;
-            if (!filesList1.contains(",")) {
-                files2 = Files.walk(Paths.get(filesList2)).filter(file -> file.toString().endsWith(".dim"))
-                        .map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
-            } else {
-                files2 = filesList1.split(",");
-            }
+            String[] files1 = Files.walk(Paths.get(intfDir)).filter(file -> file.toString().endsWith(".dim"))
+                    .map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
+
+            String[] files2 = Files.walk(Paths.get(snaphuimportDir)).filter(file -> file.toString().endsWith(".dim"))
+                    .map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
 
             String[][] pairs = new String[files1.length][2];
             for (int i = 0; i < files1.length; i++) {
@@ -106,7 +97,7 @@ public class Stage7 {
                 product.closeIO();
                 String[] iqBandNames = Arrays.stream(bandNames).filter(name -> name.contains("i_") || name.contains("q_"))
                         .toArray(String[]::new);
-                String[] fileNameSplitted = Paths.get(files1[i]).getFileName().toString().split("_");
+                String[] fileNameSplitted = Paths.get(files1[i]).getFileName().toString().replace(".dim", "").split("_");
                 String datePair = Arrays.stream(fileNameSplitted).filter(str -> {
                     Matcher m = p.matcher(str);
                     if (m.matches()) {

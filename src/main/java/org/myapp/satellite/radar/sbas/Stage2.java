@@ -19,10 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 
 public class Stage2 {
 
@@ -206,7 +203,7 @@ public class Stage2 {
                 fileWriter.flush();
                 fileWriter.close();
 
-                cmdWriter.println("gpt " + stage2Dir + File.separator + masterProductDate + "_" + slaveProductDate + "_intf.xml");
+                cmdWriter.println("gpt " + stage2Dir + File.separator + masterProductDate + "_" + slaveProductDate + ".xml");
             }
             cmdWriter.close();
 
