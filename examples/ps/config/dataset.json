@@ -31,7 +31,7 @@
       "defaultvalue": "10.101.80.252",
       "label": "Database IP",
       "type": "inputTypes.text",
-      "value": "localhost"
+      "value": "172.16.1.4"
     },
     "databaseLogin": {
       "name": "databaseLogin",
