@@ -1,4 +1,4 @@
-package org.myapp.satellite.radar.squeesar;
+package org.myapp.satellite.radar.ds;
 
 import org.esa.s1tbx.commons.Sentinel1Utils;
 import org.esa.s1tbx.sentinel1.gpf.TOPSARSplitOp;
@@ -15,12 +15,20 @@ import java.util.HashMap;
 
 public class TOPSARSplitOpEnv {
 
+    Connection connection = null;
+
+    Product sourceProduct, targetProduct;
+    OperatorSpi spi;
+    TOPSARSplitOp op;
+    Sentinel1Utils s1u;
+    Sentinel1Utils.SubSwathInfo[] subSwathInfos;
     HashMap subsetParameters, topSarSplitParameters, dataSetParameters;
 
+    String intersectionGeoRegion = "";
     int firstBurstIndex, lastBurstIndex;
     String subSwathName;
 
-    public Boolean initSplitParameters(String file, HashMap stageParameters) {
+    public Boolean getSplitParameters(String file, HashMap stageParameters) {
 
         try {
 
@@ -31,34 +39,26 @@ public class TOPSARSplitOpEnv {
             String dbms = dataSetParameters.get("databaseIp").toString(); // "172.16.1.4"; // "10.101.80.252";
 
             Class.forName("org.postgresql.Driver");
-            Connection connection = DriverManager
+            connection = DriverManager
                     .getConnection(
                             "jdbc:postgresql://" + dbms + ":5432/" + dataSetParameters.get("databaseName").toString(),
                             dataSetParameters.get("databaseLogin").toString(), dataSetParameters.get("databasePasswd").toString());
             connection.setAutoCommit(false);
 
-            Product sourceProduct1 = ProductIO.readProduct(new File(file));
-            Sentinel1Utils s1u = new Sentinel1Utils(sourceProduct1);
-            Sentinel1Utils.SubSwathInfo[] subSwathInfos = s1u.getSubSwath();
-            sourceProduct1.closeIO();
-            sourceProduct1.dispose();
+            sourceProduct = ProductIO.readProduct(new File(file));
+            s1u = new Sentinel1Utils(sourceProduct);
 
-            HashMap subSwathInfo = new HashMap<String, Integer>();
-            for (int i = 0; i < subSwathInfos.length; i++) {
-                subSwathInfo.put(subSwathInfos[i].subSwathName, subSwathInfos[i].numOfBursts);
-            }
+            subSwathInfos = s1u.getSubSwath();
 
             int numOfBurst = 0;
             String splittedSwathGeoRegionWKT = "", splittedBurstOfSwathGeoRegionWKT = "";
             String subsetGeoRegionWKT = "POLYGON((" + subsetParameters.get("geoRegion").toString() + "))";
             String sql = "";
 
-            for (int i = 0; i < subSwathInfo.keySet().size(); i++) {
+            for (int i = 0; i < subSwathInfos.length; i++) {
 
-                Product sourceProduct = ProductIO.readProduct(new File(file));
-
-                OperatorSpi spi = new TOPSARSplitOp.Spi();
-                TOPSARSplitOp op = (TOPSARSplitOp) spi.createOperator();
+                spi = new TOPSARSplitOp.Spi();
+                op = (TOPSARSplitOp) spi.createOperator();
                 op.setSourceProduct(sourceProduct);
 
                 op.setParameter("selectedPolarisations", topSarSplitParameters.get("selectedPolarisations"));
@@ -66,7 +66,7 @@ public class TOPSARSplitOpEnv {
                 op.setParameter("firstBurstIndex", 1);
                 op.setParameter("lastBurstIndex", subSwathInfos[i].numOfSamples);
 
-                Product targetProduct = op.getTargetProduct();
+                targetProduct = op.getTargetProduct();
                 splittedSwathGeoRegionWKT = "POLYGON((" + targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeString("first_near_long") + ' '
                         + targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeString("first_near_lat") + ','
                         + targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeString("first_far_long") + ' '
@@ -86,10 +86,10 @@ public class TOPSARSplitOpEnv {
                     if (!resultColumn.contains("EMPTY")) {
 
                         resultColumn = resultColumn.replace("POLYGON((", "").replace("))", "");
-                        String intersectionGeoRegion = resultColumn + resultColumn.substring(resultColumn.lastIndexOf(","));
+                        intersectionGeoRegion = resultColumn + resultColumn.substring(resultColumn.lastIndexOf(","));
 
-                        subSwathName = subSwathInfo.keySet().toArray()[i].toString();
-                        numOfBurst = (int)subSwathInfo.get(subSwathName);
+                        subSwathName = subSwathInfos[i].subSwathName;
+                        numOfBurst = subSwathInfos[i].numOfBursts;
 
                         statement.close();
                         rs.close();
@@ -100,13 +100,6 @@ public class TOPSARSplitOpEnv {
                         rs.close();
                     }
                 }
-
-                sourceProduct.closeIO();
-                sourceProduct.dispose();
-                targetProduct.closeIO();
-                targetProduct.dispose();
-
-                op.dispose();
             }
 
             firstBurstIndex = -1;
@@ -114,10 +107,8 @@ public class TOPSARSplitOpEnv {
 
             for (int burst = 1; burst < numOfBurst + 1; burst++) {
 
-                Product sourceProduct = ProductIO.readProduct(new File(file));
-
-                OperatorSpi spi = new TOPSARSplitOp.Spi();
-                TOPSARSplitOp op = (TOPSARSplitOp) spi.createOperator();
+                spi = new TOPSARSplitOp.Spi();
+                op = (TOPSARSplitOp) spi.createOperator();
                 op.setSourceProduct(sourceProduct);
 
                 op.setParameter("selectedPolarisations", topSarSplitParameters.get("selectedPolarisations"));
@@ -125,7 +116,7 @@ public class TOPSARSplitOpEnv {
                 op.setParameter("firstBurstIndex", burst);
                 op.setParameter("lastBurstIndex", burst);
 
-                Product targetProduct = op.getTargetProduct();
+                targetProduct = op.getTargetProduct();
 
                 splittedBurstOfSwathGeoRegionWKT = "POLYGON((" + targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeString("first_near_long") + ' '
                         + targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeString("first_near_lat") + ','
@@ -146,28 +137,27 @@ public class TOPSARSplitOpEnv {
                     String resultColumn = rs.getString(1);
 
                     if (!resultColumn.contains("EMPTY")) {
+
                         if (firstBurstIndex == -1) {
                             firstBurstIndex = burst;
                             lastBurstIndex = burst;
+                            targetProduct.closeIO();
+                            op.dispose();
                             continue;
                         } else {
                             lastBurstIndex = burst;
+                            targetProduct.closeIO();
+                            op.dispose();
                             continue;
                         }
                     }
                 }
 
-                sourceProduct.closeIO();
-                sourceProduct.dispose();
-                targetProduct.closeIO();
-                targetProduct.dispose();
-
-                op.dispose();
-
                 statement.close();
                 rs.close();
+
+                op.dispose();
             }
-            connection.close();
 
             if (firstBurstIndex != -1 && lastBurstIndex != -1) {
                 return true;
@@ -192,6 +182,30 @@ public class TOPSARSplitOpEnv {
 
     public String getLastBurstIndex() {
         return String.valueOf(lastBurstIndex);
+    }
+
+    public void Dispose() {
+        try {
+
+            this.targetProduct.closeIO();
+            targetProduct = null;
+
+            this.sourceProduct.closeIO();
+            sourceProduct = null;
+
+            op.dispose();
+            op = null;
+            spi = null;
+
+            s1u = null;
+
+            subSwathInfos = null;
+
+            connection.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

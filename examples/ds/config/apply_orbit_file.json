@@ -33,7 +33,7 @@
       "name": "continueOnFail",
       "label": "Do not fail if new orbit file is not found",
       "type": "inputTypes.checkBox",
-      "value": false,
+      "value": true,
       "defaultvalue": false
     }
   }
