@@ -64,7 +64,7 @@ public class TOPSARSplitOpEnv {
                 op.setParameter("selectedPolarisations", topSarSplitParameters.get("selectedPolarisations"));
                 op.setParameter("subswath", subSwathInfos[i].subSwathName);
                 op.setParameter("firstBurstIndex", 1);
-                op.setParameter("lastBurstIndex", subSwathInfos[i].numOfSamples);
+                op.setParameter("lastBurstIndex", subSwathInfos[i].numOfBursts);
 
                 targetProduct = op.getTargetProduct();
                 splittedSwathGeoRegionWKT = "POLYGON((" + targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeString("first_near_long") + ' '

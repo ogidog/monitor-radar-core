@@ -1,4 +1,4 @@
-package org.myapp.satellite.radar.ds;
+package org.myapp.satellite.radar.shared;
 
 import org.esa.s1tbx.commons.Sentinel1Utils;
 import org.esa.s1tbx.sentinel1.gpf.TOPSARSplitOp;
@@ -64,7 +64,7 @@ public class TOPSARSplitOpEnv {
                 op.setParameter("selectedPolarisations", topSarSplitParameters.get("selectedPolarisations"));
                 op.setParameter("subswath", subSwathInfos[i].subSwathName);
                 op.setParameter("firstBurstIndex", 1);
-                op.setParameter("lastBurstIndex", subSwathInfos[i].numOfSamples);
+                op.setParameter("lastBurstIndex", subSwathInfos[i].numOfBursts);
 
                 targetProduct = op.getTargetProduct();
                 splittedSwathGeoRegionWKT = "POLYGON((" + targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeString("first_near_long") + ' '
@@ -78,13 +78,19 @@ public class TOPSARSplitOpEnv {
                         + targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeString("first_near_long") + ' '
                         + targetProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeString("first_near_lat") + "))";
 
-                sql = "SELECT ST_AsText(ST_Intersection(ST_GeomFromText('" + splittedSwathGeoRegionWKT + "'),ST_GeomFromText('" + subsetGeoRegionWKT + "')))";
+                sql = "SELECT ST_AsText(ST_Intersection(ST_GeomFromText('" + splittedSwathGeoRegionWKT + "'),ST_GeomFromText('" + subsetGeoRegionWKT + "'))), " +
+                        "ST_Area(ST_Intersection(ST_GeomFromText('" + splittedSwathGeoRegionWKT + "'),ST_GeomFromText('" + subsetGeoRegionWKT + "'))::geography)/1000000 as intersect_area, " +
+                        "ST_Area(ST_GeomFromText('" + subsetGeoRegionWKT + "')::geography)/1000000 as subset_area";
                 Statement statement = connection.createStatement();
                 ResultSet rs = statement.executeQuery(sql);
                 if (rs.next()) {
                     String resultColumn = rs.getString(1);
+                    float intersectArea = rs.getFloat(2);
+                    float subsetArea = rs.getFloat(3);
+                    if ((intersectArea / subsetArea) * 100 < 80) {
+                        continue;
+                    }
                     if (!resultColumn.contains("EMPTY")) {
-
                         resultColumn = resultColumn.replace("POLYGON((", "").replace("))", "");
                         intersectionGeoRegion = resultColumn + resultColumn.substring(resultColumn.lastIndexOf(","));
 

@@ -5,6 +5,7 @@ import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.myapp.satellite.radar.shared.TOPSARSplitOpEnv;
 import org.myapp.utils.ConsoleArgsReader;
 
 import java.io.File;
@@ -86,10 +87,11 @@ public class Stage1 {
 
                 cmdWriter.println("gpt " + stage1Dir + File.separator
                         + Paths.get(files[i]).getFileName().toString().replace(".zip", "") + ".xml");
+
             }
 
-            cmdWriter.close();
             topsarSplitOpEnv.Dispose();
+            cmdWriter.close();
 
         } catch (Exception e) {
             e.printStackTrace();
