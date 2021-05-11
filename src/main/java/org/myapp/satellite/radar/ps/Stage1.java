@@ -6,6 +6,7 @@ import org.esa.snap.core.gpf.graph.GraphIO;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.myapp.utils.ConsoleArgsReader;
+import org.myapp.satellite.radar.shared.TOPSARSplitOpEnv;
 
 import java.io.File;
 import java.io.FileReader;
