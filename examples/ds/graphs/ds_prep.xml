@@ -4,14 +4,14 @@
     <operator>Read</operator>
     <sources/>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>D:\Temp\test1\123456789123\applyorbitfile\S1B_IW_SLC__1SDV_20191218T004022_20191218T004045_Orb.dim</file>
+      <file>D:\Temp\kemerovo\results\applyorbitfile\S1B_IW_SLC__1SDV_20200101T002736_20200101T002806_019616_02512C_6AF3_Orb.dim</file>
     </parameters>
   </node>
   <node id="Read(2)">
     <operator>Read</operator>
     <sources/>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>D:\Temp\test1\123456789123\applyorbitfile\S1B_IW_SLC__1SDV_20190609T004017_20190609T004040_016612_01F448_936E_Orb.dim</file>
+      <file>D:\Temp\kemerovo\results\applyorbitfile\S1B_IW_SLC__1SDV_20200113T002735_20200113T002805_019791_0256B4_F2AA_Orb.dim</file>
     </parameters>
   </node>
   <node id="Back-Geocoding">
@@ -30,32 +30,6 @@
       <outputRangeAzimuthOffset>false</outputRangeAzimuthOffset>
       <outputDerampDemodPhase>false</outputDerampDemodPhase>
       <disableReramp>false</disableReramp>
-    </parameters>
-  </node>
-  <node id="TOPSAR-Deburst">
-    <operator>TOPSAR-Deburst</operator>
-    <sources>
-      <sourceProduct refid="Enhanced-Spectral-Diversity"/>
-    </sources>
-    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <selectedPolarisations/>
-    </parameters>
-  </node>
-  <node id="Subset">
-    <operator>Subset</operator>
-    <sources>
-      <sourceProduct refid="TOPSAR-Deburst"/>
-    </sources>
-    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <sourceBands/>
-      <region>0,0,0,0</region>
-      <referenceBand/>
-      <geoRegion>POLYGON ((88.13622283935547 69.29539489746094, 88.33269500732422 69.29539489746094, 88.33269500732422 69.37142944335938, 88.13622283935547 69.37142944335938, 88.13622283935547 69.29539489746094, 88.13622283935547 69.29539489746094))</geoRegion>
-      <subSamplingX>1</subSamplingX>
-      <subSamplingY>1</subSamplingY>
-      <fullSwath>false</fullSwath>
-      <tiePointGridNames/>
-      <copyMetadata>true</copyMetadata>
     </parameters>
   </node>
   <node id="Enhanced-Spectral-Diversity">
@@ -87,10 +61,10 @@
   <node id="Write">
     <operator>Write</operator>
     <sources>
-      <sourceProduct refid="Subset"/>
+      <sourceProduct refid="Enhanced-Spectral-Diversity"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>D:\Temp\test1\123456789123\esd\S1B_IW_SLC__1SDV_20190609T004017_20190609T004040_016612_01F448_936E_Orb_Stack_Deb.dim</file>
+      <file>D:\Temp\test1\123456789123\esd\S1B_IW_SLC__1SDV_20200101T002736_20200101T002806_019616_02512C_6AF3_Orb_Stack.dim</file>
       <formatName>BEAM-DIMAP</formatName>
     </parameters>
   </node>
@@ -103,19 +77,13 @@
       <displayPosition x="28.0" y="151.0"/>
     </node>
     <node id="Back-Geocoding">
-      <displayPosition x="217.0" y="120.0"/>
-    </node>
-    <node id="TOPSAR-Deburst">
-      <displayPosition x="398.0" y="171.0"/>
-    </node>
-    <node id="Subset">
-      <displayPosition x="324.0" y="257.0"/>
+      <displayPosition x="122.0" y="105.0"/>
     </node>
     <node id="Enhanced-Spectral-Diversity">
-      <displayPosition x="394.0" y="118.0"/>
+      <displayPosition x="247.0" y="106.0"/>
     </node>
     <node id="Write">
-      <displayPosition x="327.0" y="314.0"/>
+      <displayPosition x="561.0" y="107.0"/>
     </node>
   </applicationData>
 </graph>

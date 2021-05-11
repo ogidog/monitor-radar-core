@@ -4,14 +4,14 @@
     <operator>Read</operator>
     <sources/>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>D:\Temp\test1\123456789123\applyorbitfile\S1B_IW_SLC__1SDV_20191218T004022_20191218T004045_019412_024AB9_3C1C_Orb.dim</file>
+      <file>D:\Temp\kemerovo\results\applyorbitfile\S1B_IW_SLC__1SDV_20200101T002736_20200101T002806_019616_02512C_6AF3_Orb.dim</file>
     </parameters>
   </node>
   <node id="Read(2)">
     <operator>Read</operator>
     <sources/>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>D:\Temp\test1\123456789123\applyorbitfile\S1B_IW_SLC__1SDV_20190609T004017_20190609T004040_016612_01F448_936E_Orb.dim</file>
+      <file>D:\Temp\kemerovo\results\applyorbitfile\S1B_IW_SLC__1SDV_20200113T002735_20200113T002805_019791_0256B4_F2AA_Orb.dim</file>
     </parameters>
   </node>
   <node id="Back-Geocoding">
@@ -32,39 +32,13 @@
       <disableReramp>false</disableReramp>
     </parameters>
   </node>
-  <node id="TOPSAR-Deburst(2)">
-    <operator>TOPSAR-Deburst</operator>
+  <node id="Write">
+    <operator>Write</operator>
     <sources>
       <sourceProduct refid="Back-Geocoding"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <selectedPolarisations/>
-    </parameters>
-  </node>
-  <node id="Subset">
-    <operator>Subset</operator>
-    <sources>
-      <sourceProduct refid="TOPSAR-Deburst(2)"/>
-    </sources>
-    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <sourceBands/>
-      <region>0,0,0,0</region>
-      <referenceBand/>
-      <geoRegion>POLYGON ((88.13622283935547 69.29539489746094, 88.33269500732422 69.29539489746094, 88.33269500732422 69.37142944335938, 88.13622283935547 69.37142944335938, 88.13622283935547 69.29539489746094, 88.13622283935547 69.29539489746094))</geoRegion>
-      <subSamplingX>1</subSamplingX>
-      <subSamplingY>1</subSamplingY>
-      <fullSwath>false</fullSwath>
-      <tiePointGridNames/>
-      <copyMetadata>true</copyMetadata>
-    </parameters>
-  </node>
-  <node id="Write">
-    <operator>Write</operator>
-    <sources>
-      <sourceProduct refid="Subset"/>
-    </sources>
-    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>D:\Temp\test1\123456789123\esd\S1B_IW_SLC__1SDV_20190609T004017_20190609T004040_016612_01F448_936E_Orb_Stack_Deb.dim</file>
+      <file>D:\Temp\test1\123456789123\esd\S1B_IW_SLC__1SDV_20200101T002736_20200101T002806_019616_02512C_6AF3_Orb_Stack.dim</file>
       <formatName>BEAM-DIMAP</formatName>
     </parameters>
   </node>
@@ -79,14 +53,8 @@
     <node id="Back-Geocoding">
       <displayPosition x="135.0" y="122.0"/>
     </node>
-    <node id="TOPSAR-Deburst(2)">
-      <displayPosition x="297.0" y="197.0"/>
-    </node>
-    <node id="Subset">
-      <displayPosition x="324.0" y="257.0"/>
-    </node>
     <node id="Write">
-      <displayPosition x="327.0" y="314.0"/>
+      <displayPosition x="392.0" y="121.0"/>
     </node>
   </applicationData>
 </graph>
