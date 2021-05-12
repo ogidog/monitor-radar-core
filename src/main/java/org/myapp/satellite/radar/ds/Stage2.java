@@ -48,6 +48,14 @@ public class Stage2 {
                         .forEach(File::delete);
             }
 
+            String subsetEsdDir = outputDir + "" + File.separator + "subsetesd";
+            if (Files.exists(Paths.get(subsetEsdDir))) {
+                Files.walk(Paths.get(subsetEsdDir))
+                        .sorted(Comparator.reverseOrder())
+                        .map(Path::toFile)
+                        .forEach(File::delete);
+            }
+
             String stage2Dir = outputDir + "" + File.separator + "stage2";
             if (Files.exists(Paths.get(stage2Dir))) {
                 Files.walk(Paths.get(stage2Dir))
@@ -57,6 +65,7 @@ public class Stage2 {
             }
 
             new File(esdDir).mkdirs();
+            new File(subsetEsdDir).mkdirs();
             new File(stage2Dir).mkdirs();
 
             Product[] products = Arrays.stream(files).map(file -> {
@@ -85,6 +94,10 @@ public class Stage2 {
             Graph graph = GraphIO.read(fileReader);
             fileReader.close();
 
+            // Subset
+            graph.getNode("Subset").getConfiguration().getChild("geoRegion")
+                    .setValue("POLYGON((" + ((HashMap) parameters.get("Subset")).get("geoRegion").toString() + "))");
+
             // BackGeocoding
             ((HashMap) parameters.get("BackGeocoding")).forEach((key, value) -> {
                 graph.getNode("Back-Geocoding").getConfiguration().getChild(key.toString())
@@ -104,6 +117,9 @@ public class Stage2 {
                     graph.getNode("Read(2)").getConfiguration().getChild("file").setValue(masterProductPath + File.separator + slaveProductName + ".dim");
                     graph.getNode("Write").getConfiguration().getChild("file")
                             .setValue(esdDir + File.separator + slaveProductName + "_Stack_Deb.dim");
+
+                    graph.getNode("Write(2)").getConfiguration().getChild("file")
+                            .setValue(subsetEsdDir + File.separator + slaveProductName + "_Stack_Deb.dim");
 
                     FileWriter fileWriter = new FileWriter(stage2Dir + File.separator + slaveProductName + ".xml");
                     GraphIO.write(graph, fileWriter);
@@ -140,13 +156,23 @@ public class Stage2 {
             JSONParser parser = new JSONParser();
             stageParameters = new HashMap<>();
 
-            // BackGeocoding
-            parser = new JSONParser();
-            FileReader fileReader = new FileReader(configDir + File.separator + "back_geocoding.json");
+            // Subset
+            FileReader fileReader = new FileReader(configDir + File.separator + "subset.json");
             JSONObject jsonObject = (JSONObject) parser.parse(fileReader);
             HashMap jsonParameters = (HashMap) jsonObject.get("parameters");
-
+            String geoRegionCoordinates = ((HashMap) jsonParameters.get("geoRegion")).get("value").toString();
             HashMap parameters = new HashMap();
+            parameters.put("geoRegion", geoRegionCoordinates);
+            stageParameters.put("Subset", parameters);
+            fileReader.close();
+
+            // BackGeocoding
+            parser = new JSONParser();
+            fileReader = new FileReader(configDir + File.separator + "back_geocoding.json");
+            jsonObject = (JSONObject) parser.parse(fileReader);
+            jsonParameters = (HashMap) jsonObject.get("parameters");
+
+            parameters = new HashMap();
             Iterator it = jsonParameters.entrySet().iterator();
             while (it.hasNext()) {
                 Map.Entry pair = (Map.Entry) it.next();

@@ -58,6 +58,33 @@
       <overallAzimuthShift>0.0</overallAzimuthShift>
     </parameters>
   </node>
+  <node id="Subset">
+    <operator>Subset</operator>
+    <sources>
+      <sourceProduct refid="Enhanced-Spectral-Diversity"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <sourceBands/>
+      <region>0,0,23955,3034</region>
+      <referenceBand/>
+      <geoRegion/>
+      <subSamplingX>1</subSamplingX>
+      <subSamplingY>1</subSamplingY>
+      <fullSwath>false</fullSwath>
+      <tiePointGridNames/>
+      <copyMetadata>true</copyMetadata>
+    </parameters>
+  </node>
+  <node id="Write(2)">
+    <operator>Write</operator>
+    <sources>
+      <sourceProduct refid="Subset"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>D:\Temp\test1\123456789123\esd\Subset_S1B_IW_SLC__1SDV_20200101T002736_20200101T002806_019616_02512C_6AF3_Orb_Stack.dim</file>
+      <formatName>BEAM-DIMAP</formatName>
+    </parameters>
+  </node>
   <node id="Write">
     <operator>Write</operator>
     <sources>
@@ -80,7 +107,13 @@
       <displayPosition x="122.0" y="105.0"/>
     </node>
     <node id="Enhanced-Spectral-Diversity">
-      <displayPosition x="247.0" y="106.0"/>
+      <displayPosition x="262.0" y="99.0"/>
+    </node>
+    <node id="Subset">
+      <displayPosition x="312.0" y="152.0"/>
+    </node>
+    <node id="Write(2)">
+      <displayPosition x="356.0" y="223.0"/>
     </node>
     <node id="Write">
       <displayPosition x="561.0" y="107.0"/>
