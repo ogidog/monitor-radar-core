@@ -109,8 +109,8 @@ public class Stage2 {
                 masterProductDate = masterProductDate.split("T")[0].split("_")[5];
                 slaveProductDate = slaveProductDate.split("T")[0].split("_")[5];
 
-                graph.getNode("Read").getConfiguration().getChild("file").setValue(pair[0] + ".dim");
-                graph.getNode("Read(2)").getConfiguration().getChild("file").setValue(pair[1] + ".dim");
+                graph.getNode("Read").getConfiguration().getChild("file").setValue(pair[0]);
+                graph.getNode("Read(2)").getConfiguration().getChild("file").setValue(pair[1]);
                 graph.getNode("Write").getConfiguration().getChild("file")
                         .setValue(tcDir + File.separator + masterProductDate + "_" + slaveProductDate + ".dim");
 
