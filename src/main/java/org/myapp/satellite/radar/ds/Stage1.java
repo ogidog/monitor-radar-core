@@ -94,8 +94,8 @@ public class Stage1 {
             cmdWriter.close();
 
         } catch (Exception e) {
+            System.out.println("\nHere!!!!\n");
             e.printStackTrace();
-            return;
         }
     }
 

@@ -4,14 +4,14 @@
     <operator>Read</operator>
     <sources/>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>D:\Temp\kemerovo\results\topophaseremoval\S1B_IW_SLC__1SDV_20200101T002736_20200101T002806_019616_02512C_6AF3_Orb_Stack_Deb_Stack_Ifg_Deb_DInSAR.dim</file>
+      <file>D:\Temp\kiyzasski_NDAI\results\applyorbitfile\S1B_IW_SLC__1SDV_20190106T002757_20190106T002825_014366_01ABBB_71C4_Orb.dim</file>
     </parameters>
   </node>
   <node id="Read(2)">
     <operator>Read</operator>
     <sources/>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>D:\Temp\kemerovo\results\topophaseremoval\S1B_IW_SLC__1SDV_20200828T002743_20200828T002813_023116_02BE3C_5AEA_Orb_Stack_Deb_Stack_Ifg_Deb_DInSAR.dim</file>
+      <file>D:\Temp\kiyzasski_NDAI\results\applyorbitfile\S1B_IW_SLC__1SDV_20190118T002757_20190118T002825_014541_01B15F_343B_Orb.dim</file>
     </parameters>
   </node>
   <node id="Back-Geocoding">
@@ -32,6 +32,15 @@
       <disableReramp>false</disableReramp>
     </parameters>
   </node>
+  <node id="TOPSAR-Deburst">
+    <operator>TOPSAR-Deburst</operator>
+    <sources>
+      <sourceProduct refid="Interferogram"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <selectedPolarisations/>
+    </parameters>
+  </node>
   <node id="Interferogram">
     <operator>Interferogram</operator>
     <sources>
@@ -43,7 +52,7 @@
       <srpNumberPoints>501</srpNumberPoints>
       <orbitDegree>3</orbitDegree>
       <includeCoherence>true</includeCoherence>
-      <cohWinAz>2</cohWinAz>
+      <cohWinAz>3</cohWinAz>
       <cohWinRg>10</cohWinRg>
       <squarePixel>true</squarePixel>
       <subtractTopographicPhase>true</subtractTopographicPhase>
@@ -56,19 +65,56 @@
       <outputLatLon>false</outputLatLon>
     </parameters>
   </node>
-  <node id="TOPSAR-Deburst">
-    <operator>TOPSAR-Deburst</operator>
+  <node id="TopoPhaseRemoval">
+    <operator>TopoPhaseRemoval</operator>
     <sources>
-      <sourceProduct refid="Interferogram"/>
+      <sourceProduct refid="TOPSAR-Deburst"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <selectedPolarisations/>
+      <orbitDegree>3</orbitDegree>
+      <demName>SRTM 3Sec</demName>
+      <externalDEMFile/>
+      <externalDEMNoDataValue>0.0</externalDEMNoDataValue>
+      <tileExtensionPercent>100</tileExtensionPercent>
+      <outputTopoPhaseBand>true</outputTopoPhaseBand>
+      <outputElevationBand>true</outputElevationBand>
+      <outputLatLonBands>false</outputLatLonBands>
+    </parameters>
+  </node>
+  <node id="Subset">
+    <operator>Subset</operator>
+    <sources>
+      <sourceProduct refid="GoldsteinPhaseFiltering"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <sourceBands>i_ifg_VV_06Jan2019_18Jan2019,q_ifg_VV_06Jan2019_18Jan2019,Intensity_ifg_VV_06Jan2019_18Jan2019_db,Phase_ifg_VV_06Jan2019_18Jan2019,topo_phase_VV_06Jan2019_18Jan2019,coh_IW1_VV_06Jan2019_18Jan2019,elevation</sourceBands>
+      <region>0,0,0,0</region>
+      <referenceBand/>
+      <geoRegion>POLYGON ((87.62728118896484 53.588199615478516, 87.7283935546875 53.588199615478516, 87.7283935546875 53.54425811767578, 87.62728118896484 53.54425811767578, 87.62728118896484 53.588199615478516, 87.62728118896484 53.588199615478516))</geoRegion>
+      <subSamplingX>1</subSamplingX>
+      <subSamplingY>1</subSamplingY>
+      <fullSwath>false</fullSwath>
+      <tiePointGridNames/>
+      <copyMetadata>true</copyMetadata>
+    </parameters>
+  </node>
+  <node id="Multilook">
+    <operator>Multilook</operator>
+    <sources>
+      <sourceProduct refid="TopoPhaseRemoval"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <sourceBands>i_ifg_VV_06Jan2019_18Jan2019,q_ifg_VV_06Jan2019_18Jan2019,Intensity_ifg_VV_06Jan2019_18Jan2019_ifg_srd_VV_06Jan2019_18Jan2019,Phase_ifg_srd_VV_06Jan2019_18Jan2019,topo_phase_VV_06Jan2019_18Jan2019,coh_IW1_VV_06Jan2019_18Jan2019,elevation</sourceBands>
+      <nRgLooks>4</nRgLooks>
+      <nAzLooks>1</nAzLooks>
+      <outputIntensity>false</outputIntensity>
+      <grSquarePixel>false</grSquarePixel>
     </parameters>
   </node>
   <node id="GoldsteinPhaseFiltering">
     <operator>GoldsteinPhaseFiltering</operator>
     <sources>
-      <sourceProduct refid="TOPSAR-Deburst"/>
+      <sourceProduct refid="Multilook"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <alpha>1.0</alpha>
@@ -81,18 +127,18 @@
   <node id="Terrain-Correction">
     <operator>Terrain-Correction</operator>
     <sources>
-      <sourceProduct refid="GoldsteinPhaseFiltering"/>
+      <sourceProduct refid="Subset"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <sourceBands/>
+      <sourceBands>i_ifg_VV_06Jan2019_18Jan2019,q_ifg_VV_06Jan2019_18Jan2019,Intensity_ifg_VV_06Jan2019_18Jan2019_db,Phase_ifg_VV_06Jan2019_18Jan2019,topo_phase_VV_06Jan2019_18Jan2019,coh_IW1_VV_06Jan2019_18Jan2019,elevation</sourceBands>
       <demName>SRTM 3Sec</demName>
       <externalDEMFile/>
       <externalDEMNoDataValue>0.0</externalDEMNoDataValue>
       <externalDEMApplyEGM>true</externalDEMApplyEGM>
       <demResamplingMethod>BILINEAR_INTERPOLATION</demResamplingMethod>
       <imgResamplingMethod>BILINEAR_INTERPOLATION</imgResamplingMethod>
-      <pixelSpacingInMeter>0.0</pixelSpacingInMeter>
-      <pixelSpacingInDegree>0.0</pixelSpacingInDegree>
+      <pixelSpacingInMeter>13.92</pixelSpacingInMeter>
+      <pixelSpacingInDegree>1.2504548754943738E-4</pixelSpacingInDegree>
       <mapProjection>GEOGCS[&quot;WGS84(DD)&quot;, &#xd;
   DATUM[&quot;WGS84&quot;, &#xd;
     SPHEROID[&quot;WGS84&quot;, 6378137.0, 298.257223563]], &#xd;
@@ -121,30 +167,13 @@
       <externalAuxFile/>
     </parameters>
   </node>
-  <node id="Subset">
-    <operator>Subset</operator>
+  <node id="Write">
+    <operator>Write</operator>
     <sources>
       <sourceProduct refid="Terrain-Correction"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <sourceBands/>
-      <region>0,0,0,0</region>
-      <referenceBand/>
-      <geoRegion>POLYGON ((22.763696670532227 26.787948608398438, 31.02815818786621 26.787948608398438, 31.02815818786621 15.142569541931152, 22.763696670532227 15.142569541931152, 22.763696670532227 26.787948608398438, 22.763696670532227 26.787948608398438))</geoRegion>
-      <subSamplingX>1</subSamplingX>
-      <subSamplingY>1</subSamplingY>
-      <fullSwath>false</fullSwath>
-      <tiePointGridNames/>
-      <copyMetadata>true</copyMetadata>
-    </parameters>
-  </node>
-  <node id="Write">
-    <operator>Write</operator>
-    <sources>
-      <sourceProduct refid="Subset"/>
-    </sources>
-    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>D:\Temp\test1\123456789123\esd\target1.dim</file>
+      <file>D:\Temp\Subset_S1B_IW_SLC__1SDV_20190106T002757_20190106T002825_014366_01ABBB_71C4_Orb_Stack_Ifg_Deb_DInSAR_ML_Flt_TC.dim</file>
       <formatName>BEAM-DIMAP</formatName>
     </parameters>
   </node>
@@ -157,25 +186,31 @@
       <displayPosition x="40.0" y="127.0"/>
     </node>
     <node id="Back-Geocoding">
-      <displayPosition x="163.0" y="88.0"/>
-    </node>
-    <node id="Interferogram">
-      <displayPosition x="323.0" y="88.0"/>
+      <displayPosition x="152.0" y="88.0"/>
     </node>
     <node id="TOPSAR-Deburst">
       <displayPosition x="454.0" y="85.0"/>
     </node>
-    <node id="GoldsteinPhaseFiltering">
-      <displayPosition x="603.0" y="83.0"/>
+    <node id="Interferogram">
+      <displayPosition x="327.0" y="79.0"/>
     </node>
-    <node id="Terrain-Correction">
-      <displayPosition x="783.0" y="80.0"/>
+    <node id="TopoPhaseRemoval">
+      <displayPosition x="552.0" y="167.0"/>
     </node>
     <node id="Subset">
-      <displayPosition x="775.0" y="153.0"/>
+      <displayPosition x="900.0" y="177.0"/>
+    </node>
+    <node id="Multilook">
+      <displayPosition x="717.0" y="213.0"/>
+    </node>
+    <node id="GoldsteinPhaseFiltering">
+      <displayPosition x="715.0" y="107.0"/>
+    </node>
+    <node id="Terrain-Correction">
+      <displayPosition x="887.0" y="84.0"/>
     </node>
     <node id="Write">
-      <displayPosition x="668.0" y="155.0"/>
+      <displayPosition x="1079.0" y="225.0"/>
     </node>
   </applicationData>
 </graph>
