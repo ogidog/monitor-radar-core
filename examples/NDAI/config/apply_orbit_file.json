@@ -1,0 +1,40 @@
+{
+  "label": "Apply Orbit File",
+  "name": "apply_orbit_file",
+  "description": "This operator applies orbit file to a given product.",
+  "parameters": {
+    "orbitType": {
+      "index": 0,
+      "name": "orbitType",
+      "label": "Orbit State Vectors",
+      "type": "inputTypes.select",
+      "value": "Sentinel Precise (Auto Download)",
+      "defaultvalue": "",
+      "options": [
+        "Sentinel Precise (Auto Download)",
+        "Sentinel Restituted (Auto Download)",
+        "DORIS Preliminary POR (ENVISAT)",
+        "DORIS Precise VOR (ENVISAT) (Auto Download)",
+        "DELFT Precise (ENVISAT, ERS1&2) (Auto Download)",
+        "PRARE Precise (ERS1&2) (Auto Download)",
+        "Kompsat5 Precise"
+      ]
+    },
+    "polyDegree": {
+      "index": 1,
+      "name": "polyDegree",
+      "label": "Polynomial Degree",
+      "type": "inputTypes.text",
+      "value": 3,
+      "defaultvalue": 3
+    },
+    "continueOnFail": {
+      "index": 2,
+      "name": "continueOnFail",
+      "label": "Do not fail if new orbit file is not found",
+      "type": "inputTypes.checkBox",
+      "value": true,
+      "defaultvalue": false
+    }
+  }
+}

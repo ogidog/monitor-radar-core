@@ -1,6 +1,7 @@
 
 package org.myapp.satellite.radar.sbas;
 
+import org.esa.s1tbx.commons.Sentinel1Utils;
 import org.esa.s1tbx.insar.gpf.InSARStackOverview;
 import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.datamodel.Product;
@@ -158,7 +159,15 @@ public class Stage2 {
                 }
             }
 
-            String graphFile = "filt_intf.xml";
+            Sentinel1Utils s1u = new Sentinel1Utils(products[0]);
+            int numOfBurst = s1u.getNumOfBursts(s1u.getSubSwath()[0].subSwathName);
+            String graphFile;
+            if (numOfBurst > 1) {
+                graphFile = "filt_intf.xml";
+            } else {
+                graphFile = "filt_intf_without_esd.xml";
+            }
+
             FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
             Graph graph = GraphIO.read(fileReader);
             fileReader.close();
