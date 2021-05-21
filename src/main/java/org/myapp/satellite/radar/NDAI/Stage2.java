@@ -2,7 +2,6 @@ package org.myapp.satellite.radar.NDAI;
 
 import org.esa.s1tbx.commons.Sentinel1Utils;
 import org.esa.snap.core.dataio.ProductIO;
-import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
 import org.json.simple.JSONObject;
@@ -17,7 +16,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Stage2 {
 
