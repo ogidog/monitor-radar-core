@@ -1,5 +1,6 @@
 package org.myapp.satellite.radar.NDAI;
 
+import org.esa.s1tbx.commons.Sentinel1Utils;
 import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.graph.Graph;
@@ -10,6 +11,8 @@ import org.myapp.utils.ConsoleArgsReader;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -68,7 +71,15 @@ public class Stage2 {
                 }
             }
 
-            String graphFile = "filt_intf.xml";
+            Sentinel1Utils s1u = new Sentinel1Utils(ProductIO.readProduct(files[0]));
+            int numOfBurst = s1u.getNumOfBursts(s1u.getSubSwath()[0].subSwathName);
+            String graphFile;
+            if (numOfBurst > 1) {
+                graphFile = "tc.xml";
+            } else {
+                graphFile = "tc_without_esd.xml";
+            }
+
             FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
             Graph graph = GraphIO.read(fileReader);
             fileReader.close();
@@ -89,13 +100,29 @@ public class Stage2 {
                         .setValue(value.toString());
             });
 
-            // TopoPhaseRemoval
-            ((HashMap) parameters.get("TopoPhaseRemoval")).forEach((key, value) -> {
-                graph.getNode("TopoPhaseRemoval").getConfiguration().getChild(key.toString())
-                        .setValue(value.toString());
-            });
+            PrintWriter cmdWriter = new PrintWriter(stage2Dir + File.separator + "stage2.cmd", "UTF-8");
+            String masterProductDate, slaveProductDate, masterProductName, slaveProductName;
 
-            return;
+            for (String[] pair : pairs) {
+                masterProductDate = Paths.get(pair[0]).getFileName().toString();
+                slaveProductDate = Paths.get(pair[1]).getFileName().toString();
+                masterProductDate = masterProductDate.split("T")[0].split("_")[5];
+                slaveProductDate = slaveProductDate.split("T")[0].split("_")[5];
+
+                graph.getNode("Read").getConfiguration().getChild("file").setValue(pair[0] + ".dim");
+                graph.getNode("Read(2)").getConfiguration().getChild("file").setValue(pair[1] + ".dim");
+                graph.getNode("Write").getConfiguration().getChild("file")
+                        .setValue(tcDir + File.separator + masterProductDate + "_" + slaveProductDate + ".dim");
+
+                FileWriter fileWriter = new FileWriter(stage2Dir + File.separator
+                        + masterProductDate + "_" + slaveProductDate + ".xml");
+                GraphIO.write(graph, fileWriter);
+                fileWriter.flush();
+                fileWriter.close();
+
+                cmdWriter.println("gpt " + stage2Dir + File.separator + masterProductDate + "_" + slaveProductDate + ".xml");
+            }
+            cmdWriter.close();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -149,21 +176,6 @@ public class Stage2 {
                 parameters.put(pair.getKey().toString(), ((HashMap) jsonParameters.get(pair.getKey().toString())).get("value"));
             }
             stageParameters.put("Interferogram", parameters);
-            fileReader.close();
-
-            // Topo Phase Removal
-            parser = new JSONParser();
-            fileReader = new FileReader(configDir + File.separator + "topo_phase_removal.json");
-            jsonObject = (JSONObject) parser.parse(fileReader);
-            jsonParameters = (HashMap) jsonObject.get("parameters");
-
-            parameters = new HashMap();
-            it = jsonParameters.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry pair = (Map.Entry) it.next();
-                parameters.put(pair.getKey().toString(), ((HashMap) jsonParameters.get(pair.getKey().toString())).get("value"));
-            }
-            stageParameters.put("TopoPhaseRemoval", parameters);
             fileReader.close();
 
             return stageParameters;

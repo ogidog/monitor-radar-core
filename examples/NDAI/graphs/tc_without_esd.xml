@@ -3,12 +3,16 @@
   <node id="Read">
     <operator>Read</operator>
     <sources/>
-    <parameters class="com.bc.ceres.binding.dom.XppDomElement"/>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>D:\Temp\kemerovo\results\topophaseremoval\S1B_IW_SLC__1SDV_20200101T002736_20200101T002806_019616_02512C_6AF3_Orb_Stack_Deb_Stack_Ifg_Deb_DInSAR.dim</file>
+    </parameters>
   </node>
   <node id="Read(2)">
     <operator>Read</operator>
     <sources/>
-    <parameters class="com.bc.ceres.binding.dom.XppDomElement"/>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>D:\Temp\kemerovo\results\topophaseremoval\S1B_IW_SLC__1SDV_20200828T002743_20200828T002813_023116_02BE3C_5AEA_Orb_Stack_Deb_Stack_Ifg_Deb_DInSAR.dim</file>
+    </parameters>
   </node>
   <node id="Back-Geocoding">
     <operator>Back-Geocoding</operator>
@@ -87,6 +91,8 @@
       <externalDEMApplyEGM>true</externalDEMApplyEGM>
       <demResamplingMethod>BILINEAR_INTERPOLATION</demResamplingMethod>
       <imgResamplingMethod>BILINEAR_INTERPOLATION</imgResamplingMethod>
+      <pixelSpacingInMeter>0.0</pixelSpacingInMeter>
+      <pixelSpacingInDegree>0.0</pixelSpacingInDegree>
       <mapProjection>GEOGCS[&quot;WGS84(DD)&quot;, &#xd;
   DATUM[&quot;WGS84&quot;, &#xd;
     SPHEROID[&quot;WGS84&quot;, 6378137.0, 298.257223563]], &#xd;
