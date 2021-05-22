@@ -98,23 +98,10 @@
       <copyMetadata>true</copyMetadata>
     </parameters>
   </node>
-  <node id="Multilook">
-    <operator>Multilook</operator>
-    <sources>
-      <sourceProduct refid="TopoPhaseRemoval"/>
-    </sources>
-    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <sourceBands>i_ifg_VV_06Jan2019_18Jan2019,q_ifg_VV_06Jan2019_18Jan2019,Intensity_ifg_VV_06Jan2019_18Jan2019_ifg_srd_VV_06Jan2019_18Jan2019,Phase_ifg_srd_VV_06Jan2019_18Jan2019,topo_phase_VV_06Jan2019_18Jan2019,coh_IW1_VV_06Jan2019_18Jan2019,elevation</sourceBands>
-      <nRgLooks>4</nRgLooks>
-      <nAzLooks>1</nAzLooks>
-      <outputIntensity>false</outputIntensity>
-      <grSquarePixel>false</grSquarePixel>
-    </parameters>
-  </node>
   <node id="GoldsteinPhaseFiltering">
     <operator>GoldsteinPhaseFiltering</operator>
     <sources>
-      <sourceProduct refid="Multilook"/>
+      <sourceProduct refid="TopoPhaseRemoval"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <alpha>1.0</alpha>
@@ -137,8 +124,6 @@
       <externalDEMApplyEGM>true</externalDEMApplyEGM>
       <demResamplingMethod>BILINEAR_INTERPOLATION</demResamplingMethod>
       <imgResamplingMethod>BILINEAR_INTERPOLATION</imgResamplingMethod>
-      <pixelSpacingInMeter>13.92</pixelSpacingInMeter>
-      <pixelSpacingInDegree>1.2504548754943738E-4</pixelSpacingInDegree>
       <mapProjection>GEOGCS[&quot;WGS84(DD)&quot;, &#xd;
   DATUM[&quot;WGS84&quot;, &#xd;
     SPHEROID[&quot;WGS84&quot;, 6378137.0, 298.257223563]], &#xd;
@@ -173,7 +158,7 @@
       <sourceProduct refid="Terrain-Correction"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>D:\Temp\Subset_S1B_IW_SLC__1SDV_20190106T002757_20190106T002825_014366_01ABBB_71C4_Orb_Stack_Ifg_Deb_DInSAR_ML_Flt_TC.dim</file>
+      <file>D:\Temp\Subset_S1B_IW_SLC__1SDV_20190106T002757_20190106T002825_014366_01ABBB_71C4_Orb_Stack_Ifg_Deb_DInSAR_Flt_TC.dim</file>
       <formatName>BEAM-DIMAP</formatName>
     </parameters>
   </node>
@@ -199,9 +184,6 @@
     </node>
     <node id="Subset">
       <displayPosition x="900.0" y="177.0"/>
-    </node>
-    <node id="Multilook">
-      <displayPosition x="717.0" y="213.0"/>
     </node>
     <node id="GoldsteinPhaseFiltering">
       <displayPosition x="715.0" y="107.0"/>
