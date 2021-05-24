@@ -17,7 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class Stage2 {
+public class Stage3 {
 
     public static void main(String[] args) {
 
@@ -34,11 +34,11 @@ public class Stage2 {
                 return;
             }
 
-            String stage2Dir = outputDir + "" + File.separator + "stage2";
+            String stage3Dir = outputDir + "" + File.separator + "stage3";
+            String subsetDir = outputDir + File.separator + "subset";
             String esdDir = outputDir + File.separator + "esd";
-            String applyorbitfileDir = outputDir + File.separator + "applyorbitfile";
 
-            String[] files = Files.walk(Paths.get(applyorbitfileDir)).filter(path -> {
+            String[] files = Files.walk(Paths.get(esdDir)).filter(path -> {
                 if (path.toString().endsWith(".dim")) {
                     return true;
                 } else {
@@ -46,69 +46,53 @@ public class Stage2 {
                 }
             }).map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
 
-            if (Files.exists(Paths.get(esdDir))) {
-                Files.walk(Paths.get(esdDir))
+            if (Files.exists(Paths.get(subsetDir))) {
+                Files.walk(Paths.get(subsetDir))
                         .sorted(Comparator.reverseOrder())
                         .map(Path::toFile)
                         .forEach(File::delete);
             }
-            new File(esdDir).mkdirs();
+            new File(subsetDir).mkdirs();
 
-            if (Files.exists(Paths.get(stage2Dir))) {
-                Files.walk(Paths.get(stage2Dir))
+            if (Files.exists(Paths.get(stage3Dir))) {
+                Files.walk(Paths.get(stage3Dir))
                         .sorted(Comparator.reverseOrder())
                         .map(Path::toFile)
                         .forEach(File::delete);
             }
-            new File(stage2Dir).mkdirs();
+            new File(stage3Dir).mkdirs();
 
-            ArrayList<String[]> pairs = new ArrayList<>();
-            for (int i = 0; i < files.length - 2; i++) {
-                for (int j = i + 1; j < i + 2; j++) {
-                    pairs.add(new String[]{files[i], files[j]});
-                }
-            }
-
-            Sentinel1Utils s1u = new Sentinel1Utils(ProductIO.readProduct(files[0]));
-            int numOfBurst = s1u.getNumOfBursts(s1u.getSubSwath()[0].subSwathName);
-            String graphFile;
-            if (numOfBurst > 1) {
-                graphFile = "esd.xml";
-            } else {
-                graphFile = "backgeocoding.xml";
-            }
-
+            String graphFile = "subset.xml";
             FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
             Graph graph = GraphIO.read(fileReader);
             fileReader.close();
 
-            // BackGeocoding
-            ((HashMap) parameters.get("BackGeocoding")).forEach((key, value) -> {
-                graph.getNode("Back-Geocoding").getConfiguration().getChild(key.toString())
+            // Subset
+            graph.getNode("Subset").getConfiguration().getChild("geoRegion")
+                    .setValue("POLYGON((" + ((HashMap) parameters.get("Subset")).get("geoRegion").toString() + "))");
+
+            // Interferogram
+            ((HashMap) parameters.get("Interferogram")).forEach((key, value) -> {
+                graph.getNode("Interferogram").getConfiguration().getChild(key.toString())
                         .setValue(value.toString());
             });
 
-            PrintWriter cmdWriter = new PrintWriter(stage2Dir + File.separator + "stage2.cmd", "UTF-8");
+            PrintWriter cmdWriter = new PrintWriter(stage3Dir + File.separator + "stage3.cmd", "UTF-8");
             String masterProductDate, slaveProductDate;
 
-            for (String[] pair : pairs) {
-                masterProductDate = Paths.get(pair[0]).getFileName().toString();
-                slaveProductDate = Paths.get(pair[1]).getFileName().toString();
-                masterProductDate = masterProductDate.split("T")[0].split("_")[5];
-                slaveProductDate = slaveProductDate.split("T")[0].split("_")[5];
-
-                graph.getNode("Read").getConfiguration().getChild("file").setValue(pair[0]);
-                graph.getNode("Read(2)").getConfiguration().getChild("file").setValue(pair[1]);
+            for (String file : files) {
+                String fileName = Paths.get(file).getFileName().toString().replace(".dim", "");
+                graph.getNode("Read").getConfiguration().getChild("file").setValue(file);
                 graph.getNode("Write").getConfiguration().getChild("file")
-                        .setValue(esdDir + File.separator + masterProductDate + "_" + slaveProductDate + ".dim");
+                        .setValue(subsetDir + File.separator + fileName + ".dim");
 
-                FileWriter fileWriter = new FileWriter(stage2Dir + File.separator
-                        + masterProductDate + "_" + slaveProductDate + ".xml");
+                FileWriter fileWriter = new FileWriter(stage3Dir + File.separator
+                        + fileName + ".xml");
                 GraphIO.write(graph, fileWriter);
                 fileWriter.flush();
                 fileWriter.close();
 
-                cmdWriter.println("gpt " + stage2Dir + File.separator + masterProductDate + "_" + slaveProductDate + ".xml");
+                cmdWriter.println("gpt " + stage3Dir + File.separator + fileName + ".xml");
             }
             cmdWriter.close();
 
@@ -123,20 +107,32 @@ public class Stage2 {
         try {
             HashMap<String, HashMap> stageParameters = new HashMap<>();
 
-
-            // BackGeocoding
+            // Subset
             JSONParser parser = new JSONParser();
-            FileReader fileReader = new FileReader(configDir + File.separator + "back_geocoding.json");
+            FileReader fileReader = new FileReader(configDir + File.separator + "subset.json");
             JSONObject jsonObject = (JSONObject) parser.parse(fileReader);
             HashMap<String, HashMap> jsonParameters = (HashMap) jsonObject.get("parameters");
 
+            String geoRegionCoordinates = ((HashMap) jsonParameters.get("geoRegion")).get("value").toString();
             HashMap parameters = new HashMap();
+            parameters.put("geoRegion", geoRegionCoordinates);
+            stageParameters.put("Subset", parameters);
+
+            fileReader.close();
+
+            // Interferogram Formation
+            parser = new JSONParser();
+            fileReader = new FileReader(configDir + File.separator + "interferogram_formation.json");
+            jsonObject = (JSONObject) parser.parse(fileReader);
+            jsonParameters = (HashMap) jsonObject.get("parameters");
+
+            parameters = new HashMap();
             Iterator it = jsonParameters.entrySet().iterator();
             while (it.hasNext()) {
                 Map.Entry pair = (Map.Entry) it.next();
                 parameters.put(pair.getKey().toString(), ((HashMap) jsonParameters.get(pair.getKey().toString())).get("value"));
             }
-            stageParameters.put("BackGeocoding", parameters);
+            stageParameters.put("Interferogram", parameters);
             fileReader.close();
 
             return stageParameters;
