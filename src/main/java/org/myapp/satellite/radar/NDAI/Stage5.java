@@ -1,5 +1,7 @@
 package org.myapp.satellite.radar.NDAI;
 
+import org.esa.snap.core.dataio.ProductIO;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
 import org.json.simple.JSONObject;
@@ -16,7 +18,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Stage4 {
+public class Stage5 {
 
     public static void main(String[] args) {
 
@@ -25,53 +27,64 @@ public class Stage4 {
             HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
             String outputDir = consoleParameters.get("outputDir").toString();
             String graphDir = consoleParameters.get("graphDir").toString();
+            String[] yearList = consoleParameters.get("yearList").toString().split(",");
 
-            String stage4Dir = outputDir + "" + File.separator + "stage4";
-            String subsetDir = outputDir + File.separator + "subset";
+            String stage5Dir = outputDir + "" + File.separator + "stage5";
             String stackDir = outputDir + File.separator + "stack";
+            String avgCohDir = outputDir + File.separator + "avgcoh";
 
-            String[] files = Files.walk(Paths.get(subsetDir)).filter(path -> {
-                if (path.toString().endsWith(".dim")) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }).map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
+            String stackFile = stackDir + File.separator + "stack.dim";
 
-            if (Files.exists(Paths.get(stackDir))) {
-                Files.walk(Paths.get(stackDir))
+            if (Files.exists(Paths.get(avgCohDir))) {
+                Files.walk(Paths.get(avgCohDir))
                         .sorted(Comparator.reverseOrder())
                         .map(Path::toFile)
                         .forEach(File::delete);
             }
-            new File(stackDir).mkdirs();
+            new File(avgCohDir).mkdirs();
 
-            if (Files.exists(Paths.get(stage4Dir))) {
-                Files.walk(Paths.get(stage4Dir))
+            if (Files.exists(Paths.get(stage5Dir))) {
+                Files.walk(Paths.get(stage5Dir))
                         .sorted(Comparator.reverseOrder())
                         .map(Path::toFile)
                         .forEach(File::delete);
             }
-            new File(stage4Dir).mkdirs();
+            new File(stage5Dir).mkdirs();
 
-            String graphFile = "createstack.xml";
+            Product stackProduct = ProductIO.readProduct(stackFile);
+            String[] stackBandNames = stackProduct.getBandNames();
+            stackProduct.closeIO();
+            stackProduct.dispose();
+
+            String graphFile = "avgcohband.xml";
             FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
             Graph graph = GraphIO.read(fileReader);
             fileReader.close();
 
-            String fileList = Arrays.stream(files).collect(Collectors.joining(","));
-            graph.getNode("ProductSet-Reader").getConfiguration().getChild("fileList").setValue(fileList);
-            graph.getNode("Write").getConfiguration().getChild("file")
-                    .setValue(stackDir + File.separator + "stack.dim");
+            for (String year : yearList) {
+                String filteredBands = Arrays.stream(stackBandNames).filter(bandName -> {
+                    if (bandName.contains(year)) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }).collect(Collectors.joining(","));
 
-            FileWriter fileWriter = new FileWriter(stage4Dir + File.separator           + "stack.xml");
-            GraphIO.write(graph, fileWriter);
-            fileWriter.flush();
-            fileWriter.close();
+                graph.getNode("Read").getConfiguration().getChild("file").setValue(stackFile);
+                graph.getNode("Write").getConfiguration().getChild("file")
+                        .setValue(avgCohDir + File.separator + "avgcohband" + year + ".dim");
+                graph.getNode("BandMaths").getConfiguration().getChild("targetBands").getChild("targetBand").getChild("expression").setValue(
+                        "avg(" + filteredBands + ")");
 
-            PrintWriter cmdWriter = new PrintWriter(stage4Dir + File.separator + "stage4.cmd", "UTF-8");
-            cmdWriter.println("gpt " + stage4Dir + File.separator + "stack.xml");
-            cmdWriter.close();
+                FileWriter fileWriter = new FileWriter(stage5Dir + File.separator + "avgcohband" + year + ".xml");
+                GraphIO.write(graph, fileWriter);
+                fileWriter.flush();
+                fileWriter.close();
+
+                PrintWriter cmdWriter = new PrintWriter(stage5Dir + File.separator + "stage5.cmd", "UTF-8");
+                cmdWriter.println("gpt " + stage5Dir + File.separator + "avgcohband" + year + ".xml");
+                cmdWriter.close();
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
