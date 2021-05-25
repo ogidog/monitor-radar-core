@@ -15,7 +15,10 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class Stage5 {
@@ -27,7 +30,6 @@ public class Stage5 {
             HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
             String outputDir = consoleParameters.get("outputDir").toString();
             String graphDir = consoleParameters.get("graphDir").toString();
-            String[] yearList = consoleParameters.get("yearList").toString().split(",");
 
             String stage5Dir = outputDir + "" + File.separator + "stage5";
             String stackDir = outputDir + File.separator + "stack";
@@ -56,11 +58,18 @@ public class Stage5 {
             stackProduct.closeIO();
             stackProduct.dispose();
 
+            String[] yearList = Arrays.stream(stackBandNames).map(bandName -> {
+                Matcher m = Pattern.compile("(_)(\\d{2})(\\w{3})(\\d{4})(_)").matcher(bandName);
+                m.find();
+                return m.group(4);
+            }).distinct().toArray(String[]::new);
+
             String graphFile = "avgcohband.xml";
             FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
             Graph graph = GraphIO.read(fileReader);
             fileReader.close();
 
+            PrintWriter cmdWriter = new PrintWriter(stage5Dir + File.separator + "stage5.cmd", "UTF-8");
             for (String year : yearList) {
                 String filteredBands = Arrays.stream(stackBandNames).filter(bandName -> {
                     if (bandName.contains(year)) {
@@ -81,10 +90,9 @@ public class Stage5 {
                 fileWriter.flush();
                 fileWriter.close();
 
-                PrintWriter cmdWriter = new PrintWriter(stage5Dir + File.separator + "stage5.cmd", "UTF-8");
                 cmdWriter.println("gpt " + stage5Dir + File.separator + "avgcohband" + year + ".xml");
-                cmdWriter.close();
             }
+            cmdWriter.close();
 
         } catch (Exception e) {
             e.printStackTrace();
