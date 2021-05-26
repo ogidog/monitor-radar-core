@@ -8,10 +8,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.myapp.utils.ConsoleArgsReader;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.PrintWriter;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -31,18 +29,18 @@ public class Stage6 {
             String graphDir = consoleParameters.get("graphDir").toString();
 
             String stage6Dir = outputDir + "" + File.separator + "stage6";
-            String stackDir = outputDir + File.separator + "stack";
-            String bandMathsDir = outputDir + File.separator + "bandmaths";
+            String avgStdDir = outputDir + File.separator + "avgstd";
+            String stablePointDir = outputDir + File.separator + "stablepoints";
 
-            String stackFile = stackDir + File.separator + "stack.dim";
+            String avgStdFile = avgStdDir + File.separator + "cohavgstd.dim";
 
-            if (Files.exists(Paths.get(bandMathsDir))) {
-                Files.walk(Paths.get(bandMathsDir))
+            if (Files.exists(Paths.get(stablePointDir))) {
+                Files.walk(Paths.get(stablePointDir))
                         .sorted(Comparator.reverseOrder())
                         .map(Path::toFile)
                         .forEach(File::delete);
             }
-            new File(bandMathsDir).mkdirs();
+            new File(stablePointDir).mkdirs();
 
             if (Files.exists(Paths.get(stage6Dir))) {
                 Files.walk(Paths.get(stage6Dir))
@@ -52,100 +50,53 @@ public class Stage6 {
             }
             new File(stage6Dir).mkdirs();
 
-            Product stackProduct = ProductIO.readProduct(stackFile);
-            String[] stackBandNames = stackProduct.getBandNames();
-            stackProduct.closeIO();
-            stackProduct.dispose();
+            Product avgStdProduct = ProductIO.readProduct(avgStdFile);
+            String[] avgStdBandNames = avgStdProduct.getBandNames();
+            avgStdProduct.closeIO();
+            avgStdProduct.dispose();
 
-            String[] yearList = Arrays.stream(stackBandNames).map(bandName -> {
-                Matcher m = Pattern.compile("(_)(\\d{2})(\\w{3})(\\d{4})(_)").matcher(bandName);
-                m.find();
-                return m.group(4);
+            String[] yearList = Arrays.stream(avgStdBandNames).map(bandName -> {
+                return bandName.split("_")[2];
             }).distinct().toArray(String[]::new);
 
-            String graphFile = "bandmaths.xml";
+            String graphFile = "stablepoints.xml";
             FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
             Graph graph = GraphIO.read(fileReader);
             fileReader.close();
 
-            PrintWriter cmdWriter = new PrintWriter(stage6Dir + File.separator + "stage5.cmd", "UTF-8");
-            FileWriter fileWriter = new FileWriter(stage6Dir + File.separator + "bandmaths.xml");
+            PrintWriter cmdWriter = new PrintWriter(stage6Dir + File.separator + "stage6.cmd", "UTF-8");
+            //Writer fileWriter = new OutputStreamWriter(new FileOutputStream(stage6Dir + File.separator + "stablepoints.xml"),"UTF-8");
+            BufferedWriter fileWriter = new BufferedWriter(new FileWriter(stage6Dir + File.separator + "stablepoints.xml"));
 
-            graph.getNode("Read").getConfiguration().getChild("file").setValue(stackFile);
+            graph.getNode("Read").getConfiguration().getChild("file").setValue(avgStdFile);
             graph.getNode("Write").getConfiguration().getChild("file")
-                    .setValue(bandMathsDir + File.separator + "bandmaths.dim");
+                    .setValue(stablePointDir + File.separator + "stablepoints.dim");
             int counter = 1;
             for (String year : yearList) {
-                String filteredBands = Arrays.stream(stackBandNames).filter(bandName -> {
+                String[] filteredBands = Arrays.stream(avgStdBandNames).filter(bandName -> {
                     if (bandName.contains(year)) {
                         return true;
                     } else {
                         return false;
                     }
-                }).collect(Collectors.joining(","));
+                }).toArray(String[]::new);
 
                 graph.getNode("BandMaths(" + String.valueOf(counter) + ")").getConfiguration().getChild("targetBands").getChild("targetBand").getChild("expression").setValue(
-                        "avg(" + filteredBands + ")");
+                        filteredBands[0] + " > 0.8 and " + filteredBands[1] + " < 0.2");
                 graph.getNode("BandMaths(" + String.valueOf(counter) + ")").getConfiguration().getChild("targetBands").getChild("targetBand").getChild("name").setValue(
-                        "avg_coh_" + year);
-                graph.getNode("BandMaths(" + String.valueOf(counter + 3) + ")").getConfiguration().getChild("targetBands").getChild("targetBand").getChild("expression").setValue(
-                        "stddev(" + filteredBands + ")");
-                graph.getNode("BandMaths(" + String.valueOf(counter + 3) + ")").getConfiguration().getChild("targetBands").getChild("targetBand").getChild("name").setValue(
-                        "std_coh_" + year);
+                        "stable_points_" + year);
                 counter += 1;
             }
-
             GraphIO.write(graph, fileWriter);
             fileWriter.flush();
             fileWriter.close();
 
-            cmdWriter.println("gpt " + stage6Dir + File.separator + "bandmaths.xml");
+            cmdWriter.println("gpt " + stage6Dir + File.separator + "stablepoints.xml");
             cmdWriter.close();
 
         } catch (Exception e) {
             e.printStackTrace();
             return;
-        }
-    }
-
-    static HashMap getParameters(String configDir) {
-
-        try {
-            HashMap<String, HashMap> stageParameters = new HashMap<>();
-
-            // Subset
-            JSONParser parser = new JSONParser();
-            FileReader fileReader = new FileReader(configDir + File.separator + "subset.json");
-            JSONObject jsonObject = (JSONObject) parser.parse(fileReader);
-            HashMap<String, HashMap> jsonParameters = (HashMap) jsonObject.get("parameters");
-
-            String geoRegionCoordinates = ((HashMap) jsonParameters.get("geoRegion")).get("value").toString();
-            HashMap parameters = new HashMap();
-            parameters.put("geoRegion", geoRegionCoordinates);
-            stageParameters.put("Subset", parameters);
-
-            fileReader.close();
-
-            // Interferogram Formation
-            parser = new JSONParser();
-            fileReader = new FileReader(configDir + File.separator + "interferogram_formation.json");
-            jsonObject = (JSONObject) parser.parse(fileReader);
-            jsonParameters = (HashMap) jsonObject.get("parameters");
-
-            parameters = new HashMap();
-            Iterator it = jsonParameters.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry pair = (Map.Entry) it.next();
-                parameters.put(pair.getKey().toString(), ((HashMap) jsonParameters.get(pair.getKey().toString())).get("value"));
-            }
-            stageParameters.put("Interferogram", parameters);
-            fileReader.close();
-
-            return stageParameters;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
         }
     }
 }

@@ -78,45 +78,4 @@ public class Stage4 {
             return;
         }
     }
-
-    static HashMap getParameters(String configDir) {
-
-        try {
-            HashMap<String, HashMap> stageParameters = new HashMap<>();
-
-            // Subset
-            JSONParser parser = new JSONParser();
-            FileReader fileReader = new FileReader(configDir + File.separator + "subset.json");
-            JSONObject jsonObject = (JSONObject) parser.parse(fileReader);
-            HashMap<String, HashMap> jsonParameters = (HashMap) jsonObject.get("parameters");
-
-            String geoRegionCoordinates = ((HashMap) jsonParameters.get("geoRegion")).get("value").toString();
-            HashMap parameters = new HashMap();
-            parameters.put("geoRegion", geoRegionCoordinates);
-            stageParameters.put("Subset", parameters);
-
-            fileReader.close();
-
-            // Interferogram Formation
-            parser = new JSONParser();
-            fileReader = new FileReader(configDir + File.separator + "interferogram_formation.json");
-            jsonObject = (JSONObject) parser.parse(fileReader);
-            jsonParameters = (HashMap) jsonObject.get("parameters");
-
-            parameters = new HashMap();
-            Iterator it = jsonParameters.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry pair = (Map.Entry) it.next();
-                parameters.put(pair.getKey().toString(), ((HashMap) jsonParameters.get(pair.getKey().toString())).get("value"));
-            }
-            stageParameters.put("Interferogram", parameters);
-            fileReader.close();
-
-            return stageParameters;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 }
