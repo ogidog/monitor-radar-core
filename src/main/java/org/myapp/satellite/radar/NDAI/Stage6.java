@@ -15,13 +15,12 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class Stage5 {
+public class Stage6 {
 
     public static void main(String[] args) {
 
@@ -31,27 +30,27 @@ public class Stage5 {
             String outputDir = consoleParameters.get("outputDir").toString();
             String graphDir = consoleParameters.get("graphDir").toString();
 
-            String stage5Dir = outputDir + "" + File.separator + "stage5";
+            String stage6Dir = outputDir + "" + File.separator + "stage6";
             String stackDir = outputDir + File.separator + "stack";
-            String avgStdDir = outputDir + File.separator + "avgstd";
+            String bandMathsDir = outputDir + File.separator + "bandmaths";
 
             String stackFile = stackDir + File.separator + "stack.dim";
 
-            if (Files.exists(Paths.get(avgStdDir))) {
-                Files.walk(Paths.get(avgStdDir))
+            if (Files.exists(Paths.get(bandMathsDir))) {
+                Files.walk(Paths.get(bandMathsDir))
                         .sorted(Comparator.reverseOrder())
                         .map(Path::toFile)
                         .forEach(File::delete);
             }
-            new File(avgStdDir).mkdirs();
+            new File(bandMathsDir).mkdirs();
 
-            if (Files.exists(Paths.get(stage5Dir))) {
-                Files.walk(Paths.get(stage5Dir))
+            if (Files.exists(Paths.get(stage6Dir))) {
+                Files.walk(Paths.get(stage6Dir))
                         .sorted(Comparator.reverseOrder())
                         .map(Path::toFile)
                         .forEach(File::delete);
             }
-            new File(stage5Dir).mkdirs();
+            new File(stage6Dir).mkdirs();
 
             Product stackProduct = ProductIO.readProduct(stackFile);
             String[] stackBandNames = stackProduct.getBandNames();
@@ -69,12 +68,12 @@ public class Stage5 {
             Graph graph = GraphIO.read(fileReader);
             fileReader.close();
 
-            PrintWriter cmdWriter = new PrintWriter(stage5Dir + File.separator + "stage5.cmd", "UTF-8");
-            FileWriter fileWriter = new FileWriter(stage5Dir + File.separator + "cohavgstd.xml");
+            PrintWriter cmdWriter = new PrintWriter(stage6Dir + File.separator + "stage5.cmd", "UTF-8");
+            FileWriter fileWriter = new FileWriter(stage6Dir + File.separator + "bandmaths.xml");
 
             graph.getNode("Read").getConfiguration().getChild("file").setValue(stackFile);
             graph.getNode("Write").getConfiguration().getChild("file")
-                    .setValue(avgStdDir + File.separator + "cohavgstd.dim");
+                    .setValue(bandMathsDir + File.separator + "bandmaths.dim");
             int counter = 1;
             for (String year : yearList) {
                 String filteredBands = Arrays.stream(stackBandNames).filter(bandName -> {
@@ -100,7 +99,7 @@ public class Stage5 {
             fileWriter.flush();
             fileWriter.close();
 
-            cmdWriter.println("gpt " + stage5Dir + File.separator + "cohavgstd.xml");
+            cmdWriter.println("gpt " + stage6Dir + File.separator + "bandmaths.xml");
             cmdWriter.close();
 
         } catch (Exception e) {
