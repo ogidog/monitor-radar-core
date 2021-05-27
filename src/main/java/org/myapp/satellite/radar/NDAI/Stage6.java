@@ -65,7 +65,6 @@ public class Stage6 {
             fileReader.close();
 
             PrintWriter cmdWriter = new PrintWriter(stage6Dir + File.separator + "stage6.cmd", "UTF-8");
-            //Writer fileWriter = new OutputStreamWriter(new FileOutputStream(stage6Dir + File.separator + "stablepoints.xml"),"UTF-8");
             BufferedWriter fileWriter = new BufferedWriter(new FileWriter(stage6Dir + File.separator + "stablepoints.xml"));
 
             graph.getNode("Read").getConfiguration().getChild("file").setValue(avgStdFile);

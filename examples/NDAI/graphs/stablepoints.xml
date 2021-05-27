@@ -7,7 +7,7 @@
       <file>D:\Temp\kiyzassky_NDAI\results\avgstd\cohavgstd.dim</file>
     </parameters>
   </node>
-  <node id="BandMaths">
+  <node id="BandMaths(1)">
     <operator>BandMaths</operator>
     <sources>
       <sourceProduct refid="Read"/>
@@ -29,7 +29,7 @@
   <node id="BandMerge">
     <operator>BandMerge</operator>
     <sources>
-      <sourceProduct refid="BandMaths"/>
+      <sourceProduct refid="BandMaths(1)"/>
       <sourceProduct.1 refid="BandMaths(2)"/>
       <sourceProduct.2 refid="BandMaths(3)"/>
     </sources>
