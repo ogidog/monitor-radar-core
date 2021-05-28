@@ -47,7 +47,7 @@ public class Stage8 {
                     .filter(path -> path.toString().endsWith(".dat"))
                     .map(path -> path.getFileName().toString()).toArray(String[]::new);
 
-            HashMap<String, Float> rhoStable = new HashMap();
+            HashMap<String, Float> bandsRhoStable = new HashMap();
             Product stackProduct = ProductIO.readProduct(stackFile);
             ProductIO.writeProduct(stackProduct, ndaiFile, "BEAM-DIMAP");
             stackProduct.closeIO();
@@ -78,26 +78,38 @@ public class Stage8 {
                         int y = stablePointIndexes[i] / stackBand.getRasterWidth();
                         cohStablePointsSum += stackBand.getPixelFloat(x, y);
                     }
-                    rhoStable.put(stackBandName, cohStablePointsSum / stablePointIndexes.length);
+                    bandsRhoStable.put(stackBandName, cohStablePointsSum / stablePointIndexes.length);
                     cohStablePointsSum = 0.0f;
                 }
             }
 
-            //DimapProductWriterPlugIn writerPlugIn = new DimapProductWriterPlugIn();
-            //DimapProductWriter writer = new DimapProductWriter(writerPlugIn);
-            //writer.initDirs(new File(ndaiFile));
-            //stackProduct.setProductWriter(writer);
+            DimapProductWriterPlugIn dimapProductWriterPlugIn = new DimapProductWriterPlugIn();
+            DimapProductWriter dimapProductWriter = new DimapProductWriter(dimapProductWriterPlugIn);
+            dimapProductWriter.initDirs(new File(ndaiFile));
+            stackProduct.setProductWriter(dimapProductWriter);
             Band[] stackBands = stackProduct.getBands();
             for (Band band : stackBands) {
-                if (rhoStable.get(band.getName()) < 0.8) {
+                float rhoStable = bandsRhoStable.get(band.getName());
+                if (rhoStable < 0.8) {
                     stackProduct.removeBand(band);
+                } else {
+                    band.readRasterDataFully();
+                    ProductData pd = band.getRasterData();
+                    for (int i = 0; i < band.getNumDataElems(); i++) {
+                        int x = i % band.getRasterWidth();
+                        int y = i / band.getRasterWidth();
+                        float ndai = (rhoStable - band.getPixelFloat(x, y)) / (rhoStable + band.getPixelFloat(x, y));
+                        //float ndai = (rhoStable - pd.getElemFloatAt(i)) / (rhoStable + pd.getElemFloatAt(i));
+                        // pd.setElemFloatAt(i,ndai);
+                        band.setPixelFloat(x, y, ndai);
+                    }
+                    //band.writeRasterData(0,0, band.getRasterWidth(),band.getRasterHeight(),pd);
+                    band.writeRasterDataFully();
                 }
             }
-            ProductIO.writeProduct(stackProduct,ndaiFile,"BEAM-DIMAP");
+            ProductIO.writeProduct(stackProduct, ndaiFile, "BEAM-DIMAP");
             stackProduct.closeIO();
             stackProduct.dispose();
-            //writer.close();
-            //writer.flush();
 
         } catch (Exception e) {
             e.printStackTrace();
