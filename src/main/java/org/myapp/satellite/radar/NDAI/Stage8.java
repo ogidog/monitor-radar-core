@@ -1,12 +1,20 @@
 package org.myapp.satellite.radar.NDAI;
 
+import com.bc.ceres.core.ProgressMonitor;
 import org.esa.snap.core.dataio.ProductIO;
+import org.esa.snap.core.dataio.ProductWriter;
+import org.esa.snap.core.dataio.ProductWriterPlugIn;
+import org.esa.snap.core.dataio.dimap.DimapProductWriter;
+import org.esa.snap.core.dataio.dimap.DimapProductWriterPlugIn;
+import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductData;
+import org.esa.snap.core.datamodel.ProductNode;
 import org.myapp.utils.ConsoleArgsReader;
+import scala.collection.mutable.HashTable;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.ObjectInputStream;
+import java.io.*;
+import java.nio.Buffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -23,6 +31,7 @@ public class Stage8 {
             String outputDir = consoleParameters.get("outputDir").toString();
 
             String ndaiDir = outputDir + File.separator + "ndai";
+            String ndaiFile = ndaiDir + File.separator + "ndai.dim";
             String stablePointIndexesDir = outputDir + File.separator + "stablepointindexes";
             String stackFile = outputDir + File.separator + "stack" + File.separator + "stack.dim";
 
@@ -38,14 +47,57 @@ public class Stage8 {
                     .filter(path -> path.toString().endsWith(".dat"))
                     .map(path -> path.getFileName().toString()).toArray(String[]::new);
 
+            HashMap<String, Float> rhoStable = new HashMap();
             Product stackProduct = ProductIO.readProduct(stackFile);
+            ProductIO.writeProduct(stackProduct, ndaiFile, "BEAM-DIMAP");
+            stackProduct.closeIO();
+            stackProduct.dispose();
+
+            stackProduct = ProductIO.readProduct(ndaiFile);
             for (String stablePointIndexFile : stablePointIndexFiles) {
                 String year = stablePointIndexFile.replace(".dat", "").split("_")[2];
-                String[] stackBandNames = Arrays.stream(stackProduct.getBandNames())
-                        .filter(name->name.contains(year)).toArray(String[]::new);
 
-                return;
+                File file = new File(stablePointIndexesDir + File.separator + stablePointIndexFile);
+                ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
+                int[] stablePointIndexes = new int[(int) file.length() / 4];
+                int j = 0;
+                while (ois.available() > 0) {
+                    stablePointIndexes[j] = ois.readInt();
+                    j += 1;
+                }
+                ois.close();
+
+                String[] stackBandNames = Arrays.stream(stackProduct.getBandNames())
+                        .filter(name -> name.contains(year)).toArray(String[]::new);
+                float cohStablePointsSum = 0.0f;
+                for (String stackBandName : stackBandNames) {
+                    Band stackBand = stackProduct.getBand(stackBandName);
+                    stackBand.readRasterDataFully();
+                    for (int i = 0; i < stablePointIndexes.length; i++) {
+                        int x = stablePointIndexes[i] % stackBand.getRasterWidth();
+                        int y = stablePointIndexes[i] / stackBand.getRasterWidth();
+                        cohStablePointsSum += stackBand.getPixelFloat(x, y);
+                    }
+                    rhoStable.put(stackBandName, cohStablePointsSum / stablePointIndexes.length);
+                    cohStablePointsSum = 0.0f;
+                }
             }
+
+            //DimapProductWriterPlugIn writerPlugIn = new DimapProductWriterPlugIn();
+            //DimapProductWriter writer = new DimapProductWriter(writerPlugIn);
+            //writer.initDirs(new File(ndaiFile));
+            //stackProduct.setProductWriter(writer);
+            Band[] stackBands = stackProduct.getBands();
+            for (Band band : stackBands) {
+                if (rhoStable.get(band.getName()) < 0.8) {
+                    stackProduct.removeBand(band);
+                }
+            }
+            ProductIO.writeProduct(stackProduct,ndaiFile,"BEAM-DIMAP");
+            stackProduct.closeIO();
+            stackProduct.dispose();
+            //writer.close();
+            //writer.flush();
 
         } catch (Exception e) {
             e.printStackTrace();
