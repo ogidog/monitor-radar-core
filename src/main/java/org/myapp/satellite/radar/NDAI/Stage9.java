@@ -1,86 +1,132 @@
 package org.myapp.satellite.radar.NDAI;
 
-import org.esa.s1tbx.commons.Sentinel1Utils;
 import org.esa.snap.core.dataio.ProductIO;
-import org.esa.snap.core.gpf.graph.Graph;
-import org.esa.snap.core.gpf.graph.GraphIO;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductData;
 import org.myapp.utils.ConsoleArgsReader;
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.PrintWriter;
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
 
 public class Stage9 {
 
     public static void main(String[] args) {
 
         try {
-
             HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
             String outputDir = consoleParameters.get("outputDir").toString();
-            String graphDir = consoleParameters.get("graphDir").toString();
 
-            String stage7Dir = outputDir + "" + File.separator + "stage7";
-            String tcDir = outputDir + File.separator + "tc";
-            String subsetDir = outputDir + File.separator + "subset";
+            String ndaiDir = outputDir + File.separator + "ndai";
+            String ndaiFile = ndaiDir + File.separator + "ndai.dim";
+            String avgNDAIDir = outputDir + File.separator + "avgndai";
 
-            String[] files = Files.walk(Paths.get(subsetDir)).filter(path -> {
-                if (path.toString().endsWith(".dim")) {
-                    return true;
-                } else {
-                    return false;
+            if (Files.exists(Paths.get(avgNDAIDir))) {
+                Files.walk(Paths.get(avgNDAIDir))
+                        .sorted(Comparator.reverseOrder())
+                        .map(Path::toFile)
+                        .forEach(File::delete);
+            }
+            new File(avgNDAIDir).mkdirs();
+
+            Product ndaiProduct = ProductIO.readProduct(ndaiFile);
+            int width = ndaiProduct.getSceneRasterWidth();
+            int height = ndaiProduct.getSceneRasterHeight();
+
+            int idx;
+            int falsePixelsCounter = 0;
+            int falsePixelsTreshhold = (int) (ndaiProduct.getSceneRasterWidth() * 0.1);
+            int subsetY0 = -1, subsetY1 = -1, subsetX0 = -1, subsetX1 = -1;
+            int maxSubsetY0 = 0, minSubsetY1 = height, maxSubsetX0 = 0, minSubsetX1 = width;
+
+            Band[] ndaiBands = ndaiProduct.getBands();
+            for (Band band : ndaiBands) {
+
+                falsePixelsCounter = 0;
+                subsetY0 = -1;
+                subsetY1 = -1;
+                subsetX0 = -1;
+                subsetX1 = -1;
+
+                band.readRasterDataFully();
+                float[] data = ((ProductData.Float) band.getData()).getArray();
+
+                // by width
+                for (int y = 0; y < height; y++) {
+                    for (int x = 0; x < width; x++) {
+                        idx = width * y + x;
+                        if (data[idx] == 1.0) {
+                            falsePixelsCounter += 1;
+                        }
+                    }
+                    if (falsePixelsCounter < falsePixelsTreshhold && subsetY0 == -1) {
+                        subsetY0 = y;
+                    }
+                    if (falsePixelsCounter > falsePixelsTreshhold && subsetY0 != -1) {
+                        subsetY1 = y - 1;
+                        break;
+                    }
+                    falsePixelsCounter = 0;
                 }
-            }).map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
+                if (subsetY1 == -1) {
+                    subsetY1 = height;
+                }
+                if (subsetY0 == -1) {
+                    subsetY0 = 0;
+                }
 
-            if (Files.exists(Paths.get(tcDir))) {
-                Files.walk(Paths.get(tcDir))
-                        .sorted(Comparator.reverseOrder())
-                        .map(Path::toFile)
-                        .forEach(File::delete);
+                // by height
+                falsePixelsCounter = 0;
+                for (int x = 0; x < width; x++) {
+                    for (int y = 0; y < height; y++) {
+                        idx = width * y + x;
+                        if (data[idx] == 1.0) {
+                            falsePixelsCounter += 1;
+                        }
+                    }
+                    if (falsePixelsCounter < falsePixelsTreshhold && subsetX0 == -1) {
+                        subsetX0 = x;
+                    }
+                    if (falsePixelsCounter > falsePixelsTreshhold && subsetX0 != -1) {
+                        subsetX1 = x - 1;
+                        break;
+                    }
+                    falsePixelsCounter = 0;
+                }
+                if (subsetX1 == -1) {
+                    subsetX1 = width;
+                }
+                if (subsetX0 == -1) {
+                    subsetX0 = 0;
+                }
+
+
+                if (subsetY0 > maxSubsetY0) {
+                    maxSubsetY0 = subsetY0;
+                }
+                if (subsetY1 < minSubsetY1) {
+                    minSubsetY1 = subsetY1;
+                }
+                if (subsetX0 > maxSubsetX0) {
+                    maxSubsetX0 = subsetX0;
+                }
+                if (subsetX1 < minSubsetX1) {
+                    minSubsetX1 = subsetX1;
+                }
             }
-            new File(tcDir).mkdirs();
 
-            if (Files.exists(Paths.get(stage7Dir))) {
-                Files.walk(Paths.get(stage7Dir))
-                        .sorted(Comparator.reverseOrder())
-                        .map(Path::toFile)
-                        .forEach(File::delete);
-            }
-            new File(stage7Dir).mkdirs();
-
-            String graphFile = "tc.xml";
-            FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
-            Graph graph = GraphIO.read(fileReader);
-            fileReader.close();
-
-            PrintWriter cmdWriter = new PrintWriter(stage7Dir + File.separator + "stage4.cmd", "UTF-8");
-
-            for (String file : files) {
-                String fileName = Paths.get(file).getFileName().toString().replace(".dim", "");
-                graph.getNode("Read").getConfiguration().getChild("file").setValue(file);
-                graph.getNode("Write").getConfiguration().getChild("file")
-                        .setValue(tcDir + File.separator + fileName + ".dim");
-
-                FileWriter fileWriter = new FileWriter(stage7Dir + File.separator
-                        + fileName + ".xml");
-                GraphIO.write(graph, fileWriter);
-                fileWriter.flush();
-                fileWriter.close();
-
-                cmdWriter.println("gpt " + stage7Dir + File.separator + fileName + ".xml");
-            }
-            cmdWriter.close();
+            ndaiProduct.closeIO();
+            ndaiProduct.dispose();
 
         } catch (Exception e) {
             e.printStackTrace();
-            return;
         }
     }
 }
