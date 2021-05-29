@@ -1,5 +1,6 @@
 package org.myapp.satellite.radar.NDAI;
 
+import com.bc.ceres.core.ProgressMonitor;
 import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Product;
@@ -27,16 +28,42 @@ public class Stage10 {
             HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
 
             String outputDir = consoleParameters.get("outputDir").toString();
+            String filteredAvgNDAIFile = outputDir + File.separator + "avgndai" + File.separator + "filteredavgndai.tif";
             String avgNDAIFile = outputDir + File.separator + "avgndai" + File.separator + "avgndai.tif";
-            String cohAvgStd = outputDir + File.separator + "avgstd" + File.separator + "cohavgstd.dim";
+            String subsetedCohAvgStdFile = outputDir + File.separator + "avgndai" + File.separator + "subsetedCohAvgStd.dim";
 
             Product avgNDAIProduct = ProductIO.readProduct(avgNDAIFile);
-            Product cohAvgStdProduct = ProductIO.readProduct(cohAvgStd);
+            Band[] avgNDAIBands = avgNDAIProduct.getBands();
+            avgNDAIBands[0].readRasterDataFully();
+            avgNDAIBands[1].readRasterDataFully();
+            avgNDAIBands[2].readRasterDataFully();
 
-            Band[] avgNDAIBand = avgNDAIProduct.getBands();
+            Product subsetedCohAvgStdProduct = ProductIO.readProduct(subsetedCohAvgStdFile);
+            Band[] cohAvgStdBands = subsetedCohAvgStdProduct.getBands();
+            cohAvgStdBands[0].readRasterDataFully();
+            cohAvgStdBands[1].readRasterDataFully();
+            cohAvgStdBands[2].readRasterDataFully();
 
-            //product.getBandAt(0).getRasterData().setElemFloatAt(j, Float.NaN);
+            int width = avgNDAIProduct.getSceneRasterWidth();
+            int height = avgNDAIProduct.getSceneRasterHeight();
+            for (int i = 0; i < width * height; i++) {
+                if (cohAvgStdBands[0].getData().getElemFloatAt(i) < 0.55 &&
+                        cohAvgStdBands[1].getData().getElemFloatAt(i) < 0.55 &&
+                        cohAvgStdBands[2].getData().getElemFloatAt(i) < 0.55) {
+                    avgNDAIProduct.getBandAt(0).getRasterData().setElemFloatAt(i, Float.NaN);
+                    avgNDAIProduct.getBandAt(1).getRasterData().setElemFloatAt(i, Float.NaN);
+                    avgNDAIProduct.getBandAt(2).getRasterData().setElemFloatAt(i, Float.NaN);
+                }
+            }
+            File file = new File(filteredAvgNDAIFile);
+            ProductIO.writeProduct(avgNDAIProduct,
+                    file,
+                    "GeoTiff",
+                    false,
+                    ProgressMonitor.NULL);
 
+            avgNDAIProduct.closeIO();
+            subsetedCohAvgStdProduct.closeIO();
 
         } catch (Exception e) {
             e.printStackTrace();

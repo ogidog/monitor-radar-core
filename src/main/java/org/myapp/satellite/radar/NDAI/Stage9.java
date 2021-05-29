@@ -158,7 +158,6 @@ public class Stage9 {
             graph.getNode("Subset(2)").getConfiguration().getChild("region")
                     .setValue(maxSubsetX0 + "," + maxSubsetY0 + "," + minSubsetX1 + "," + minSubsetY1);
 
-
             String[] yearList = Arrays.stream(ndaiBandNames).map(bandName -> {
                 Matcher m = Pattern.compile("(_)(\\d{2})(\\w{3})(\\d{4})(_)").matcher(bandName);
                 m.find();
