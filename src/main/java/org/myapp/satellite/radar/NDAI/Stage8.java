@@ -83,10 +83,6 @@ public class Stage8 {
                 }
             }
 
-            DimapProductWriterPlugIn dimapProductWriterPlugIn = new DimapProductWriterPlugIn();
-            DimapProductWriter dimapProductWriter = new DimapProductWriter(dimapProductWriterPlugIn);
-            dimapProductWriter.initDirs(new File(ndaiFile));
-            stackProduct.setProductWriter(dimapProductWriter);
             Band[] stackBands = stackProduct.getBands();
             for (Band band : stackBands) {
                 float rhoStable = bandsRhoStable.get(band.getName());
@@ -99,12 +95,8 @@ public class Stage8 {
                         int x = i % band.getRasterWidth();
                         int y = i / band.getRasterWidth();
                         float ndai = (rhoStable - band.getPixelFloat(x, y)) / (rhoStable + band.getPixelFloat(x, y));
-                        //float ndai = (rhoStable - pd.getElemFloatAt(i)) / (rhoStable + pd.getElemFloatAt(i));
-                        // pd.setElemFloatAt(i,ndai);
                         band.setPixelFloat(x, y, ndai);
                     }
-                    //band.writeRasterData(0,0, band.getRasterWidth(),band.getRasterHeight(),pd);
-                    band.writeRasterDataFully();
                 }
             }
             ProductIO.writeProduct(stackProduct, ndaiFile, "BEAM-DIMAP");
