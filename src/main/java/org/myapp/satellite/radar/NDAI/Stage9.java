@@ -28,8 +28,8 @@ public class Stage9 {
             String outputDir = consoleParameters.get("outputDir").toString();
             String graphDir = consoleParameters.get("graphDir").toString();
 
-            String ndaiDir = outputDir + File.separator + "ndai";
-            String ndaiFile = ndaiDir + File.separator + "ndai.dim";
+            String ndaiFile = outputDir + File.separator + "ndai" + File.separator + "ndai.dim";
+            String avgStdFile = outputDir + File.separator + "avgstd" + File.separator + "cohavgstd.dim";
             String avgNDAIDir = outputDir + File.separator + "avgndai";
             String stage9Dir = outputDir + "" + File.separator + "stage9";
 
@@ -148,7 +148,16 @@ public class Stage9 {
 
             graph.getNode("Read").getConfiguration().getChild("file").setValue(ndaiFile);
             graph.getNode("Write").getConfiguration().getChild("file")
-                    .setValue(avgNDAIDir + File.separator + "avgndai.dim");
+                    .setValue(avgNDAIDir + File.separator + "avgndai");
+            graph.getNode("Read(2)").getConfiguration().getChild("file").setValue(avgStdFile);
+            graph.getNode("Write(2)").getConfiguration().getChild("file")
+                    .setValue(avgNDAIDir + File.separator + "subsetedCohAvgStd.dim");
+
+            graph.getNode("Subset").getConfiguration().getChild("region")
+                    .setValue(maxSubsetX0 + "," + maxSubsetY0 + "," + minSubsetX1 + "," + minSubsetY1);
+            graph.getNode("Subset(2)").getConfiguration().getChild("region")
+                    .setValue(maxSubsetX0 + "," + maxSubsetY0 + "," + minSubsetX1 + "," + minSubsetY1);
+
 
             String[] yearList = Arrays.stream(ndaiBandNames).map(bandName -> {
                 Matcher m = Pattern.compile("(_)(\\d{2})(\\w{3})(\\d{4})(_)").matcher(bandName);
@@ -172,8 +181,6 @@ public class Stage9 {
                         "avg_ndai_" + year);
                 counter += 1;
             }
-            graph.getNode("Subset").getConfiguration().getChild("region")
-                    .setValue(maxSubsetX0 + "," + maxSubsetY0 + "," + minSubsetX1 + "," + minSubsetY1);
 
             GraphIO.write(graph, fileWriter);
             fileWriter.flush();
