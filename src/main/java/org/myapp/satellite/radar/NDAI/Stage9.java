@@ -4,17 +4,20 @@ import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductData;
+import org.esa.snap.core.gpf.graph.Graph;
+import org.esa.snap.core.gpf.graph.GraphIO;
 import org.myapp.utils.ConsoleArgsReader;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.ObjectInputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class Stage9 {
 
@@ -23,10 +26,12 @@ public class Stage9 {
         try {
             HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
             String outputDir = consoleParameters.get("outputDir").toString();
+            String graphDir = consoleParameters.get("graphDir").toString();
 
             String ndaiDir = outputDir + File.separator + "ndai";
             String ndaiFile = ndaiDir + File.separator + "ndai.dim";
             String avgNDAIDir = outputDir + File.separator + "avgndai";
+            String stage9Dir = outputDir + "" + File.separator + "stage9";
 
             if (Files.exists(Paths.get(avgNDAIDir))) {
                 Files.walk(Paths.get(avgNDAIDir))
@@ -36,16 +41,24 @@ public class Stage9 {
             }
             new File(avgNDAIDir).mkdirs();
 
+            if (Files.exists(Paths.get(stage9Dir))) {
+                Files.walk(Paths.get(stage9Dir))
+                        .sorted(Comparator.reverseOrder())
+                        .map(Path::toFile)
+                        .forEach(File::delete);
+            }
+            new File(stage9Dir).mkdirs();
+
             Product ndaiProduct = ProductIO.readProduct(ndaiFile);
             int width = ndaiProduct.getSceneRasterWidth();
             int height = ndaiProduct.getSceneRasterHeight();
+            String[] ndaiBandNames = ndaiProduct.getBandNames();
 
             int idx;
             int falsePixelsCounter = 0;
             int falsePixelsTreshhold = (int) (ndaiProduct.getSceneRasterWidth() * 0.1);
             int subsetY0 = -1, subsetY1 = -1, subsetX0 = -1, subsetX1 = -1;
             int maxSubsetY0 = 0, minSubsetY1 = height, maxSubsetX0 = 0, minSubsetX1 = width;
-
             Band[] ndaiBands = ndaiProduct.getBands();
             for (Band band : ndaiBands) {
 
@@ -124,6 +137,50 @@ public class Stage9 {
 
             ndaiProduct.closeIO();
             ndaiProduct.dispose();
+
+            String graphFile = "avgndai.xml";
+            FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
+            Graph graph = GraphIO.read(fileReader);
+            fileReader.close();
+
+            PrintWriter cmdWriter = new PrintWriter(stage9Dir + File.separator + "stage9.cmd", "UTF-8");
+            BufferedWriter fileWriter = new BufferedWriter(new FileWriter(stage9Dir + File.separator + "avgndai.xml"));
+
+            graph.getNode("Read").getConfiguration().getChild("file").setValue(ndaiFile);
+            graph.getNode("Write").getConfiguration().getChild("file")
+                    .setValue(avgNDAIDir + File.separator + "avgndai.dim");
+
+            String[] yearList = Arrays.stream(ndaiBandNames).map(bandName -> {
+                Matcher m = Pattern.compile("(_)(\\d{2})(\\w{3})(\\d{4})(_)").matcher(bandName);
+                m.find();
+                return m.group(4);
+            }).distinct().toArray(String[]::new);
+
+            int counter = 1;
+            for (String year : yearList) {
+                String filteredBands = Arrays.stream(ndaiBandNames).filter(bandName -> {
+                    if (bandName.contains(year)) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }).collect(Collectors.joining(","));
+
+                graph.getNode("BandMaths(" + String.valueOf(counter) + ")").getConfiguration().getChild("targetBands").getChild("targetBand").getChild("expression").setValue(
+                        "avg(" + filteredBands + ")");
+                graph.getNode("BandMaths(" + String.valueOf(counter) + ")").getConfiguration().getChild("targetBands").getChild("targetBand").getChild("name").setValue(
+                        "avg_ndai_" + year);
+                counter += 1;
+            }
+            graph.getNode("Subset").getConfiguration().getChild("region")
+                    .setValue(maxSubsetX0 + "," + maxSubsetY0 + "," + minSubsetX1 + "," + minSubsetY1);
+
+            GraphIO.write(graph, fileWriter);
+            fileWriter.flush();
+            fileWriter.close();
+
+            cmdWriter.println("gpt " + stage9Dir + File.separator + "avgndai.xml");
+            cmdWriter.close();
 
         } catch (Exception e) {
             e.printStackTrace();

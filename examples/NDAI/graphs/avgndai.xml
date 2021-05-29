@@ -76,13 +76,30 @@
       <geographicError>1.0E-5</geographicError>
     </parameters>
   </node>
-  <node id="Write">
-    <operator>Write</operator>
+  <node id="Subset">
+    <operator>Subset</operator>
     <sources>
       <sourceProduct refid="BandMerge"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>D:\Temp\stack_BandMath1.dim</file>
+      <sourceBands/>
+      <region>0,0,100,200</region>
+      <referenceBand/>
+      <geoRegion/>
+      <subSamplingX>1</subSamplingX>
+      <subSamplingY>1</subSamplingY>
+      <fullSwath>false</fullSwath>
+      <tiePointGridNames/>
+      <copyMetadata>true</copyMetadata>
+    </parameters>
+  </node>
+  <node id="Write">
+    <operator>Write</operator>
+    <sources>
+      <sourceProduct refid="Subset"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>D:\Temp\target.dim</file>
       <formatName>BEAM-DIMAP</formatName>
     </parameters>
   </node>
@@ -103,8 +120,11 @@
     <node id="BandMerge">
       <displayPosition x="369.0" y="60.0"/>
     </node>
+    <node id="Subset">
+      <displayPosition x="468.0" y="113.0"/>
+    </node>
     <node id="Write">
-      <displayPosition x="497.0" y="63.0"/>
+      <displayPosition x="557.0" y="113.0"/>
     </node>
   </applicationData>
 </graph>
