@@ -23,7 +23,7 @@
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <orbitDegree>3</orbitDegree>
-      <demName>SRTM 1Sec HGT</demName>
+      <demName>SRTM 3Sec</demName>
       <externalDEMFile/>
       <externalDEMNoDataValue>0.0</externalDEMNoDataValue>
       <tileExtensionPercent>100</tileExtensionPercent>
@@ -77,7 +77,7 @@
       <cohWinRg>7</cohWinRg>
       <squarePixel>false</squarePixel>
       <subtractTopographicPhase>true</subtractTopographicPhase>
-      <demName>SRTM 1Sec HGT</demName>
+      <demName>SRTM 3Sec</demName>
       <externalDEMFile/>
       <externalDEMNoDataValue>0.0</externalDEMNoDataValue>
       <externalDEMApplyEGM>true</externalDEMApplyEGM>
@@ -122,7 +122,7 @@
       <displayPosition x="790.0" y="49.0"/>
     </node>
     <node id="GoldsteinPhaseFiltering">
-      <displayPosition x="592.0" y="51.0"/>
+      <displayPosition x="593.0" y="51.0"/>
     </node>
     <node id="Interferogram">
       <displayPosition x="144.0" y="52.0"/>

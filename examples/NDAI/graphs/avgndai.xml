@@ -134,7 +134,7 @@
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <file>D:\Temp\target.tif</file>
-      <formatName>GeoTIFF</formatName>
+      <formatName>BEAM-DIMAP</formatName>
     </parameters>
   </node>
   <applicationData id="Presentation">

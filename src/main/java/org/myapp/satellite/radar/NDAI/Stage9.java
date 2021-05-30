@@ -148,7 +148,7 @@ public class Stage9 {
 
             graph.getNode("Read").getConfiguration().getChild("file").setValue(ndaiFile);
             graph.getNode("Write").getConfiguration().getChild("file")
-                    .setValue(avgNDAIDir + File.separator + "avgndai");
+                    .setValue(avgNDAIDir + File.separator + "avgndai.dim");
             graph.getNode("Read(2)").getConfiguration().getChild("file").setValue(avgStdFile);
             graph.getNode("Write(2)").getConfiguration().getChild("file")
                     .setValue(avgNDAIDir + File.separator + "subsetedCohAvgStd.dim");

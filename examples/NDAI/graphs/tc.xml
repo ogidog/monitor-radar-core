@@ -4,7 +4,7 @@
     <operator>Read</operator>
     <sources/>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>D:\Temp\kiyzassky_NDAI\results\subset\20181119_20181201.dim</file>
+      <file>D:\Temp\kiyzasski_NDAI\results\avgndai\filteredavgndai.dim</file>
     </parameters>
   </node>
   <node id="Terrain-Correction">
@@ -54,8 +54,8 @@
       <sourceProduct refid="Terrain-Correction"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>D:\Temp\Subset_S1B_IW_SLC__1SDV_20190106T002757_20190106T002825_014366_01ABBB_71C4_Orb_Stack_Ifg_Deb_DInSAR_Flt_TC.dim</file>
-      <formatName>BEAM-DIMAP</formatName>
+      <file>D:\Temp\target1.tif</file>
+      <formatName>GeoTIFF</formatName>
     </parameters>
   </node>
   <applicationData id="Presentation">
@@ -64,7 +64,7 @@
             <displayPosition x="38.0" y="55.0"/>
     </node>
     <node id="Terrain-Correction">
-      <displayPosition x="167.0" y="47.0"/>
+      <displayPosition x="168.0" y="47.0"/>
     </node>
     <node id="Write">
       <displayPosition x="340.0" y="48.0"/>

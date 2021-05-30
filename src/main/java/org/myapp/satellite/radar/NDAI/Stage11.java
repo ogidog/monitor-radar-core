@@ -26,61 +26,82 @@ public class Stage11 {
             HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
             String outputDir = consoleParameters.get("outputDir").toString();
             String graphDir = consoleParameters.get("graphDir").toString();
+            String configDir = consoleParameters.get("configDir").toString();
 
-            String stage7Dir = outputDir + "" + File.separator + "stage7";
-            String tcDir = outputDir + File.separator + "tc";
-            String subsetDir = outputDir + File.separator + "subset";
+            String stage11Dir = outputDir + "" + File.separator + "stage11";
+            String tcFilteredAvgNDAIFile = outputDir + File.separator + "avgndai" + File.separator + "tcfilteredavgndai";
+            String filteredAvgNDAIFile = outputDir + File.separator + "avgndai" + File.separator + "filteredavgndai.dim";
 
-            String[] files = Files.walk(Paths.get(subsetDir)).filter(path -> {
-                if (path.toString().endsWith(".dim")) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }).map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
+            HashMap parameters = getParameters(configDir);
+            if (parameters == null) {
+                System.out.println("Fail to read parameters.");
+                return;
+            }
 
-            if (Files.exists(Paths.get(tcDir))) {
-                Files.walk(Paths.get(tcDir))
+            if (Files.exists(Paths.get(stage11Dir))) {
+                Files.walk(Paths.get(stage11Dir))
                         .sorted(Comparator.reverseOrder())
                         .map(Path::toFile)
                         .forEach(File::delete);
             }
-            new File(tcDir).mkdirs();
-
-            if (Files.exists(Paths.get(stage7Dir))) {
-                Files.walk(Paths.get(stage7Dir))
-                        .sorted(Comparator.reverseOrder())
-                        .map(Path::toFile)
-                        .forEach(File::delete);
-            }
-            new File(stage7Dir).mkdirs();
+            new File(stage11Dir).mkdirs();
 
             String graphFile = "tc.xml";
             FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
             Graph graph = GraphIO.read(fileReader);
             fileReader.close();
 
-            PrintWriter cmdWriter = new PrintWriter(stage7Dir + File.separator + "stage4.cmd", "UTF-8");
+            // Terrain Correction
+            ((HashMap) parameters.get("TerrainCorrection")).forEach((key, value) -> {
+                graph.getNode("Terrain-Correction").getConfiguration().getChild(key.toString())
+                        .setValue(value.toString());
+            });
 
-            for (String file : files) {
-                String fileName = Paths.get(file).getFileName().toString().replace(".dim", "");
-                graph.getNode("Read").getConfiguration().getChild("file").setValue(file);
-                graph.getNode("Write").getConfiguration().getChild("file")
-                        .setValue(tcDir + File.separator + fileName + ".dim");
+            PrintWriter cmdWriter = new PrintWriter(stage11Dir + File.separator + "stage11.cmd", "UTF-8");
+            graph.getNode("Read").getConfiguration().getChild("file").setValue(filteredAvgNDAIFile);
+            graph.getNode("Write").getConfiguration().getChild("file")
+                    .setValue(tcFilteredAvgNDAIFile);
+            FileWriter fileWriter = new FileWriter(stage11Dir + File.separator + "tcfilteredavgndai.xml");
+            GraphIO.write(graph, fileWriter);
+            fileWriter.flush();
+            fileWriter.close();
 
-                FileWriter fileWriter = new FileWriter(stage7Dir + File.separator
-                        + fileName + ".xml");
-                GraphIO.write(graph, fileWriter);
-                fileWriter.flush();
-                fileWriter.close();
-
-                cmdWriter.println("gpt " + stage7Dir + File.separator + fileName + ".xml");
-            }
+            cmdWriter.println("gpt " + stage11Dir + File.separator + "tcfilteredavgndai.xml");
             cmdWriter.close();
 
         } catch (Exception e) {
             e.printStackTrace();
             return;
+        }
+    }
+
+    static HashMap getParameters(String configDir) {
+
+        HashMap<String, HashMap> stageParameters = null;
+
+        try {
+            JSONParser parser = new JSONParser();
+            stageParameters = new HashMap<>();
+
+            // TerrainCorrection
+            parser = new JSONParser();
+            FileReader fileReader = new FileReader(configDir + File.separator + "terrain_correction.json");
+            JSONObject jsonObject = (JSONObject) parser.parse(fileReader);
+            HashMap jsonParameters = (HashMap) jsonObject.get("parameters");
+            HashMap parameters = new HashMap();
+            Iterator it = jsonParameters.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry pair = (Map.Entry) it.next();
+                parameters.put(pair.getKey().toString(), ((HashMap) jsonParameters.get(pair.getKey().toString())).get("value"));
+            }
+            stageParameters.put("TerrainCorrection", parameters);
+            fileReader.close();
+
+            return stageParameters;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }

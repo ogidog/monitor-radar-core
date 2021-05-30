@@ -28,8 +28,8 @@ public class Stage10 {
             HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
 
             String outputDir = consoleParameters.get("outputDir").toString();
-            String filteredAvgNDAIFile = outputDir + File.separator + "avgndai" + File.separator + "filteredavgndai.tif";
-            String avgNDAIFile = outputDir + File.separator + "avgndai" + File.separator + "avgndai.tif";
+            String filteredAvgNDAIFile = outputDir + File.separator + "avgndai" + File.separator + "filteredavgndai.dim";
+            String avgNDAIFile = outputDir + File.separator + "avgndai" + File.separator + "avgndai.dim";
             String subsetedCohAvgStdFile = outputDir + File.separator + "avgndai" + File.separator + "subsetedCohAvgStd.dim";
 
             Product avgNDAIProduct = ProductIO.readProduct(avgNDAIFile);
@@ -58,7 +58,7 @@ public class Stage10 {
             File file = new File(filteredAvgNDAIFile);
             ProductIO.writeProduct(avgNDAIProduct,
                     file,
-                    "GeoTiff",
+                    "BEAM-DIMAP",
                     false,
                     ProgressMonitor.NULL);
 
