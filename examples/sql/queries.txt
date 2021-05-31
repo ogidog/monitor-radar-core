@@ -1,4 +1,4 @@
-select string_agg(file_path, ',' order by name asc) from remote_sensing_data a
+select replace(replace(string_agg(file_path, ',' order by name asc),'/','\'),'\mnt\satimg','Y:') from remote_sensing_data a
 where ST_Intersects(
     a.geom ,
     ST_GeomFromText('SRID=4326;POLYGON((87.62805498060708 53.58937440559718,87.73276842054848 53.58937440559718,87.73276842054848 53.542681765607895,87.62805498060708 53.542681765607895,87.62805498060708 53.58937440559718))'))
