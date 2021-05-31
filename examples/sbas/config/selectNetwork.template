@@ -2,8 +2,8 @@ selectNetwork.method = delaunay
 selectNetwork.referenceFile = no
 
 # Baseline Info
-selectNetwork.perpBaseMax   = 50.
-selectNetwork.tempBaseMax   = 65.
+selectNetwork.perpBaseMax   = 50
+selectNetwork.tempBaseMax   = 65
 selectNetwork.tempBaseMin   = 0.
 selectNetwork.keepSeasonal  = no
 selectNetwork.dopOverlapMin = 15.
