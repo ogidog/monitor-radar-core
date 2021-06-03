@@ -78,6 +78,10 @@ public class Stage10 {
                     if ((band3 / band1) * 100 < 0.3 && (band3 / band2) * 100 < 0.3 && Math.abs((band1 / band2) * 100 - 100) < 0.3) {
                         avgNDAIProduct.getBandAt(1).getRasterData().setElemFloatAt(i, 4.0f);
                     }
+                    //HLH (band1, band3)
+                    if ((band2 / band1) * 100 < 0.3 && (band2 / band3) * 100 < 0.3 && Math.abs((band1 / band3) * 100 - 100) < 0.3) {
+                        avgNDAIProduct.getBandAt(1).getRasterData().setElemFloatAt(i, 4.0f);
+                    }
 
                 }
             }
