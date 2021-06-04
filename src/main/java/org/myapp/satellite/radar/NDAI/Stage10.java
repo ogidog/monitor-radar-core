@@ -53,37 +53,42 @@ public class Stage10 {
                     avgNDAIProduct.getBandAt(0).getRasterData().setElemFloatAt(i, Float.NaN);
                     avgNDAIProduct.getBandAt(1).getRasterData().setElemFloatAt(i, Float.NaN);
                     avgNDAIProduct.getBandAt(2).getRasterData().setElemFloatAt(i, Float.NaN);
-                } else {
-                    float band1 = avgNDAIProduct.getBandAt(0).getRasterData().getElemFloatAt(i);
-                    float band2 = avgNDAIProduct.getBandAt(1).getRasterData().getElemFloatAt(i);
-                    float band3 = avgNDAIProduct.getBandAt(2).getRasterData().getElemFloatAt(i);
-
-                    avgNDAIProduct.getBandAt(0).getRasterData().setElemFloatAt(i, 0.0f);
-                    avgNDAIProduct.getBandAt(1).getRasterData().setElemFloatAt(i, 0.0f);
-                    avgNDAIProduct.getBandAt(2).getRasterData().setElemFloatAt(i, 0.0f);
-
-                    //LLH (band3)
-                    if ((band2 / band3) * 100 < 0.3 && (band1 / band3) * 100 < 0.3) {
+                }
+                /*
+                else {
+                    //LLH (band3, red)
+                    if ((band2 / band3) * 100 < 30f && (band1 / band3) * 100 < 30f) {
                         avgNDAIProduct.getBandAt(2).getRasterData().setElemFloatAt(i, 1.0f);
                     }
-                    //LHL (band2)
-                    if ((band3 / band2) * 100 < 0.3 && (band1 / band2) * 100 < 0.3) {
+                    //LHL (band2, green)
+                    if ((band3 / band2) * 100 < 30f && (band1 / band2) * 100 < 30f) {
                         avgNDAIProduct.getBandAt(1).getRasterData().setElemFloatAt(i, 2.0f);
                     }
-                    //HLL (band1)
-                    if ((band3 / band1) * 100 < 0.3 && (band2 / band1) * 100 < 0.3) {
-                        avgNDAIProduct.getBandAt(1).getRasterData().setElemFloatAt(i, 3.0f);
+                    //HLL (band1, blue)
+                    if ((band3 / band1) * 100 < 30f && (band2 / band1) * 100 < 30f) {
+                        avgNDAIProduct.getBandAt(0).getRasterData().setElemFloatAt(i, 3.0f);
                     }
-                    //HHL (band1, band2)
-                    if ((band3 / band1) * 100 < 0.3 && (band3 / band2) * 100 < 0.3 && Math.abs((band1 / band2) * 100 - 100) < 0.3) {
-                        avgNDAIProduct.getBandAt(1).getRasterData().setElemFloatAt(i, 4.0f);
+                    //HHL (band1, band2, cyan)
+                    if ((band3 / band1) * 100 < 30f && (band3 / band2) * 100 < 30f && Math.abs((band1 / band2) * 100 - 100) < 30f) {
+                        avgNDAIProduct.getBandAt(2).getRasterData().setElemFloatAt(i, 4.0f);
                     }
-                    //HLH (band1, band3)
-                    if ((band2 / band1) * 100 < 0.3 && (band2 / band3) * 100 < 0.3 && Math.abs((band1 / band3) * 100 - 100) < 0.3) {
-                        avgNDAIProduct.getBandAt(1).getRasterData().setElemFloatAt(i, 4.0f);
+                    //HLH (band1, band3, magenta)
+                    if ((band2 / band1) * 100 < 30f && (band2 / band3) * 100 < 30f && Math.abs((band1 / band3) * 100 - 100) < 30f) {
+                        avgNDAIProduct.getBandAt(1).getRasterData().setElemFloatAt(i, 5.0f);
                     }
-
-                }
+                    //LHH (band2, band3, yellow)
+                    if ((band1 / band2) * 100 < 0.3 && (band1 / band3) * 100 < 30f && Math.abs((band2 / band3) * 100 - 100) < 30f) {
+                        avgNDAIProduct.getBandAt(0).getRasterData().setElemFloatAt(i, 6.0f);
+                    }
+                    //LLL (band1, band2, band3, white)
+                    if (band1  < 0.003 && band2 < 0.003 && band3 < 0.003) {
+                        avgNDAIProduct.getBandAt(2).getRasterData().setElemFloatAt(i, 7.0f);
+                    }
+                    //HHH (band1, band2, band3, black)
+                    if (band1  > 0.3 && band2 > 0.3 && band3 > 0.3) {
+                        avgNDAIProduct.getBandAt(1).getRasterData().setElemFloatAt(i, 8.0f);
+                    }
+                }*/
             }
             File file = new File(filteredAvgNDAIFile);
             ProductIO.writeProduct(avgNDAIProduct,
