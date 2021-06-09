@@ -97,6 +97,7 @@ public class Stage2 {
             String masterProductDate, slaveProductDate;
 
             for (String[] pair : pairs) {
+                убрать разные года в паре
                 masterProductDate = Paths.get(pair[0]).getFileName().toString();
                 slaveProductDate = Paths.get(pair[1]).getFileName().toString();
                 masterProductDate = masterProductDate.split("T")[0].split("_")[5];
