@@ -1,20 +1,12 @@
 package org.myapp.satellite.radar.NDAI;
 
-import com.bc.ceres.core.ProgressMonitor;
 import org.esa.snap.core.dataio.ProductIO;
-import org.esa.snap.core.dataio.ProductWriter;
-import org.esa.snap.core.dataio.ProductWriterPlugIn;
-import org.esa.snap.core.dataio.dimap.DimapProductWriter;
-import org.esa.snap.core.dataio.dimap.DimapProductWriterPlugIn;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductData;
-import org.esa.snap.core.datamodel.ProductNode;
 import org.myapp.utils.ConsoleArgsReader;
-import scala.collection.mutable.HashTable;
 
 import java.io.*;
-import java.nio.Buffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;

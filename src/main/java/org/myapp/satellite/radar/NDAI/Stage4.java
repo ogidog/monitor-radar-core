@@ -36,6 +36,10 @@ public class Stage4 {
                 } else {
                     return false;
                 }
+            }).sorted((file1,file2)->{
+                String file1Name = file1.getFileName().toString().replace(".dim","").split("_")[1];
+                String file2Name = file2.getFileName().toString().replace(".dim","").split("_")[1];
+                return file1Name.compareTo(file2Name);
             }).map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
 
             if (Files.exists(Paths.get(stackDir))) {
@@ -64,7 +68,7 @@ public class Stage4 {
             graph.getNode("Write").getConfiguration().getChild("file")
                     .setValue(stackDir + File.separator + "stack.dim");
 
-            FileWriter fileWriter = new FileWriter(stage4Dir + File.separator           + "stack.xml");
+            FileWriter fileWriter = new FileWriter(stage4Dir + File.separator + "stack.xml");
             GraphIO.write(graph, fileWriter);
             fileWriter.flush();
             fileWriter.close();

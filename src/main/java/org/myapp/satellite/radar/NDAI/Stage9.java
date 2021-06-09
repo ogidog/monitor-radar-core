@@ -164,7 +164,7 @@ public class Stage9 {
                 return m.group(4);
             }).distinct().toArray(String[]::new);
 
-            int counter = 1;
+            int counter = 3;
             for (String year : yearList) {
                 String filteredBands = Arrays.stream(ndaiBandNames).filter(bandName -> {
                     if (bandName.contains(year)) {
@@ -178,7 +178,7 @@ public class Stage9 {
                         "avg(" + filteredBands + ")");
                 graph.getNode("BandMaths(" + String.valueOf(counter) + ")").getConfiguration().getChild("targetBands").getChild("targetBand").getChild("name").setValue(
                         "avg_ndai_" + year);
-                counter += 1;
+                counter -= 1;
             }
 
             GraphIO.write(graph, fileWriter);
