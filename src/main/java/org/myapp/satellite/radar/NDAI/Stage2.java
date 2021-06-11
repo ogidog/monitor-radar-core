@@ -97,11 +97,15 @@ public class Stage2 {
             String masterProductDate, slaveProductDate;
 
             for (String[] pair : pairs) {
-                убрать разные года в паре
                 masterProductDate = Paths.get(pair[0]).getFileName().toString();
                 slaveProductDate = Paths.get(pair[1]).getFileName().toString();
                 masterProductDate = masterProductDate.split("T")[0].split("_")[5];
                 slaveProductDate = slaveProductDate.split("T")[0].split("_")[5];
+                String masterProductYear = masterProductDate.substring(0, 4);
+                String slaveProductYear = slaveProductDate.substring(0, 4);
+                if (!masterProductYear.equals(slaveProductYear)) {
+                    continue;
+                }
 
                 graph.getNode("Read").getConfiguration().getChild("file").setValue(pair[0]);
                 graph.getNode("Read(2)").getConfiguration().getChild("file").setValue(pair[1]);

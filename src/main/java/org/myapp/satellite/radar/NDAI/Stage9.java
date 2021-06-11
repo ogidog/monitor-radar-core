@@ -162,9 +162,9 @@ public class Stage9 {
                 Matcher m = Pattern.compile("(_)(\\d{2})(\\w{3})(\\d{4})(_)").matcher(bandName);
                 m.find();
                 return m.group(4);
-            }).distinct().toArray(String[]::new);
+            }).distinct().sorted(Comparator.reverseOrder()).toArray(String[]::new);
 
-            int counter = 3;
+            int counter = 1;
             for (String year : yearList) {
                 String filteredBands = Arrays.stream(ndaiBandNames).filter(bandName -> {
                     if (bandName.contains(year)) {
@@ -178,7 +178,7 @@ public class Stage9 {
                         "avg(" + filteredBands + ")");
                 graph.getNode("BandMaths(" + String.valueOf(counter) + ")").getConfiguration().getChild("targetBands").getChild("targetBand").getChild("name").setValue(
                         "avg_ndai_" + year);
-                counter -= 1;
+                counter += 1;
             }
 
             GraphIO.write(graph, fileWriter);

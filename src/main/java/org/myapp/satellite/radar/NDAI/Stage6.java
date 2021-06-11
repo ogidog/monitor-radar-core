@@ -57,7 +57,7 @@ public class Stage6 {
 
             String[] yearList = Arrays.stream(avgStdBandNames).map(bandName -> {
                 return bandName.split("_")[2];
-            }).distinct().toArray(String[]::new);
+            }).distinct().sorted(Comparator.reverseOrder()).toArray(String[]::new);
 
             String graphFile = "stablepoints.xml";
             FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
