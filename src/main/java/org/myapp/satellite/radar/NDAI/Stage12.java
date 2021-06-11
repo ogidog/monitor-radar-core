@@ -18,12 +18,8 @@ public class Stage12 {
             String configDir = consoleParameters.get("configDir").toString();
 
             Product tcfilteredavgndaiProduct = ProductIO.readProduct(outputDir + File.separator + "avgndai" + File.separator + "tcfilteredavgndai.tif");
-            String first_near_long = tcfilteredavgndaiProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeString("first_near_long");
-            String first_near_lat = tcfilteredavgndaiProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeString("first_near_lat");
             String first_far_long = tcfilteredavgndaiProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeString("first_far_long");
             String first_far_lat = tcfilteredavgndaiProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeString("first_far_lat");
-            String last_far_long = tcfilteredavgndaiProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeString("last_far_long");
-            String last_far_lat = tcfilteredavgndaiProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeString("last_far_lat");
             String last_near_long = tcfilteredavgndaiProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeString("last_near_long");
             String last_near_lat = tcfilteredavgndaiProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeString("last_near_lat");
             tcfilteredavgndaiProduct.closeIO();
@@ -31,12 +27,30 @@ public class Stage12 {
 
             File file = new File(configDir + File.separator + "ndai.kml");
             BufferedReader br = new BufferedReader(new FileReader(file));
-            String ndaiKML = br.lines().map(line->{
-
+            String ndaiKML = br.lines().map(line -> {
+                if (line.contains("<north>")) {
+                    line = "<north>" + first_far_lat + "</north>";
+                }
+                if (line.contains("<east>")) {
+                    line = "<east>" + first_far_long + "</east>";
+                }
+                if (line.contains("<south>")) {
+                    line = "<south>" + last_near_lat + "</south>";
+                }
+                if (line.contains("<west>")) {
+                    line = "<west>" + last_near_long + "</west>";
+                }
                 return line;
             }).collect(Collectors.joining());
+            br.close();
 
-            System.out.printf(first_far_lat + "," + first_far_long + "," + last_near_lat + "," + last_near_long);
+            file = new File(outputDir + File.separator + "avgndai" + File.separator + "ndai.kml");
+            BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+            bw.write(ndaiKML);
+            bw.flush();
+            bw.close();
+
+            // System.out.printf(first_far_lat + "," + first_far_long + "," + last_near_lat + "," + last_near_long);
 
         } catch (Exception ex) {
             ex.printStackTrace();
