@@ -1,7 +1,5 @@
 package org.myapp.satellite.radar.NDAI;
 
-import org.esa.s1tbx.commons.Sentinel1Utils;
-import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
 import org.json.simple.JSONObject;
