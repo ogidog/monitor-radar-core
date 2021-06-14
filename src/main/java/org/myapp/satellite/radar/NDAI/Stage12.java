@@ -16,6 +16,7 @@ public class Stage12 {
             HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
             String outputDir = consoleParameters.get("outputDir").toString();
             String configDir = consoleParameters.get("configDir").toString();
+            String kmlObjectUrl = consoleParameters.get("kmlObjectUrl").toString();
 
             Product tcfilteredavgndaiProduct = ProductIO.readProduct(outputDir + File.separator + "avgndai" + File.separator + "tcfilteredavgndai.tif");
             String first_far_long = tcfilteredavgndaiProduct.getMetadataRoot().getElement("Abstracted_Metadata").getAttributeString("first_far_long");
@@ -43,10 +44,17 @@ public class Stage12 {
                 return line;
             }).collect(Collectors.joining());
             br.close();
+            String ndaiKMLOnline = ndaiKML.replace("legend.png", kmlObjectUrl + "/legend.png")
+                    .replace("tcfilteredavgndai_new.png", kmlObjectUrl + "/tcfilteredavgndai_new.png");
 
             file = new File(outputDir + File.separator + "avgndai" + File.separator + "ndai.kml");
             BufferedWriter bw = new BufferedWriter(new FileWriter(file));
             bw.write(ndaiKML);
+            bw.flush();
+            bw.close();
+            file = new File(outputDir + File.separator + "avgndai" + File.separator + "ndai_online.kml");
+            bw = new BufferedWriter(new FileWriter(file));
+            bw.write(ndaiKMLOnline);
             bw.flush();
             bw.close();
 
@@ -55,7 +63,5 @@ public class Stage12 {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
-
     }
 }

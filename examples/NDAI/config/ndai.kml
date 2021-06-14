@@ -1,6 +1,6 @@
 <kml xmlns="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:gx="http://www.google.com/kml/ext/2.2">
   <Folder>
-    <name>InSAR_MintPy</name>
+    <name>NDAI</name>
     <GroundOverlay>
       <name>velocity</name>
       <Icon>
