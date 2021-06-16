@@ -31,24 +31,15 @@ public class Stage6 {
 
             String[] files1 = Files.walk(Paths.get(intfDir)).filter(file -> file.toString().endsWith(".dim"))
                     .map(path -> path.toAbsolutePath().toString())
-                    .sorted((file1, file2) -> {
-                        String file1Name = Paths.get(file1).getFileName().toString().split("_")[5].split("T")[0];
-                        String file2Name = Paths.get(file2).getFileName().toString().split("_")[5].split("T")[0];
-                        return file1Name.compareTo(file2Name);
-                    }).toArray(String[]::new);
+                    .toArray(String[]::new);
 
             String[] files2 = Files.walk(Paths.get(snaphuexportDir)).filter(file -> file.toString().endsWith(".hdr") && file.toString().contains("UnwPhase"))
                     .map(path -> path.toAbsolutePath().toString())
-                    .sorted((file1, file2) -> {
-                        String file1Name = Paths.get(file1).getFileName().toString().split("_")[5].split("T")[0];
-                        String file2Name = Paths.get(file2).getFileName().toString().split("_")[5].split("T")[0];
-                        return file1Name.compareTo(file2Name);
-                    }).toArray(String[]::new);
+                    .toArray(String[]::new);
 
             String[][] pairs = new String[files1.length][2];
             for (int i = 0; i < files1.length; i++) {
                 String date = Paths.get(files1[i]).getFileName().toString().replace(".dim", "");
-                date = date.substring(0, date.length() - 4);
                 for (int j = 0; j < files2.length; j++) {
                     if (files2[j].contains(date)) {
                         pairs[i][0] = files1[i];
