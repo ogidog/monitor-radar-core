@@ -30,10 +30,20 @@ public class Stage6 {
             String intfDir = outputDir + File.separator + "intf";
 
             String[] files1 = Files.walk(Paths.get(intfDir)).filter(file -> file.toString().endsWith(".dim"))
-                    .map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
+                    .map(path -> path.toAbsolutePath().toString())
+                    .sorted((file1, file2) -> {
+                        String file1Name = Paths.get(file1).getFileName().toString().split("_")[5].split("T")[0];
+                        String file2Name = Paths.get(file2).getFileName().toString().split("_")[5].split("T")[0];
+                        return file1Name.compareTo(file2Name);
+                    }).toArray(String[]::new);
 
             String[] files2 = Files.walk(Paths.get(snaphuexportDir)).filter(file -> file.toString().endsWith(".hdr") && file.toString().contains("UnwPhase"))
-                    .map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
+                    .map(path -> path.toAbsolutePath().toString())
+                    .sorted((file1, file2) -> {
+                        String file1Name = Paths.get(file1).getFileName().toString().split("_")[5].split("T")[0];
+                        String file2Name = Paths.get(file2).getFileName().toString().split("_")[5].split("T")[0];
+                        return file1Name.compareTo(file2Name);
+                    }).toArray(String[]::new);
 
             String[][] pairs = new String[files1.length][2];
             for (int i = 0; i < files1.length; i++) {

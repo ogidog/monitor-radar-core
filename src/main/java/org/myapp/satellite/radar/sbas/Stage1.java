@@ -92,7 +92,6 @@ public class Stage1 {
 
         } catch (Exception e) {
             e.printStackTrace();
-            return;
         }
     }
 

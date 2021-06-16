@@ -50,7 +50,12 @@ public class Stage2 {
                 } else {
                     return false;
                 }
-            }).map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
+            }).map(path -> path.toAbsolutePath().toString())
+                    .sorted((file1, file2) -> {
+                        String file1Name = Paths.get(file1).getFileName().toString().split("_")[5].split("T")[0];
+                        String file2Name = Paths.get(file2).getFileName().toString().split("_")[5].split("T")[0];
+                        return file1Name.compareTo(file2Name);
+                    }).toArray(String[]::new);
 
             Product[] products = Arrays.stream(files).map(file -> {
                 try {
