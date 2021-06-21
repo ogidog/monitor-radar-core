@@ -114,15 +114,9 @@ public class Stage4 {
 
             cmdWriter.close();
 
-            return;
-
-        } catch (
-                Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            return;
         }
-
-
     }
 
 }
