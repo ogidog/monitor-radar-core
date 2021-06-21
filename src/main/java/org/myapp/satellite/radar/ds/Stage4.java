@@ -94,8 +94,13 @@ public class Stage4 {
 
             for (int i = 0; i < files1.length; i++) {
                 String fileName = Paths.get(files1[i]).getFileName().toString();
+                String date = fileName.split("_")[5].split("T")[0];
                 graph.getNode("Read").getConfiguration().getChild("file").setValue(files1[i]);
-                graph.getNode("Read(2)").getConfiguration().getChild("file").setValue(files2[i]);
+                for (int j = 0; j < files2.length; j++) {
+                    if (files2[j].contains(date)) {
+                        graph.getNode("Read(2)").getConfiguration().getChild("file").setValue(files2[j]);
+                    }
+                }
                 graph.getNode("StampsExport").getConfiguration().getChild("targetFolder")
                         .setValue(stampsexportDir);
 

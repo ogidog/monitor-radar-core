@@ -30,7 +30,7 @@ public class Stage1 {
             String graphDir = consoleParameters.get("graphDir").toString();
             String filesList = consoleParameters.get("filesList").toString();
 
-            /*HashMap parameters = getParameters(configDir);
+            HashMap parameters = getParameters(configDir);
             if (parameters == null) {
                 System.out.println("Fail to read parameters.");
                 return;
@@ -88,7 +88,7 @@ public class Stage1 {
             }
 
             cmdWriter.close();
-            topsarSplitOpEnv.Dispose();*/
+            topsarSplitOpEnv.Dispose();
 
         } catch (Exception e) {
             e.printStackTrace();
