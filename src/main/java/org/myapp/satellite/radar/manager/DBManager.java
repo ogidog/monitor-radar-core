@@ -68,6 +68,8 @@ public class DBManager {
             boolean filterResult = false;
             for (String imageName : imageNames.split(",")) {
 
+                filterResult = false;
+
                 for (String filter : fileNameFilter) {
                     if (imageName.contains(filter)) {
                         filterResult = true;

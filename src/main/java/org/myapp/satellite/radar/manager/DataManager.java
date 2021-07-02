@@ -51,6 +51,16 @@ public class DataManager {
                     + (parameters.get("sensoroperationalmode").equals("''") ? "" : URLEncoder.encode(" AND sensoroperationalmode:", "UTF-8") + parameters.get("sensoroperationalmode"))
                     + "&format=json";
 
+            String httpQuery1 = OAHubURL + "search?rows=100&q="
+                    + "footprint:\"Intersects(POLYGON((" + parameters.get("roi").toString() + ")))\""
+                    + (parameters.get("producttype").equals("''") ? "" : " AND producttype:" + parameters.get("producttype"))
+                    + " AND ingestiondate:[" + currentYear
+                    + "-01-01T00:00:00.000Z TO " + currentYear
+                    + "-12-31T00:00:00.000Z]"
+                    + (parameters.get("relativeorbitnumber").equals("''") ? "" : " AND relativeorbitnumber:"+ parameters.get("relativeorbitnumber"))
+                    + (parameters.get("sensoroperationalmode").equals("''") ? "" : " AND sensoroperationalmode:" + parameters.get("sensoroperationalmode"))
+                    + "&format=json";
+
 
             URL url = new URL(httpQuery);
 
