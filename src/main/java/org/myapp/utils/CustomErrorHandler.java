@@ -1,6 +1,8 @@
 package org.myapp.utils;
 
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class CustomErrorHandler {
 
@@ -14,6 +16,14 @@ public class CustomErrorHandler {
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public static boolean checkPreviousErrors(String file) {
+        if (Files.exists(Paths.get(file))) {
+            return true;
+        } else {
+            return false;
         }
     }
 }
