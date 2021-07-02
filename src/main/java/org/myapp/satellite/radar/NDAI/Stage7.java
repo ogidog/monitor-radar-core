@@ -5,6 +5,7 @@ import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductData;
 import org.myapp.utils.ConsoleArgsReader;
+import org.myapp.utils.CustomErrorHandler;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -17,9 +18,11 @@ public class Stage7 {
 
     public static void main(String[] args) {
 
+        String outputDir = "";
+        
         try {
             HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
-            String outputDir = consoleParameters.get("outputDir").toString();
+            outputDir = consoleParameters.get("outputDir").toString();
 
             String stablePointDir = outputDir + File.separator + "stablepoints";
             String stablePointIndexesDir = outputDir + File.separator + "stablepointindexes";
@@ -35,7 +38,9 @@ public class Stage7 {
             Product stablePointsProduct = ProductIO.readProduct(stablePointDir + File.separator + "stablepoints.dim");
             String[] stablePointsBandNames = stablePointsProduct.getBandNames();
 
+            boolean isStablePointsExist = false;
             for (String bandName : stablePointsBandNames) {
+                isStablePointsExist = false;
                 Band stablePointsBand = stablePointsProduct.getBand(bandName);
                 stablePointsBand.readRasterDataFully();
                 float[] stablePointFlags = ((ProductData.Float) stablePointsBand.getData()).getArray();
@@ -43,16 +48,24 @@ public class Stage7 {
                 for (int i = 0; i < stablePointFlags.length; i++) {
                     if (stablePointFlags[i] == 1.0f) {
                         ous.writeInt(i);
+                        isStablePointsExist = true;
                     }
                 }
+
                 ous.flush();
                 ous.close();
+
+                if (!isStablePointsExist) {
+                    throw new Exception("No stable points.");
+                }
             }
+
 
             stablePointsProduct.closeIO();
             stablePointsProduct.dispose();
 
         } catch (Exception e) {
+            CustomErrorHandler.writeErrorToFile(e.getMessage(), outputDir + File.separator + "ERROR");
             e.printStackTrace();
         }
     }
