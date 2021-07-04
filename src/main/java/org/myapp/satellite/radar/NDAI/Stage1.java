@@ -1,7 +1,9 @@
 package org.myapp.satellite.radar.NDAI;
 
+import com.bc.ceres.core.ProgressMonitor;
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
+import org.esa.snap.core.gpf.graph.GraphProcessor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.myapp.satellite.radar.shared.TOPSARSplitOpEnv;
@@ -130,6 +132,7 @@ public class Stage1 {
 
         PrintWriter cmdWriter = new PrintWriter(stage1Dir + File.separator + "stage1.cmd", "UTF-8");
 
+        GraphProcessor processor = new GraphProcessor();
         for (int i = 0; i < files.length; i++) {
 
             topsarSplitOpEnv.getSplitParameters(files[i], parameters);
@@ -151,9 +154,11 @@ public class Stage1 {
             cmdWriter.println("gpt " + stage1Dir + File.separator
                     + Paths.get(files[i]).getFileName().toString().replace(".zip", "") + ".xml");
 
+            processor.executeGraph(graph, ProgressMonitor.NULL);
         }
 
         topsarSplitOpEnv.Dispose();
+        cmdWriter.flush();
         cmdWriter.close();
 
     }

@@ -12,10 +12,6 @@ import java.util.stream.Collectors;
 public class Stage12 {
     public static void main(String[] args) {
 
-        if(CustomErrorHandler.checkPreviousErrors()){
-            return;
-        }
-
         try {
 
             HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);

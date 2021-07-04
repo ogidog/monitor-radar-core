@@ -21,10 +21,6 @@ public class Stage4 {
 
     public static void main(String[] args) {
 
-        if(CustomErrorHandler.checkPreviousErrors()){
-            return;
-        }
-
         try {
 
             HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);

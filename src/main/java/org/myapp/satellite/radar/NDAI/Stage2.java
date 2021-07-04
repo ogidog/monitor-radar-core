@@ -1,9 +1,11 @@
 package org.myapp.satellite.radar.NDAI;
 
+import com.bc.ceres.core.ProgressMonitor;
 import org.esa.s1tbx.commons.Sentinel1Utils;
 import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
+import org.esa.snap.core.gpf.graph.GraphProcessor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.myapp.utils.ConsoleArgsReader;
@@ -21,10 +23,6 @@ import java.util.*;
 public class Stage2 {
 
     public static void main(String[] args) {
-
-        if(CustomErrorHandler.checkPreviousErrors()){
-            return;
-        }
 
         try {
 
@@ -131,6 +129,108 @@ public class Stage2 {
             CustomErrorHandler.writeErrorToFile(e.getMessage(), "/mnt/task" + File.separator + "ERROR");
             e.printStackTrace();
         }
+    }
+
+    public static void process(String outputDir, String configDir, String graphDir, String taskId) throws Exception {
+
+            HashMap parameters = getParameters(configDir);
+            if (parameters == null) {
+                System.out.println("Fail to read parameters.");
+                return;
+            }
+
+            String taskDir = outputDir + File.separator + taskId;
+            String stage2Dir = taskDir + "" + File.separator + "stage2";
+            String esdDir = taskDir + File.separator + "esd";
+            String applyorbitfileDir = taskDir + File.separator + "applyorbitfile";
+
+            String[] files = Files.walk(Paths.get(applyorbitfileDir)).filter(path -> {
+                if (path.toString().endsWith(".dim")) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }).map(path -> path.toAbsolutePath().toString())
+                    .sorted((file1, file2) -> {
+                        String file1Name = Paths.get(file1).getFileName().toString().split("_")[5].split("T")[0];
+                        String file2Name = Paths.get(file2).getFileName().toString().split("_")[5].split("T")[0];
+                        return file1Name.compareTo(file2Name);
+                    }).toArray(String[]::new);
+
+            if (Files.exists(Paths.get(esdDir))) {
+                Files.walk(Paths.get(esdDir))
+                        .sorted(Comparator.reverseOrder())
+                        .map(Path::toFile)
+                        .forEach(File::delete);
+            }
+            new File(esdDir).mkdirs();
+
+            if (Files.exists(Paths.get(stage2Dir))) {
+                Files.walk(Paths.get(stage2Dir))
+                        .sorted(Comparator.reverseOrder())
+                        .map(Path::toFile)
+                        .forEach(File::delete);
+            }
+            new File(stage2Dir).mkdirs();
+
+            ArrayList<String[]> pairs = new ArrayList<>();
+            for (int i = 0; i < files.length - 2; i++) {
+                for (int j = i + 1; j < i + 2; j++) {
+                    pairs.add(new String[]{files[i], files[j]});
+                }
+            }
+
+            Sentinel1Utils s1u = new Sentinel1Utils(ProductIO.readProduct(files[0]));
+            int numOfBurst = s1u.getNumOfBursts(s1u.getSubSwath()[0].subSwathName);
+            String graphFile;
+            if (numOfBurst > 1) {
+                graphFile = "esd.xml";
+            } else {
+                graphFile = "backgeocoding.xml";
+            }
+
+            FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
+            Graph graph = GraphIO.read(fileReader);
+            fileReader.close();
+
+            // BackGeocoding
+            ((HashMap) parameters.get("BackGeocoding")).forEach((key, value) -> {
+                graph.getNode("Back-Geocoding").getConfiguration().getChild(key.toString())
+                        .setValue(value.toString());
+            });
+
+            PrintWriter cmdWriter = new PrintWriter(stage2Dir + File.separator + "stage2.cmd", "UTF-8");
+            String masterProductDate, slaveProductDate;
+
+            GraphProcessor processor = new GraphProcessor();
+            for (String[] pair : pairs) {
+                masterProductDate = Paths.get(pair[0]).getFileName().toString();
+                slaveProductDate = Paths.get(pair[1]).getFileName().toString();
+                masterProductDate = masterProductDate.split("T")[0].split("_")[5];
+                slaveProductDate = slaveProductDate.split("T")[0].split("_")[5];
+                String masterProductYear = masterProductDate.substring(0, 4);
+                String slaveProductYear = slaveProductDate.substring(0, 4);
+                if (!masterProductYear.equals(slaveProductYear)) {
+                    continue;
+                }
+
+                graph.getNode("Read").getConfiguration().getChild("file").setValue(pair[0]);
+                graph.getNode("Read(2)").getConfiguration().getChild("file").setValue(pair[1]);
+                graph.getNode("Write").getConfiguration().getChild("file")
+                        .setValue(esdDir + File.separator + masterProductDate + "_" + slaveProductDate + ".dim");
+
+                FileWriter fileWriter = new FileWriter(stage2Dir + File.separator
+                        + masterProductDate + "_" + slaveProductDate + ".xml");
+                GraphIO.write(graph, fileWriter);
+                fileWriter.flush();
+                fileWriter.close();
+
+                cmdWriter.println("gpt " + stage2Dir + File.separator + masterProductDate + "_" + slaveProductDate + ".xml");
+
+                processor.executeGraph(graph, ProgressMonitor.NULL);
+            }
+            cmdWriter.close();
+
     }
 
     static HashMap getParameters(String configDir) {

@@ -1,5 +1,6 @@
 package org.myapp.utils;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -19,8 +20,8 @@ public class CustomErrorHandler {
         }
     }
 
-    public static boolean checkPreviousErrors() {
-        if (Files.exists(Paths.get("/mnt/task/ERROR"))) {
+    public static boolean checkPreviousErrors(String resultDir) {
+        if (Files.exists(Paths.get(resultDir + File.separator + "ERROR"))) {
             return true;
         } else {
             return false;
