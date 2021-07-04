@@ -18,11 +18,13 @@ public class Stage7 {
 
     public static void main(String[] args) {
 
-        String outputDir = "";
+        if(CustomErrorHandler.checkPreviousErrors()){
+            return;
+        }
         
         try {
             HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
-            outputDir = consoleParameters.get("outputDir").toString();
+            String outputDir = consoleParameters.get("outputDir").toString();
 
             String stablePointDir = outputDir + File.separator + "stablepoints";
             String stablePointIndexesDir = outputDir + File.separator + "stablepointindexes";
@@ -38,9 +40,9 @@ public class Stage7 {
             Product stablePointsProduct = ProductIO.readProduct(stablePointDir + File.separator + "stablepoints.dim");
             String[] stablePointsBandNames = stablePointsProduct.getBandNames();
 
-            boolean isStablePointsExist = false;
+            //boolean isStablePointsExist = false;
             for (String bandName : stablePointsBandNames) {
-                isStablePointsExist = false;
+                //isStablePointsExist = false;
                 Band stablePointsBand = stablePointsProduct.getBand(bandName);
                 stablePointsBand.readRasterDataFully();
                 float[] stablePointFlags = ((ProductData.Float) stablePointsBand.getData()).getArray();
@@ -48,24 +50,23 @@ public class Stage7 {
                 for (int i = 0; i < stablePointFlags.length; i++) {
                     if (stablePointFlags[i] == 1.0f) {
                         ous.writeInt(i);
-                        isStablePointsExist = true;
+                        //isStablePointsExist = true;
                     }
                 }
 
                 ous.flush();
                 ous.close();
 
-                if (!isStablePointsExist) {
+                /*if (!isStablePointsExist) {
                     throw new Exception("No stable points.");
-                }
+                }*/
             }
-
 
             stablePointsProduct.closeIO();
             stablePointsProduct.dispose();
 
         } catch (Exception e) {
-            CustomErrorHandler.writeErrorToFile(e.getMessage(), outputDir + File.separator + "ERROR");
+            CustomErrorHandler.writeErrorToFile(e.getMessage(), "/mnt/task" + File.separator + "ERROR");
             e.printStackTrace();
         }
     }

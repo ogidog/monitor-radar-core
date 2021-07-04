@@ -7,6 +7,7 @@ import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
 import org.myapp.utils.ConsoleArgsReader;
+import org.myapp.utils.CustomErrorHandler;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -22,6 +23,10 @@ import java.util.stream.Collectors;
 public class Stage9 {
 
     public static void main(String[] args) {
+
+        if(CustomErrorHandler.checkPreviousErrors()){
+            return;
+        }
 
         try {
             HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
@@ -189,6 +194,7 @@ public class Stage9 {
             cmdWriter.close();
 
         } catch (Exception e) {
+            CustomErrorHandler.writeErrorToFile(e.getMessage(), "/mnt/task" + File.separator + "ERROR");
             e.printStackTrace();
         }
     }

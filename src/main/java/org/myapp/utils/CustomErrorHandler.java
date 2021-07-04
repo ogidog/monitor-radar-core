@@ -19,8 +19,8 @@ public class CustomErrorHandler {
         }
     }
 
-    public static boolean checkPreviousErrors(String file) {
-        if (Files.exists(Paths.get(file))) {
+    public static boolean checkPreviousErrors() {
+        if (Files.exists(Paths.get("/mnt/task/ERROR"))) {
             return true;
         } else {
             return false;

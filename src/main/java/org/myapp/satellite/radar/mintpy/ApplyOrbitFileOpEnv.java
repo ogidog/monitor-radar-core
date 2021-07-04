@@ -1,6 +1,6 @@
 package org.myapp.satellite.radar.mintpy;
 
-import org.esa.s1tbx.sar.gpf.orbits.ApplyOrbitFileOp;
+import org.esa.s1tbx.orbits.gpf.ApplyOrbitFileOp;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.OperatorSpi;
 import org.esa.snap.runtime.Config;

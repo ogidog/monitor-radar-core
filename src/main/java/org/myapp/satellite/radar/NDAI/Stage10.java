@@ -5,6 +5,7 @@ import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Product;
 import org.myapp.utils.ConsoleArgsReader;
+import org.myapp.utils.CustomErrorHandler;
 
 import java.io.*;
 import java.util.HashMap;
@@ -13,6 +14,10 @@ import java.util.HashMap;
 public class Stage10 {
 
     public static void main(String[] args) {
+
+        if(CustomErrorHandler.checkPreviousErrors()){
+            return;
+        }
 
         try {
             HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
@@ -56,6 +61,7 @@ public class Stage10 {
             subsetedCohAvgStdProduct.closeIO();
 
         } catch (Exception e) {
+            CustomErrorHandler.writeErrorToFile(e.getMessage(), "/mnt/task" + File.separator + "ERROR");
             e.printStackTrace();
         }
     }

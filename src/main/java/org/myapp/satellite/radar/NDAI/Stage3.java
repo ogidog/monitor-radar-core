@@ -7,6 +7,7 @@ import org.esa.snap.core.gpf.graph.GraphIO;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.myapp.utils.ConsoleArgsReader;
+import org.myapp.utils.CustomErrorHandler;
 
 import java.io.File;
 import java.io.FileReader;
@@ -20,6 +21,10 @@ import java.util.*;
 public class Stage3 {
 
     public static void main(String[] args) {
+
+        if(CustomErrorHandler.checkPreviousErrors()){
+            return;
+        }
 
         try {
 
@@ -97,8 +102,8 @@ public class Stage3 {
             cmdWriter.close();
 
         } catch (Exception e) {
+            CustomErrorHandler.writeErrorToFile(e.getMessage(), "/mnt/task" + File.separator + "ERROR");
             e.printStackTrace();
-            return;
         }
     }
 

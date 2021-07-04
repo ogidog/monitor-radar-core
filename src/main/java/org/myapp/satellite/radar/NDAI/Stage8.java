@@ -5,6 +5,7 @@ import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductData;
 import org.myapp.utils.ConsoleArgsReader;
+import org.myapp.utils.CustomErrorHandler;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -17,6 +18,10 @@ import java.util.HashMap;
 public class Stage8 {
 
     public static void main(String[] args) {
+
+        if(CustomErrorHandler.checkPreviousErrors()){
+            return;
+        }
 
         try {
             HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
@@ -96,6 +101,7 @@ public class Stage8 {
             stackProduct.dispose();
 
         } catch (Exception e) {
+            CustomErrorHandler.writeErrorToFile(e.getMessage(), "/mnt/task" + File.separator + "ERROR");
             e.printStackTrace();
         }
     }

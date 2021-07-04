@@ -3,6 +3,7 @@ package org.myapp.satellite.radar.NDAI;
 import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.datamodel.Product;
 import org.myapp.utils.ConsoleArgsReader;
+import org.myapp.utils.CustomErrorHandler;
 
 import java.io.*;
 import java.util.HashMap;
@@ -10,6 +11,10 @@ import java.util.stream.Collectors;
 
 public class Stage12 {
     public static void main(String[] args) {
+
+        if(CustomErrorHandler.checkPreviousErrors()){
+            return;
+        }
 
         try {
 
@@ -60,8 +65,9 @@ public class Stage12 {
 
             // System.out.printf(first_far_lat + "," + first_far_long + "," + last_near_lat + "," + last_near_long);
 
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (Exception e) {
+            CustomErrorHandler.writeErrorToFile(e.getMessage(), "/mnt/task" + File.separator + "ERROR");
+            e.printStackTrace();
         }
     }
 }

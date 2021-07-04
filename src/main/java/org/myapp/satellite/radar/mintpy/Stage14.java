@@ -1,7 +1,7 @@
 package org.myapp.satellite.radar.mintpy;
 
 import com.bc.ceres.core.ProgressMonitor;
-import org.esa.s1tbx.sar.gpf.orbits.ApplyOrbitFileOp;
+import org.esa.s1tbx.orbits.gpf.ApplyOrbitFileOp;
 import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.OperatorSpi;

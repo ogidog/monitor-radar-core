@@ -122,11 +122,15 @@
             <artifactId>snap-product-library-ui</artifactId>
             <version>${snap.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.esa.snap</groupId>
             <artifactId>snap-netcdf</artifactId>
             <version>${snap.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.esa.s1tbx</groupId>
+            <artifactId>s1tbx-io-ephemeris</artifactId>
+            <version>${s1tbx.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple -->
@@ -148,7 +152,6 @@
             <artifactId>spark-core_2.11</artifactId>
             <version>2.2.0</version>
         </dependency>
-
     </dependencies>
 
     <build>

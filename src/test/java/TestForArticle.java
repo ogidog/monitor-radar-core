@@ -5,7 +5,7 @@ import org.apache.spark.broadcast.Broadcast;
 import org.esa.s1tbx.insar.gpf.InterferogramOp;
 import org.esa.s1tbx.sentinel1.gpf.TOPSARSplitOp;
 import org.esa.s1tbx.sentinel1.gpf.BackGeocodingOp;
-import org.esa.s1tbx.sar.gpf.orbits.ApplyOrbitFileOp;
+import org.esa.s1tbx.orbits.gpf.ApplyOrbitFileOp;
 import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.Operator;
