@@ -8,6 +8,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.myapp.utils.ConsoleArgsReader;
 import org.myapp.utils.CustomErrorHandler;
+import org.myapp.utils.Routines;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -98,5 +99,75 @@ public class Stage6 {
             CustomErrorHandler.writeErrorToFile(e.getMessage(), "/mnt/task" + File.separator + "ERROR");
             e.printStackTrace();
         }
+    }
+
+    public static void process(String outputDir, String graphDir, String taskId) throws Exception {
+
+        String taskDir = outputDir + "" + File.separator + taskId;
+        String stage6Dir = taskDir + "" + File.separator + "stage6";
+        String avgStdDir = taskDir + File.separator + "avgstd";
+        String stablePointDir = taskDir + File.separator + "stablepoints";
+
+        String avgStdFile = avgStdDir + File.separator + "cohavgstd.dim";
+
+        if (Files.exists(Paths.get(stablePointDir))) {
+            Routines.deleteDir(new File(stablePointDir));
+        }
+        new File(stablePointDir).mkdirs();
+
+        if (Files.exists(Paths.get(stage6Dir))) {
+            Routines.deleteDir(new File(stage6Dir));
+        }
+        new File(stage6Dir).mkdirs();
+
+        Product avgStdProduct = ProductIO.readProduct(avgStdFile);
+        String[] avgStdBandNames = avgStdProduct.getBandNames();
+        avgStdProduct.closeIO();
+        avgStdProduct.dispose();
+
+        String[] yearList = Arrays.stream(avgStdBandNames).map(bandName -> {
+            return bandName.split("_")[2];
+        }).distinct().sorted(Comparator.reverseOrder()).toArray(String[]::new);
+
+        String graphFile = "stablepoints.xml";
+        FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
+        Graph graph = GraphIO.read(fileReader);
+        fileReader.close();
+
+
+        graph.getNode("Read").getConfiguration().getChild("file").setValue(avgStdFile);
+        graph.getNode("Write").getConfiguration().getChild("file")
+                .setValue(stablePointDir + File.separator + "stablepoints.dim");
+        int counter = 1;
+        for (String year : yearList) {
+            String[] filteredBands = Arrays.stream(avgStdBandNames).filter(bandName -> {
+                if (bandName.contains(year)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }).toArray(String[]::new);
+
+            graph.getNode("BandMaths(" + String.valueOf(counter) + ")").getConfiguration().getChild("targetBands").getChild("targetBand").getChild("expression").setValue(
+                    filteredBands[0] + " > 0.8 and " + filteredBands[1] + " < 0.2");
+            graph.getNode("BandMaths(" + String.valueOf(counter) + ")").getConfiguration().getChild("targetBands").getChild("targetBand").getChild("name").setValue(
+                    "stable_points_" + year);
+            counter += 1;
+        }
+        BufferedWriter fileWriter = new BufferedWriter(new FileWriter(stage6Dir + File.separator + "stablepoints.xml"));
+        GraphIO.write(graph, fileWriter);
+        fileWriter.flush();
+        fileWriter.close();
+
+        ProcessBuilder pb = new ProcessBuilder(Routines.getGPTScriptName(), stage6Dir + File.separator + "stablepoints.xml");
+        pb.inheritIO();
+        Process process = pb.start();
+        int exitValue = process.waitFor();
+        if (exitValue != 0) {
+            // check for errors
+            new BufferedInputStream(process.getErrorStream());
+            throw new RuntimeException("execution of script failed!");
+        }
+
     }
 }
