@@ -1,0 +1,23 @@
+{
+  "label": "Stable points",
+  "name": "stable_points",
+  "description": "Setting up average and standard deviation thresholds to compute stable points",
+  "parameters": {
+    "aveThres": {
+      "index": 0,
+      "name": "aveThres",
+      "label": "Average Threshold",
+      "type": "inputTypes.text",
+      "value": 0.6,
+      "defaultvalue": 0.8
+    },
+    "aveThres": {
+      "index": 1,
+      "name": "stdThres",
+      "label": "Standard Deviation Threshold",
+      "type": "inputTypes.text",
+      "value": 0.2,
+      "defaultvalue": 0.2
+    }
+  }
+}

@@ -48,7 +48,7 @@ public class Main {
                 Stage5.process(outputDir, graphDir, taskId);
             }
             if (firstStep <= 6 && lastStep >= 6) {
-                Stage5.process(outputDir, graphDir, taskId);
+                Stage6.process(outputDir, configDir, graphDir, taskId);
             }
 
         } catch (Exception e) {

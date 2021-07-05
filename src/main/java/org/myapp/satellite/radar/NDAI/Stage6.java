@@ -101,7 +101,12 @@ public class Stage6 {
         }
     }
 
-    public static void process(String outputDir, String graphDir, String taskId) throws Exception {
+    public static void process(String outputDir, String configDir, String graphDir, String taskId) throws Exception {
+
+        HashMap parameters = getParameters(configDir);
+        if (parameters == null) {
+            throw new Exception("Fail to read parameters.");
+        }
 
         String taskDir = outputDir + "" + File.separator + taskId;
         String stage6Dir = taskDir + "" + File.separator + "stage6";
@@ -169,5 +174,33 @@ public class Stage6 {
             throw new RuntimeException("execution of script failed!");
         }
 
+    }
+
+    static HashMap getParameters(String configDir) {
+
+        try {
+            HashMap<String, HashMap> stageParameters = new HashMap<>();
+
+            // Subset
+            JSONParser parser = new JSONParser();
+            FileReader fileReader = new FileReader(configDir + File.separator + "stable_points.json");
+            JSONObject jsonObject = (JSONObject) parser.parse(fileReader);
+            HashMap<String, HashMap> jsonParameters = (HashMap) jsonObject.get("parameters");
+
+            String aveThres = ((HashMap) jsonParameters.get("aveThres")).get("value").toString();
+            String stdThres = ((HashMap) jsonParameters.get("stdThres")).get("value").toString();
+            HashMap parameters = new HashMap();
+            parameters.put("aveThres", aveThres);
+            parameters.put("stdThres", stdThres);
+            stageParameters.put("StablePoints", parameters);
+
+            fileReader.close();
+
+            return stageParameters;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
