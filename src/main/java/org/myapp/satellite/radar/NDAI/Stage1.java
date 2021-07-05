@@ -10,10 +10,7 @@ import org.myapp.satellite.radar.shared.TOPSARSplitOpEnv;
 import org.myapp.utils.ConsoleArgsReader;
 import org.myapp.utils.Routines;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -32,7 +29,6 @@ public class Stage1 {
             String configDir = consoleParameters.get("configDir").toString();
             String graphDir = consoleParameters.get("graphDir").toString();
             String filesList = consoleParameters.get("filesList").toString();
-            String taskid = consoleParameters.get("taskid").toString();
 
             HashMap parameters = getParameters(configDir);
             if (parameters == null) {
@@ -130,9 +126,6 @@ public class Stage1 {
         Graph graph = GraphIO.read(fileReader);
         fileReader.close();
 
-        PrintWriter cmdWriter = new PrintWriter(stage1Dir + File.separator + "stage1.cmd", "UTF-8");
-
-        GraphProcessor processor = new GraphProcessor();
         for (int i = 0; i < files.length; i++) {
 
             topsarSplitOpEnv.getSplitParameters(files[i], parameters);
@@ -151,15 +144,20 @@ public class Stage1 {
             fileWriter.flush();
             fileWriter.close();
 
-            cmdWriter.println("gpt " + stage1Dir + File.separator
+            ProcessBuilder pb = new ProcessBuilder(Routines.getGPTScriptName(), stage1Dir + File.separator
                     + Paths.get(files[i]).getFileName().toString().replace(".zip", "") + ".xml");
+            pb.inheritIO();
+            Process process = pb.start();
+            int exitValue = process.waitFor();
+            if (exitValue != 0) {
+                // check for errors
+                new BufferedInputStream(process.getErrorStream());
+                throw new RuntimeException("execution of script failed!");
+            }
 
-            processor.executeGraph(graph, ProgressMonitor.NULL);
         }
 
         topsarSplitOpEnv.Dispose();
-        cmdWriter.flush();
-        cmdWriter.close();
 
     }
 

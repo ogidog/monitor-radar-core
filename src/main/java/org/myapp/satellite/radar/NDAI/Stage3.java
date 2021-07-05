@@ -8,11 +8,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.myapp.utils.ConsoleArgsReader;
 import org.myapp.utils.CustomErrorHandler;
+import org.myapp.utils.Routines;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -103,6 +101,80 @@ public class Stage3 {
         }
     }
 
+    public static void process(String outputDir, String configDir, String graphDir, String taskId) throws Exception {
+
+        HashMap parameters = getParameters(configDir);
+        if (parameters == null) {
+            System.out.println("Fail to read parameters.");
+            return;
+        }
+
+        String taskDir = outputDir + File.separator + taskId;
+        String stage3Dir = taskDir + "" + File.separator + "stage3";
+        String subsetDir = taskDir + File.separator + "subset";
+        String esdDir = taskDir + File.separator + "esd";
+
+        String[] files = Files.walk(Paths.get(esdDir)).filter(path -> {
+            if (path.toString().endsWith(".dim")) {
+                return true;
+            } else {
+                return false;
+            }
+        }).map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
+
+        if (Files.exists(Paths.get(subsetDir))) {
+            Routines.deleteDir(new File(subsetDir));
+        }
+        new File(subsetDir).mkdirs();
+
+        if (Files.exists(Paths.get(stage3Dir))) {
+            Routines.deleteDir(new File(stage3Dir));
+        }
+        new File(stage3Dir).mkdirs();
+
+        String graphFile = "subset.xml";
+        FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
+        Graph graph = GraphIO.read(fileReader);
+        fileReader.close();
+
+        // Subset
+        graph.getNode("Subset").getConfiguration().getChild("geoRegion")
+                .setValue("POLYGON((" + ((HashMap) parameters.get("Subset")).get("geoRegion").toString() + "))");
+
+        // Interferogram
+        ((HashMap) parameters.get("Interferogram")).forEach((key, value) -> {
+            graph.getNode("Interferogram").getConfiguration().getChild(key.toString())
+                    .setValue(value.toString());
+        });
+
+        PrintWriter cmdWriter = new PrintWriter(stage3Dir + File.separator + "stage3.cmd", "UTF-8");
+        String masterProductDate, slaveProductDate;
+
+        for (String file : files) {
+            String fileName = Paths.get(file).getFileName().toString().replace(".dim", "");
+            graph.getNode("Read").getConfiguration().getChild("file").setValue(file);
+            graph.getNode("Write").getConfiguration().getChild("file")
+                    .setValue(subsetDir + File.separator + fileName + ".dim");
+
+            FileWriter fileWriter = new FileWriter(stage3Dir + File.separator
+                    + fileName + ".xml");
+            GraphIO.write(graph, fileWriter);
+            fileWriter.flush();
+            fileWriter.close();
+
+            ProcessBuilder pb = new ProcessBuilder(Routines.getGPTScriptName(), stage3Dir + File.separator
+                    + fileName + ".xml");
+            pb.inheritIO();
+            Process process = pb.start();
+            int exitValue = process.waitFor();
+            if (exitValue != 0) {
+                // check for errors
+                new BufferedInputStream(process.getErrorStream());
+                throw new RuntimeException("execution of script failed!");
+            }
+        }
+    }
+
     static HashMap getParameters(String configDir) {
 
         try {
@@ -143,4 +215,5 @@ public class Stage3 {
             return null;
         }
     }
+
 }

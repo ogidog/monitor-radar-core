@@ -4,6 +4,7 @@ import com.bc.ceres.core.ProgressMonitor;
 import org.esa.s1tbx.commons.Sentinel1Utils;
 import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.gpf.graph.Graph;
+import org.esa.snap.core.gpf.graph.GraphContext;
 import org.esa.snap.core.gpf.graph.GraphIO;
 import org.esa.snap.core.gpf.graph.GraphProcessor;
 import org.json.simple.JSONObject;
@@ -12,10 +13,7 @@ import org.myapp.utils.ConsoleArgsReader;
 import org.myapp.utils.CustomErrorHandler;
 import org.myapp.utils.Routines;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -194,10 +192,7 @@ public class Stage2 {
                     .setValue(value.toString());
         });
 
-        PrintWriter cmdWriter = new PrintWriter(stage2Dir + File.separator + "stage2.cmd", "UTF-8");
         String masterProductDate, slaveProductDate;
-
-        GraphProcessor processor = new GraphProcessor();
         for (String[] pair : pairs) {
             masterProductDate = Paths.get(pair[0]).getFileName().toString();
             slaveProductDate = Paths.get(pair[1]).getFileName().toString();
@@ -216,15 +211,21 @@ public class Stage2 {
 
             FileWriter fileWriter = new FileWriter(stage2Dir + File.separator
                     + masterProductDate + "_" + slaveProductDate + ".xml");
+
             GraphIO.write(graph, fileWriter);
             fileWriter.flush();
             fileWriter.close();
 
-            cmdWriter.println("gpt " + stage2Dir + File.separator + masterProductDate + "_" + slaveProductDate + ".xml");
-
-            // processor.executeGraph(graph, ProgressMonitor.NULL);
+            ProcessBuilder pb = new ProcessBuilder(Routines.getGPTScriptName(), stage2Dir + File.separator + masterProductDate + "_" + slaveProductDate + ".xml");
+            pb.inheritIO();
+            Process process = pb.start();
+            int exitValue = process.waitFor();
+            if (exitValue != 0) {
+                // check for errors
+                new BufferedInputStream(process.getErrorStream());
+                throw new RuntimeException("execution of script failed!");
+            }
         }
-        cmdWriter.close();
 
     }
 

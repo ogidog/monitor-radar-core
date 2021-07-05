@@ -6,11 +6,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.myapp.utils.ConsoleArgsReader;
 import org.myapp.utils.CustomErrorHandler;
+import org.myapp.utils.Routines;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -37,9 +35,9 @@ public class Stage4 {
                 } else {
                     return false;
                 }
-            }).sorted((file1,file2)->{
-                String file1Name = file1.getFileName().toString().replace(".dim","").split("_")[1];
-                String file2Name = file2.getFileName().toString().replace(".dim","").split("_")[1];
+            }).sorted((file1, file2) -> {
+                String file1Name = file1.getFileName().toString().replace(".dim", "").split("_")[1];
+                String file2Name = file2.getFileName().toString().replace(".dim", "").split("_")[1];
                 return file1Name.compareTo(file2Name);
             }).map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
 
@@ -81,6 +79,61 @@ public class Stage4 {
         } catch (Exception e) {
             CustomErrorHandler.writeErrorToFile(e.getMessage(), "/mnt/task" + File.separator + "ERROR");
             e.printStackTrace();
+        }
+    }
+
+    public static void process(String outputDir, String graphDir, String taskId) throws Exception {
+
+        String taskDir = outputDir + "" + File.separator + taskId;
+        String stage4Dir = taskDir + "" + File.separator + "stage4";
+        String subsetDir = taskDir + File.separator + "subset";
+        String stackDir = taskDir + File.separator + "stack";
+
+        String[] files = Files.walk(Paths.get(subsetDir)).filter(path -> {
+            if (path.toString().endsWith(".dim")) {
+                return true;
+            } else {
+                return false;
+            }
+        }).sorted((file1, file2) -> {
+            String file1Name = file1.getFileName().toString().replace(".dim", "").split("_")[1];
+            String file2Name = file2.getFileName().toString().replace(".dim", "").split("_")[1];
+            return file1Name.compareTo(file2Name);
+        }).map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
+
+        if (Files.exists(Paths.get(stackDir))) {
+            Routines.deleteDir(new File(stackDir));
+        }
+        new File(stackDir).mkdirs();
+
+        if (Files.exists(Paths.get(stage4Dir))) {
+            Routines.deleteDir(new File(stage4Dir));
+        }
+        new File(stage4Dir).mkdirs();
+
+        String graphFile = "createstack.xml";
+        FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
+        Graph graph = GraphIO.read(fileReader);
+        fileReader.close();
+
+        String fileList = Arrays.stream(files).collect(Collectors.joining(","));
+        graph.getNode("ProductSet-Reader").getConfiguration().getChild("fileList").setValue(fileList);
+        graph.getNode("Write").getConfiguration().getChild("file")
+                .setValue(stackDir + File.separator + "stack.dim");
+
+        FileWriter fileWriter = new FileWriter(stage4Dir + File.separator + "stack.xml");
+        GraphIO.write(graph, fileWriter);
+        fileWriter.flush();
+        fileWriter.close();
+
+        ProcessBuilder pb = new ProcessBuilder(Routines.getGPTScriptName(), stage4Dir + File.separator + "stack.xml");
+        pb.inheritIO();
+        Process process = pb.start();
+        int exitValue = process.waitFor();
+        if (exitValue != 0) {
+            // check for errors
+            new BufferedInputStream(process.getErrorStream());
+            throw new RuntimeException("execution of script failed!");
         }
     }
 }
