@@ -8,11 +8,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.myapp.utils.ConsoleArgsReader;
 import org.myapp.utils.CustomErrorHandler;
+import org.myapp.utils.Routines;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -107,6 +105,80 @@ public class Stage5 {
         } catch (Exception e) {
             CustomErrorHandler.writeErrorToFile(e.getMessage(), "/mnt/task" + File.separator + "ERROR");
             e.printStackTrace();
+        }
+    }
+
+    public static void process(String outputDir, String graphDir, String taskId) throws Exception {
+
+        String taskDir = outputDir + "" + File.separator + taskId;
+        String stage5Dir = taskDir + "" + File.separator + "stage5";
+        String stackDir = taskDir + File.separator + "stack";
+        String avgStdDir = taskDir + File.separator + "avgstd";
+
+        String stackFile = stackDir + File.separator + "stack.dim";
+
+        if (Files.exists(Paths.get(avgStdDir))) {
+            Routines.deleteDir(new File(avgStdDir));
+        }
+        new File(avgStdDir).mkdirs();
+
+        if (Files.exists(Paths.get(stage5Dir))) {
+            Routines.deleteDir(new File(stage5Dir));
+        }
+        new File(stage5Dir).mkdirs();
+
+        Product stackProduct = ProductIO.readProduct(stackFile);
+        String[] stackBandNames = stackProduct.getBandNames();
+        stackProduct.closeIO();
+        stackProduct.dispose();
+
+        String[] yearList = Arrays.stream(stackBandNames).map(bandName -> {
+            Matcher m = Pattern.compile("(_)(\\d{2})(\\w{3})(\\d{4})(_)").matcher(bandName);
+            m.find();
+            return m.group(4);
+        }).distinct().toArray(String[]::new);
+
+        String graphFile = "cohavgstd.xml";
+        FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
+        Graph graph = GraphIO.read(fileReader);
+        fileReader.close();
+
+        graph.getNode("Read").getConfiguration().getChild("file").setValue(stackFile);
+        graph.getNode("Write").getConfiguration().getChild("file")
+                .setValue(avgStdDir + File.separator + "cohavgstd.dim");
+        int counter = 1;
+        for (String year : yearList) {
+            String filteredBands = Arrays.stream(stackBandNames).filter(bandName -> {
+                if (bandName.contains(year)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }).collect(Collectors.joining(","));
+
+            graph.getNode("BandMaths(" + String.valueOf(counter) + ")").getConfiguration().getChild("targetBands").getChild("targetBand").getChild("expression").setValue(
+                    "avg(" + filteredBands + ")");
+            graph.getNode("BandMaths(" + String.valueOf(counter) + ")").getConfiguration().getChild("targetBands").getChild("targetBand").getChild("name").setValue(
+                    "avg_coh_" + year);
+            graph.getNode("BandMaths(" + String.valueOf(counter + 3) + ")").getConfiguration().getChild("targetBands").getChild("targetBand").getChild("expression").setValue(
+                    "stddev(" + filteredBands + ")");
+            graph.getNode("BandMaths(" + String.valueOf(counter + 3) + ")").getConfiguration().getChild("targetBands").getChild("targetBand").getChild("name").setValue(
+                    "std_coh_" + year);
+            counter += 1;
+        }
+        FileWriter fileWriter = new FileWriter(stage5Dir + File.separator + "cohavgstd.xml");
+        GraphIO.write(graph, fileWriter);
+        fileWriter.flush();
+        fileWriter.close();
+
+        ProcessBuilder pb = new ProcessBuilder(Routines.getGPTScriptName(), stage5Dir + File.separator + "cohavgstd.xml");
+        pb.inheritIO();
+        Process process = pb.start();
+        int exitValue = process.waitFor();
+        if (exitValue != 0) {
+            // check for errors
+            new BufferedInputStream(process.getErrorStream());
+            throw new RuntimeException("execution of script failed!");
         }
     }
 }

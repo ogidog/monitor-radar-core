@@ -44,6 +44,9 @@ public class Main {
             if (firstStep <= 4 && lastStep >= 4) {
                 Stage4.process(outputDir, graphDir, taskId);
             }
+            if (firstStep <= 5 && lastStep >= 5) {
+                Stage5.process(outputDir, graphDir, taskId);
+            }
 
         } catch (Exception e) {
             CustomErrorHandler.writeErrorToFile(e.getMessage(), resultDir + File.separator + "ERROR");
