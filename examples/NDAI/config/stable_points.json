@@ -11,7 +11,7 @@
       "value": 0.6,
       "defaultvalue": 0.8
     },
-    "aveThres": {
+    "stdThres": {
       "index": 1,
       "name": "stdThres",
       "label": "Standard Deviation Threshold",

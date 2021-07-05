@@ -138,11 +138,13 @@ public class Stage6 {
         FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
         Graph graph = GraphIO.read(fileReader);
         fileReader.close();
-
-
         graph.getNode("Read").getConfiguration().getChild("file").setValue(avgStdFile);
         graph.getNode("Write").getConfiguration().getChild("file")
                 .setValue(stablePointDir + File.separator + "stablepoints.dim");
+
+        String stdThres =  String.valueOf(((HashMap)parameters.get("StablePoints")).get("stdThres"));
+        String aveThres =  String.valueOf(((HashMap)parameters.get("StablePoints")).get("aveThres"));
+
         int counter = 1;
         for (String year : yearList) {
             String[] filteredBands = Arrays.stream(avgStdBandNames).filter(bandName -> {
