@@ -72,6 +72,9 @@ public class Main {
             if (firstStep <= 13 && lastStep >= 13) {
                 Stage13.process(outputDir, configDir, kmlObjectUrl, taskId);
             }
+            if (firstStep <= 14 && lastStep >= 14) {
+                Stage14.process(outputDir, taskId);
+            }
 
         } catch (Exception e) {
             CustomErrorHandler.writeErrorToFile(e.getMessage(), resultDir + File.separator + "ERROR");
