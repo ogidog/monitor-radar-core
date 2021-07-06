@@ -53,6 +53,12 @@ public class Main {
             if (firstStep <= 7 && lastStep >= 7) {
                 Stage7.process(outputDir, taskId);
             }
+            if (firstStep <= 8 && lastStep >= 8) {
+                Stage8.process(outputDir, configDir, taskId);
+            }
+            if (firstStep <= 9 && lastStep >= 9) {
+                Stage9.process(outputDir, graphDir, taskId);
+            }
 
         } catch (Exception e) {
             CustomErrorHandler.writeErrorToFile(e.getMessage(), resultDir + File.separator + "ERROR");

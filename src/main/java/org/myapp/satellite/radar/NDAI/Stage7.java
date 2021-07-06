@@ -6,6 +6,7 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductData;
 import org.myapp.utils.ConsoleArgsReader;
 import org.myapp.utils.CustomErrorHandler;
+import org.myapp.utils.Routines;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -74,10 +75,7 @@ public class Stage7 {
         String stablePointIndexesDir = taskDir + File.separator + "stablepointindexes";
 
         if (Files.exists(Paths.get(stablePointIndexesDir))) {
-            Files.walk(Paths.get(stablePointIndexesDir))
-                    .sorted(Comparator.reverseOrder())
-                    .map(Path::toFile)
-                    .forEach(File::delete);
+            Routines.deleteDir(new File(stablePointIndexesDir));
         }
         new File(stablePointIndexesDir).mkdirs();
 

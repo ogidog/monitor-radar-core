@@ -18,6 +18,14 @@
       "type": "inputTypes.text",
       "value": 0.2,
       "defaultvalue": 0.2
+    },
+    "rhoStableThres": {
+      "index": 0,
+      "name": "rhoStableThres",
+      "label": "Spatial Stable Point Value Threshold",
+      "type": "inputTypes.text",
+      "value": 0.6,
+      "defaultvalue": 0.8
     }
   }
 }
