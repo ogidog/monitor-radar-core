@@ -28,9 +28,9 @@ public class Main {
 
             resultDir = Paths.get(configDir).getParent().toString();
 
-            if (CustomErrorHandler.checkPreviousErrors(resultDir)) {
+            /*if (CustomErrorHandler.checkPreviousErrors(resultDir)) {
                 return;
-            }
+            }*/
 
             if (firstStep <= 1 && lastStep >= 1) {
                 Stage1.process(outputDir, configDir, graphDir, filesList, taskId);
@@ -49,6 +49,9 @@ public class Main {
             }
             if (firstStep <= 6 && lastStep >= 6) {
                 Stage6.process(outputDir, configDir, graphDir, taskId);
+            }
+            if (firstStep <= 7 && lastStep >= 7) {
+                Stage7.process(outputDir, taskId);
             }
 
         } catch (Exception e) {

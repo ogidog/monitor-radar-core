@@ -105,7 +105,7 @@ public class Stage6 {
 
         HashMap parameters = getParameters(configDir);
         if (parameters == null) {
-            throw new Exception("Fail to read parameters.");
+            throw new Exception("Stage6: Fail to read parameters");
         }
 
         String taskDir = outputDir + "" + File.separator + taskId;
@@ -142,8 +142,8 @@ public class Stage6 {
         graph.getNode("Write").getConfiguration().getChild("file")
                 .setValue(stablePointDir + File.separator + "stablepoints.dim");
 
-        String stdThres =  String.valueOf(((HashMap)parameters.get("StablePoints")).get("stdThres"));
-        String aveThres =  String.valueOf(((HashMap)parameters.get("StablePoints")).get("aveThres"));
+        String stdThres = String.valueOf(((HashMap) parameters.get("StablePoints")).get("stdThres"));
+        String avgThres = String.valueOf(((HashMap) parameters.get("StablePoints")).get("avgThres"));
 
         int counter = 1;
         for (String year : yearList) {
@@ -156,7 +156,7 @@ public class Stage6 {
             }).toArray(String[]::new);
 
             graph.getNode("BandMaths(" + String.valueOf(counter) + ")").getConfiguration().getChild("targetBands").getChild("targetBand").getChild("expression").setValue(
-                    filteredBands[0] + " > 0.8 and " + filteredBands[1] + " < 0.2");
+                    filteredBands[0] + " > " + avgThres + " and " + filteredBands[1] + " < " + stdThres);
             graph.getNode("BandMaths(" + String.valueOf(counter) + ")").getConfiguration().getChild("targetBands").getChild("targetBand").getChild("name").setValue(
                     "stable_points_" + year);
             counter += 1;
@@ -166,15 +166,7 @@ public class Stage6 {
         fileWriter.flush();
         fileWriter.close();
 
-        ProcessBuilder pb = new ProcessBuilder(Routines.getGPTScriptName(), stage6Dir + File.separator + "stablepoints.xml");
-        pb.inheritIO();
-        Process process = pb.start();
-        int exitValue = process.waitFor();
-        if (exitValue != 0) {
-            // check for errors
-            new BufferedInputStream(process.getErrorStream());
-            throw new RuntimeException("execution of script failed!");
-        }
+        Routines.runGPTScript(stage6Dir + File.separator + "stablepoints.xml", "Stage6");
 
     }
 
@@ -189,10 +181,10 @@ public class Stage6 {
             JSONObject jsonObject = (JSONObject) parser.parse(fileReader);
             HashMap<String, HashMap> jsonParameters = (HashMap) jsonObject.get("parameters");
 
-            String aveThres = ((HashMap) jsonParameters.get("aveThres")).get("value").toString();
+            String avgThres = ((HashMap) jsonParameters.get("avgThres")).get("value").toString();
             String stdThres = ((HashMap) jsonParameters.get("stdThres")).get("value").toString();
             HashMap parameters = new HashMap();
-            parameters.put("aveThres", aveThres);
+            parameters.put("avgThres", avgThres);
             parameters.put("stdThres", stdThres);
             stageParameters.put("StablePoints", parameters);
 

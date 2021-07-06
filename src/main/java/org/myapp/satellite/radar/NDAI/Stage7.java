@@ -66,4 +66,49 @@ public class Stage7 {
             e.printStackTrace();
         }
     }
+
+    public static void process(String outputDir, String taskId) throws Exception {
+
+        String taskDir = outputDir + "" + File.separator + taskId;
+        String stablePointDir = taskDir + File.separator + "stablepoints";
+        String stablePointIndexesDir = taskDir + File.separator + "stablepointindexes";
+
+        if (Files.exists(Paths.get(stablePointIndexesDir))) {
+            Files.walk(Paths.get(stablePointIndexesDir))
+                    .sorted(Comparator.reverseOrder())
+                    .map(Path::toFile)
+                    .forEach(File::delete);
+        }
+        new File(stablePointIndexesDir).mkdirs();
+
+        Product stablePointsProduct = ProductIO.readProduct(stablePointDir + File.separator + "stablepoints.dim");
+        String[] stablePointsBandNames = stablePointsProduct.getBandNames();
+
+        boolean isStablePointsExist = false;
+        for (String bandName : stablePointsBandNames) {
+            isStablePointsExist = false;
+            Band stablePointsBand = stablePointsProduct.getBand(bandName);
+            stablePointsBand.readRasterDataFully();
+            float[] stablePointFlags = ((ProductData.Float) stablePointsBand.getData()).getArray();
+            ObjectOutputStream ous = new ObjectOutputStream(new FileOutputStream(stablePointIndexesDir + File.separator + bandName + ".dat"));
+            for (int i = 0; i < stablePointFlags.length; i++) {
+                if (stablePointFlags[i] == 1.0f) {
+                    ous.writeInt(i);
+                    isStablePointsExist = true;
+                }
+            }
+
+            ous.flush();
+            ous.close();
+
+            if (!isStablePointsExist) {
+                stablePointsProduct.closeIO();
+                stablePointsProduct.dispose();
+
+                throw new Exception("Stage7: No stable points");
+            }
+        }
+        stablePointsProduct.closeIO();
+        stablePointsProduct.dispose();
+    }
 }

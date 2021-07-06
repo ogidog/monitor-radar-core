@@ -3,9 +3,9 @@
   "name": "stable_points",
   "description": "Setting up average and standard deviation thresholds to compute stable points",
   "parameters": {
-    "aveThres": {
+    "avgThres": {
       "index": 0,
-      "name": "aveThres",
+      "name": "avgThres",
       "label": "Average Threshold",
       "type": "inputTypes.text",
       "value": 0.6,
