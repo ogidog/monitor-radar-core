@@ -12,7 +12,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        String outputDir, configDir, graphDir, filesList, taskId, resultDir = "";
+        String outputDir, configDir, graphDir, filesList, taskId, resultDir = "",kmlObjectUrl;
         int firstStep, lastStep;
 
         try {
@@ -25,6 +25,7 @@ public class Main {
             firstStep = Integer.valueOf(consoleParameters.get("firstStep").toString());
             lastStep = Integer.valueOf(consoleParameters.get("lastStep").toString());
             taskId = consoleParameters.get("taskId").toString();
+            kmlObjectUrl = consoleParameters.get("kmlObjectUrl").toString();
 
             resultDir = Paths.get(configDir).getParent().toString();
 
@@ -58,6 +59,15 @@ public class Main {
             }
             if (firstStep <= 9 && lastStep >= 9) {
                 Stage9.process(outputDir, graphDir, taskId);
+            }
+            if (firstStep <= 10 && lastStep >= 10) {
+                Stage10.process(outputDir, taskId);
+            }
+            if (firstStep <= 11 && lastStep >= 11) {
+                Stage11.process(outputDir, configDir, graphDir, taskId);
+            }
+            if (firstStep <= 13 && lastStep >= 13) {
+                Stage13.process(outputDir, configDir, kmlObjectUrl, taskId);
             }
 
         } catch (Exception e) {
