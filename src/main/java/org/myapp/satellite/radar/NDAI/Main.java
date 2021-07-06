@@ -12,7 +12,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        String outputDir, configDir, graphDir, filesList, taskId, resultDir = "",kmlObjectUrl;
+        String outputDir, configDir, graphDir, filesList, taskId, resultDir = "", kmlObjectUrl;
         int firstStep, lastStep;
 
         try {
@@ -65,6 +65,9 @@ public class Main {
             }
             if (firstStep <= 11 && lastStep >= 11) {
                 Stage11.process(outputDir, configDir, graphDir, taskId);
+            }
+            if (firstStep <= 12 && lastStep >= 12) {
+                Stage12.process(outputDir, taskId);
             }
             if (firstStep <= 13 && lastStep >= 13) {
                 Stage13.process(outputDir, configDir, kmlObjectUrl, taskId);
