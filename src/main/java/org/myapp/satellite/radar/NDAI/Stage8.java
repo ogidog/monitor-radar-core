@@ -7,7 +7,7 @@ import org.esa.snap.core.datamodel.ProductData;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.myapp.utils.ConsoleArgsReader;
-import org.myapp.utils.CustomErrorHandler;
+import org.myapp.utils.Process1;
 import org.myapp.utils.Routines;
 
 import java.io.*;
@@ -100,7 +100,7 @@ public class Stage8 {
             stackProduct.dispose();
 
         } catch (Exception e) {
-            CustomErrorHandler.writeErrorToFile(e.getMessage(), "/mnt/task" + File.separator + "ERROR");
+            Process1.writeErrorToFile(e.getMessage(), "/mnt/task" + File.separator + "ERROR");
             e.printStackTrace();
         }
     }

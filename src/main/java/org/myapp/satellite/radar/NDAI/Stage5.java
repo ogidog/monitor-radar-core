@@ -4,17 +4,14 @@ import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.myapp.utils.ConsoleArgsReader;
-import org.myapp.utils.CustomErrorHandler;
+import org.myapp.utils.Process1;
 import org.myapp.utils.Routines;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -103,7 +100,7 @@ public class Stage5 {
             cmdWriter.close();
 
         } catch (Exception e) {
-            CustomErrorHandler.writeErrorToFile(e.getMessage(), "/mnt/task" + File.separator + "ERROR");
+            Process1.writeErrorToFile(e.getMessage(), "/mnt/task" + File.separator + "ERROR");
             e.printStackTrace();
         }
     }
@@ -173,7 +170,7 @@ public class Stage5 {
 
         ProcessBuilder pb = new ProcessBuilder(Routines.getGPTScriptName(), stage5Dir + File.separator + "cohavgstd.xml");
         pb.inheritIO();
-        Process process = pb.start();
+        java.lang.Process process = pb.start();
         int exitValue = process.waitFor();
         if (exitValue != 0) {
             // check for errors

@@ -1,11 +1,10 @@
 package org.myapp.satellite.radar.NDAI;
 
 import org.myapp.utils.ConsoleArgsReader;
-import org.myapp.utils.CustomErrorHandler;
+import org.myapp.utils.Routines;
 
 import java.io.File;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.HashMap;
 
 public class Main {
@@ -29,9 +28,11 @@ public class Main {
 
             resultDir = Paths.get(configDir).getParent().toString();
 
-            /*if (CustomErrorHandler.checkPreviousErrors(resultDir)) {
+            if (Routines.checkPreviousErrors(resultDir)) {
                 return;
-            }*/
+            }
+
+            Routines.writeStatus(resultDir + File.separator + "processing");
 
             if (firstStep <= 1 && lastStep >= 1) {
                 Stage1.process(outputDir, configDir, graphDir, filesList, taskId);
@@ -76,8 +77,10 @@ public class Main {
                 Stage14.process(outputDir, taskId);
             }
 
+            Routines.writeStatus(resultDir + File.separator + "ok");
+
         } catch (Exception e) {
-            CustomErrorHandler.writeErrorToFile(e.getMessage(), resultDir + File.separator + "ERROR");
+            Routines.writeErrorToFile(e.getMessage(), resultDir + File.separator + "error");
 
             // TODO: убрать
             e.printStackTrace();

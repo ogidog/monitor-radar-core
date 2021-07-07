@@ -5,7 +5,7 @@ import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Product;
 import org.myapp.utils.ConsoleArgsReader;
-import org.myapp.utils.CustomErrorHandler;
+import org.myapp.utils.Process1;
 
 import java.io.*;
 import java.util.HashMap;
@@ -57,7 +57,7 @@ public class Stage10 {
             subsetedCohAvgStdProduct.closeIO();
 
         } catch (Exception e) {
-            CustomErrorHandler.writeErrorToFile(e.getMessage(), "/mnt/task" + File.separator + "ERROR");
+            Process1.writeErrorToFile(e.getMessage(), "/mnt/task" + File.separator + "ERROR");
             e.printStackTrace();
         }
     }

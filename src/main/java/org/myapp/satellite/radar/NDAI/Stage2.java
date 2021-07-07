@@ -1,16 +1,13 @@
 package org.myapp.satellite.radar.NDAI;
 
-import com.bc.ceres.core.ProgressMonitor;
 import org.esa.s1tbx.commons.Sentinel1Utils;
 import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.gpf.graph.Graph;
-import org.esa.snap.core.gpf.graph.GraphContext;
 import org.esa.snap.core.gpf.graph.GraphIO;
-import org.esa.snap.core.gpf.graph.GraphProcessor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.myapp.utils.ConsoleArgsReader;
-import org.myapp.utils.CustomErrorHandler;
+import org.myapp.utils.Process1;
 import org.myapp.utils.Routines;
 
 import java.io.*;
@@ -125,7 +122,7 @@ public class Stage2 {
             cmdWriter.close();
 
         } catch (Exception e) {
-            CustomErrorHandler.writeErrorToFile(e.getMessage(), "/mnt/task" + File.separator + "ERROR");
+            Process1.writeErrorToFile(e.getMessage(), "/mnt/task" + File.separator + "ERROR");
             e.printStackTrace();
         }
     }
@@ -217,7 +214,7 @@ public class Stage2 {
 
             ProcessBuilder pb = new ProcessBuilder(Routines.getGPTScriptName(), stage2Dir + File.separator + masterProductDate + "_" + slaveProductDate + ".xml");
             pb.inheritIO();
-            Process process = pb.start();
+            java.lang.Process process = pb.start();
             int exitValue = process.waitFor();
             if (exitValue != 0) {
                 // check for errors

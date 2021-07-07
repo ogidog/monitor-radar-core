@@ -2,8 +2,9 @@ package org.myapp.utils;
 
 import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.PrintWriter;
 import java.nio.file.Files;
-import java.util.Locale;
+import java.nio.file.Paths;
 
 public class Routines {
 
@@ -40,6 +41,39 @@ public class Routines {
         }
     }
 
+    public static void writeErrorToFile(String message, String file) {
+        try {
+
+            PrintWriter pr = new PrintWriter(file);
+            pr.print(message);
+            pr.flush();
+            pr.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void writeStatus(String file) {
+        try {
+
+            PrintWriter pr = new PrintWriter(file);
+            pr.print("");
+            pr.flush();
+            pr.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static boolean checkPreviousErrors(String resultDir) {
+        if (Files.exists(Paths.get(resultDir + File.separator + "error"))) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
 
 }
