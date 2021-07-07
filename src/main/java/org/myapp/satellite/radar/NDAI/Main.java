@@ -32,7 +32,7 @@ public class Main {
                 return;
             }
 
-            Routines.writeStatus(taskDir, "processing", "");
+            Routines.writeStatus(taskDir, Routines.TaskStatus.PROCESSING, "");
 
             if (firstStep <= 1 && lastStep >= 1) {
                 Stage1.process(outputDir, configDir, graphDir, filesList, taskId);
@@ -77,10 +77,10 @@ public class Main {
                 Stage14.process(outputDir, taskId);
             }
 
-            Routines.writeStatus(taskDir, "done", "");
+            Routines.writeStatus(taskDir, Routines.TaskStatus.COMPLETED, "");
 
         } catch (Exception e) {
-            Routines.writeStatus(taskDir, "error", e.getMessage());
+            Routines.writeStatus(taskDir, Routines.TaskStatus.ERROR, e.getMessage());
 
             // TODO: убрать
             e.printStackTrace();

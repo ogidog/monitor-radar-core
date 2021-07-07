@@ -8,6 +8,19 @@ import java.nio.file.Paths;
 
 public class Routines {
 
+    public enum TaskStatus {
+
+        COMPLETED("Completed"),
+        ERROR("Error"),
+        PROCESSING("Processing");
+
+        public final String label;
+
+        private TaskStatus(String label) {
+            this.label = label;
+        }
+    }
+
     public static void deleteDir(File file) {
         File[] contents = file.listFiles();
         if (contents != null) {
@@ -53,31 +66,31 @@ public class Routines {
         }
     }
 
-    public static void writeStatus(String taskDir, String status, String message) {
+    public static void writeStatus(String taskDir, TaskStatus status, String message) {
         try {
             PrintWriter pr;
             switch (status) {
-                case "done":
-                    Files.deleteIfExists(Paths.get(taskDir + File.separator + "processing"));
-                    pr = new PrintWriter(taskDir + File.separator + status);
+                case COMPLETED:
+                    Files.deleteIfExists(Paths.get(taskDir + File.separator + TaskStatus.valueOf("PROCESSING").label));
+                    pr = new PrintWriter(taskDir + File.separator + TaskStatus.valueOf("COMPLETED").label);
                     pr.print("");
                     pr.flush();
                     pr.close();
                     break;
 
-                case "processing":
-                    Files.deleteIfExists(Paths.get(taskDir + File.separator + "done"));
-                    Files.deleteIfExists(Paths.get(taskDir + File.separator + "error"));
-                    pr = new PrintWriter(taskDir + File.separator + status);
+                case PROCESSING:
+                    Files.deleteIfExists(Paths.get(taskDir + File.separator + TaskStatus.valueOf("COMPLETED").label));
+                    Files.deleteIfExists(Paths.get(taskDir + File.separator + TaskStatus.valueOf("ERROR").label));
+                    pr = new PrintWriter(taskDir + File.separator + TaskStatus.valueOf("PROCESSING").label);
                     pr.print("");
                     pr.flush();
                     pr.close();
                     break;
 
-                case "error":
-                    Files.deleteIfExists(Paths.get(taskDir + File.separator + "done"));
-                    Files.deleteIfExists(Paths.get(taskDir + File.separator + "processing"));
-                    pr = new PrintWriter(taskDir + File.separator + status);
+                case ERROR:
+                    Files.deleteIfExists(Paths.get(taskDir + TaskStatus.valueOf("COMPLETED").label));
+                    Files.deleteIfExists(Paths.get(taskDir + File.separator + TaskStatus.valueOf("PROCESSING").label));
+                    pr = new PrintWriter(taskDir + File.separator + TaskStatus.valueOf("ERROR").label);
                     pr.print(message);
                     pr.flush();
                     pr.close();
