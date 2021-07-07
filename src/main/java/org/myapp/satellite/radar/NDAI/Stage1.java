@@ -143,16 +143,8 @@ public class Stage1 {
             fileWriter.flush();
             fileWriter.close();
 
-            ProcessBuilder pb = new ProcessBuilder(Routines.getGPTScriptName(), stage1Dir + File.separator
-                    + Paths.get(files[i]).getFileName().toString().replace(".zip", "") + ".xml");
-            pb.inheritIO();
-            Process process = pb.start();
-            int exitValue = process.waitFor();
-            if (exitValue != 0) {
-                // check for errors
-                new BufferedInputStream(process.getErrorStream());
-                throw new RuntimeException("execution of script failed!");
-            }
+            Routines.runGPTScript(stage1Dir + File.separator
+                    + Paths.get(files[i]).getFileName().toString().replace(".zip", "") + ".xml","Stage1");
 
         }
 

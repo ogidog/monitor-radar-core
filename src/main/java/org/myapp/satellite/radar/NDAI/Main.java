@@ -11,7 +11,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        String outputDir, configDir, graphDir, filesList, taskId, resultDir = "", kmlObjectUrl;
+        String outputDir, configDir, graphDir, filesList, taskId, taskDir = "", kmlObjectUrl;
         int firstStep, lastStep;
 
         try {
@@ -26,13 +26,13 @@ public class Main {
             taskId = consoleParameters.get("taskId").toString();
             kmlObjectUrl = consoleParameters.get("kmlObjectUrl").toString();
 
-            resultDir = Paths.get(configDir).getParent().toString();
+            taskDir = Paths.get(configDir).getParent().toString();
 
-            if (Routines.checkPreviousErrors(resultDir)) {
+            if (Routines.checkPreviousErrors(taskDir)) {
                 return;
             }
 
-            Routines.writeStatus(resultDir + File.separator + "processing");
+            Routines.writeStatus(taskDir, "processing", "");
 
             if (firstStep <= 1 && lastStep >= 1) {
                 Stage1.process(outputDir, configDir, graphDir, filesList, taskId);
@@ -77,10 +77,10 @@ public class Main {
                 Stage14.process(outputDir, taskId);
             }
 
-            Routines.writeStatus(resultDir + File.separator + "ok");
+            Routines.writeStatus(taskDir, "done", "");
 
         } catch (Exception e) {
-            Routines.writeErrorToFile(e.getMessage(), resultDir + File.separator + "error");
+            Routines.writeStatus(taskDir, "error", e.getMessage());
 
             // TODO: убрать
             e.printStackTrace();

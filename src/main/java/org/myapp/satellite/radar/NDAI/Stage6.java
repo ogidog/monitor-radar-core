@@ -7,7 +7,6 @@ import org.esa.snap.core.gpf.graph.GraphIO;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.myapp.utils.ConsoleArgsReader;
-import org.myapp.utils.Process1;
 import org.myapp.utils.Routines;
 
 import java.io.*;
@@ -92,7 +91,6 @@ public class Stage6 {
             cmdWriter.close();
 
         } catch (Exception e) {
-            Process1.writeErrorToFile(e.getMessage(), "/mnt/task" + File.separator + "ERROR");
             e.printStackTrace();
         }
     }

@@ -53,26 +53,39 @@ public class Routines {
         }
     }
 
-    public static void writeErrorToFile(String message, String file) {
+    public static void writeStatus(String taskDir, String status, String message) {
         try {
+            PrintWriter pr;
+            switch (status) {
+                case "done":
+                    Files.deleteIfExists(Paths.get(taskDir + File.separator + "processing"));
+                    pr = new PrintWriter(taskDir + File.separator + status);
+                    pr.print("");
+                    pr.flush();
+                    pr.close();
+                    break;
 
-            PrintWriter pr = new PrintWriter(file);
-            pr.print(message);
-            pr.flush();
-            pr.close();
+                case "processing":
+                    Files.deleteIfExists(Paths.get(taskDir + File.separator + "done"));
+                    Files.deleteIfExists(Paths.get(taskDir + File.separator + "error"));
+                    pr = new PrintWriter(taskDir + File.separator + status);
+                    pr.print("");
+                    pr.flush();
+                    pr.close();
+                    break;
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+                case "error":
+                    Files.deleteIfExists(Paths.get(taskDir + File.separator + "done"));
+                    Files.deleteIfExists(Paths.get(taskDir + File.separator + "processing"));
+                    pr = new PrintWriter(taskDir + File.separator + status);
+                    pr.print(message);
+                    pr.flush();
+                    pr.close();
+                    break;
 
-    public static void writeStatus(String file) {
-        try {
-
-            PrintWriter pr = new PrintWriter(file);
-            pr.print("");
-            pr.flush();
-            pr.close();
+                default:
+                    break;
+            }
 
         } catch (Exception e) {
             e.printStackTrace();

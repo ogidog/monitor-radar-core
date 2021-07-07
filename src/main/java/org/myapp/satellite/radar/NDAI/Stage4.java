@@ -3,7 +3,6 @@ package org.myapp.satellite.radar.NDAI;
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
 import org.myapp.utils.ConsoleArgsReader;
-import org.myapp.utils.Process1;
 import org.myapp.utils.Routines;
 
 import java.io.*;
@@ -75,7 +74,6 @@ public class Stage4 {
             cmdWriter.close();
 
         } catch (Exception e) {
-            Process1.writeErrorToFile(e.getMessage(), "/mnt/task" + File.separator + "ERROR");
             e.printStackTrace();
         }
     }
@@ -124,14 +122,6 @@ public class Stage4 {
         fileWriter.flush();
         fileWriter.close();
 
-        ProcessBuilder pb = new ProcessBuilder(Routines.getGPTScriptName(), stage4Dir + File.separator + "stack.xml");
-        pb.inheritIO();
-        java.lang.Process process = pb.start();
-        int exitValue = process.waitFor();
-        if (exitValue != 0) {
-            // check for errors
-            new BufferedInputStream(process.getErrorStream());
-            throw new RuntimeException("execution of script failed!");
-        }
+        Routines.runGPTScript( stage4Dir + File.separator + "stack.xml", "Stage4");
     }
 }

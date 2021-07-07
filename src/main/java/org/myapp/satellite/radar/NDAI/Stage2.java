@@ -7,7 +7,6 @@ import org.esa.snap.core.gpf.graph.GraphIO;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.myapp.utils.ConsoleArgsReader;
-import org.myapp.utils.Process1;
 import org.myapp.utils.Routines;
 
 import java.io.*;
@@ -122,7 +121,6 @@ public class Stage2 {
             cmdWriter.close();
 
         } catch (Exception e) {
-            Process1.writeErrorToFile(e.getMessage(), "/mnt/task" + File.separator + "ERROR");
             e.printStackTrace();
         }
     }
@@ -212,15 +210,8 @@ public class Stage2 {
             fileWriter.flush();
             fileWriter.close();
 
-            ProcessBuilder pb = new ProcessBuilder(Routines.getGPTScriptName(), stage2Dir + File.separator + masterProductDate + "_" + slaveProductDate + ".xml");
-            pb.inheritIO();
-            java.lang.Process process = pb.start();
-            int exitValue = process.waitFor();
-            if (exitValue != 0) {
-                // check for errors
-                new BufferedInputStream(process.getErrorStream());
-                throw new RuntimeException("execution of script failed!");
-            }
+            Routines.runGPTScript(stage2Dir + File.separator + masterProductDate + "_" + slaveProductDate + ".xml", "Stage2");
+
         }
 
     }

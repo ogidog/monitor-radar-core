@@ -7,7 +7,6 @@ import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
 import org.myapp.utils.ConsoleArgsReader;
-import org.myapp.utils.Process1;
 import org.myapp.utils.Routines;
 
 import java.io.*;
@@ -191,7 +190,6 @@ public class Stage9 {
             cmdWriter.close();
 
         } catch (Exception e) {
-            Process1.writeErrorToFile(e.getMessage(), "/mnt/task" + File.separator + "ERROR");
             e.printStackTrace();
         }
     }
