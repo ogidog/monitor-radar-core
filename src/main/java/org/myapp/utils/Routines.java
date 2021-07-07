@@ -41,6 +41,18 @@ public class Routines {
         }
     }
 
+    public static void runScript(String scriptFile, String taskDir, String stageName) throws Exception {
+        ProcessBuilder pb = new ProcessBuilder(scriptFile, taskDir);
+        pb.inheritIO();
+        Process process = pb.start();
+        int exitValue = process.waitFor();
+        if (exitValue != 0) {
+            // check for errors
+            new BufferedInputStream(process.getErrorStream());
+            throw new RuntimeException(stageName + " : execution of GPT script failed");
+        }
+    }
+
     public static void writeErrorToFile(String message, String file) {
         try {
 
@@ -74,6 +86,4 @@ public class Routines {
             return false;
         }
     }
-
-
 }
