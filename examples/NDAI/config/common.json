@@ -8,8 +8,8 @@
       "name": "method",
       "label": "Method",
       "type": "inputTypes.select",
-      "value": "SBAS",
-      "defaultvalue": "SBAS",
+      "value": "PS",
+      "defaultvalue": "PS",
       "options": [
         "PS:Persistent Scatterers (PS)",
         "DS: Distributed Scatterers (DS)",
@@ -22,8 +22,8 @@
       "name": "description",
       "label": "Description",
       "type": "inputTypes.text",
-      "value": "Velocity displacements",
-      "defaultvalue": "Velocity displacements"
+      "value": "г. Кемерово, 2020 г.",
+      "defaultvalue": "Difference Index"
     }
   }
 }
