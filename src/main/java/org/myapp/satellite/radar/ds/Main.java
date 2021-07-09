@@ -39,6 +39,21 @@ public class Main {
             if (firstStep <= 2 && lastStep >= 2) {
                 Stage2.process(outputDir, configDir, graphDir, taskId);
             }
+            if (firstStep <= 3 && lastStep >= 3) {
+                Stage3.process(outputDir, taskId);
+            }
+            if (firstStep <= 4 && lastStep >= 4) {
+                Stage4.process(outputDir, configDir, graphDir, taskId);
+            }
+            if (firstStep <= 5 && lastStep >= 5) {
+                Stage5.process(outputDir, graphDir, taskId);
+            }
+            if (firstStep <= 6 && lastStep >= 6) {
+                Stage6.process(outputDir, graphDir, taskId);
+            }
+            if (firstStep <= 7 && lastStep >= 7) {
+                Stage7.process(outputDir, taskId);
+            }
 
             Routines.writeStatus(taskDir, Routines.TaskStatus.COMPLETED, "");
 

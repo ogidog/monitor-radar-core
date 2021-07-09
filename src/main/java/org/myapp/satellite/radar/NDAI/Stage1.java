@@ -95,7 +95,7 @@ public class Stage1 {
         }
     }
 
-    public static void process(String outputDir, String configDir, String graphDir, String filesList, String taskid) throws Exception {
+    public static void process(String outputDir, String configDir, String graphDir, String filesList, String taskId) throws Exception {
 
         HashMap parameters = getParameters(configDir);
         if (parameters == null) {
@@ -110,7 +110,7 @@ public class Stage1 {
             files = filesList.split(",");
         }
 
-        String taskDir = outputDir + File.separator + taskid;
+        String taskDir = outputDir + File.separator + taskId;
         if (Files.exists(Paths.get(taskDir))) {
             Routines.deleteDir(new File(taskDir));
         }
