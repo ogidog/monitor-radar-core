@@ -54,6 +54,9 @@ public class Main {
             if (firstStep <= 7 && lastStep >= 7) {
                 Stage7.process(outputDir, taskId);
             }
+            if (firstStep <= 8 && lastStep >= 8) {
+                Stage8.process(outputDir, taskId);
+            }
 
             Routines.writeStatus(taskDir, Routines.TaskStatus.COMPLETED, "");
 
