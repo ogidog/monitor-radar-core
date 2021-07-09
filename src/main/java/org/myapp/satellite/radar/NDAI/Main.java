@@ -3,7 +3,6 @@ package org.myapp.satellite.radar.NDAI;
 import org.myapp.utils.ConsoleArgsReader;
 import org.myapp.utils.Routines;
 
-import java.io.File;
 import java.nio.file.Paths;
 import java.util.HashMap;
 
