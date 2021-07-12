@@ -41,10 +41,11 @@ public class Main {
             if (firstStep <= 3 && lastStep >= 3) {
                 Stage3.process(outputDir, configDir, graphDir, taskId);
             }
-            /*
+
             if (firstStep <= 4 && lastStep >= 4) {
                 Stage4.process(outputDir, configDir, graphDir, taskId);
             }
+            /*
             if (firstStep <= 5 && lastStep >= 5) {
                 Stage5.process(outputDir, graphDir, taskId);
             }

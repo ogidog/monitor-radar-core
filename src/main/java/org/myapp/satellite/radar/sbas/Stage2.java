@@ -232,8 +232,7 @@ public class Stage2 {
 
         HashMap parameters = getParameters(configDir);
         if (parameters == null) {
-            System.out.println("Fail to read parameters.");
-            return;
+            throw new Exception("Fail to read parameters.");
         }
 
         String taskDir = outputDir + File.separator + taskId;

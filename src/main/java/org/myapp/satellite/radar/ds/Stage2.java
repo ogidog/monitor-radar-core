@@ -190,8 +190,7 @@ public class Stage2 {
 
         HashMap parameters = getParameters(configDir);
         if (parameters == null) {
-            System.out.println("Fail to read parameters.");
-            return;
+            throw new Exception("Fail to read parameters.");
         }
 
         Sentinel1Utils s1u = new Sentinel1Utils(products[0]);
