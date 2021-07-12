@@ -101,9 +101,9 @@ public class Stage4 {
         String taskDir = outputDir + File.separator + taskId;
         String stage4Dir = taskDir + "" + File.separator + "stage4";
         String snaphuexportDir = taskDir + File.separator + "snaphuexport";
-        String intfDir = taskDir + File.separator + "intf";
+        String subsetDir = taskDir + File.separator + "subset";
 
-        String[] files = Files.walk(Paths.get(intfDir)).filter(file -> file.toString().endsWith(".dim"))
+        String[] files = Files.walk(Paths.get(subsetDir)).filter(file -> file.toString().endsWith(".dim"))
                 .map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
 
         for (int i = 0; i < files.length; i++) {
