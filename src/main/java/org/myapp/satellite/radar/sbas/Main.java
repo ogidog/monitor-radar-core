@@ -24,7 +24,7 @@ public class Main {
             lastStep = Integer.valueOf(consoleParameters.get("lastStep").toString());
             taskId = consoleParameters.get("taskId").toString();
 
-            taskDir = Paths.get(configDir).getParent().toString();
+            resultDir = Paths.get(configDir).getParent().toString();
 
             if (Routines.checkPreviousErrors(taskDir)) {
                 return;
