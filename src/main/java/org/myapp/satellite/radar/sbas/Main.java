@@ -36,12 +36,12 @@ public class Main {
                 Stage1.process(outputDir, configDir, graphDir, filesList, taskId);
             }
             if (firstStep <= 2 && lastStep >= 2) {
-                Stage2bak.process(outputDir, configDir, graphDir, taskId);
+                Stage2.process(outputDir, configDir, graphDir, taskId);
+            }
+            if (firstStep <= 3 && lastStep >= 3) {
+                Stage3.process(outputDir, configDir, graphDir, taskId);
             }
             /*
-            if (firstStep <= 3 && lastStep >= 3) {
-                Stage3.process(outputDir, taskId);
-            }
             if (firstStep <= 4 && lastStep >= 4) {
                 Stage4.process(outputDir, configDir, graphDir, taskId);
             }
