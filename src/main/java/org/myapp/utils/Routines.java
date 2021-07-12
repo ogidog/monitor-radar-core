@@ -54,15 +54,30 @@ public class Routines {
         }
     }
 
-    public static void runScript(String scriptFile, String taskDir, String stageName) throws Exception {
-        ProcessBuilder pb = new ProcessBuilder(scriptFile, taskDir);
+    public static void runScript(String scriptFile, String param, String stageName) throws Exception {
+        ProcessBuilder pb;
+        pb = new ProcessBuilder(scriptFile, param);
         pb.inheritIO();
         Process process = pb.start();
         int exitValue = process.waitFor();
         if (exitValue != 0) {
             // check for errors
             new BufferedInputStream(process.getErrorStream());
-            throw new RuntimeException(stageName + " : execution of GPT script failed");
+            throw new RuntimeException(stageName + " : execution of script failed");
+        }
+    }
+
+    public static void runScript(String scriptFile, String[] params, String stageName) throws Exception {
+        ProcessBuilder pb;
+        pb = new ProcessBuilder(params);
+        ffff
+        pb.inheritIO();
+        Process process = pb.start();
+        int exitValue = process.waitFor();
+        if (exitValue != 0) {
+            // check for errors
+            new BufferedInputStream(process.getErrorStream());
+            throw new RuntimeException(stageName + " : execution of script failed");
         }
     }
 

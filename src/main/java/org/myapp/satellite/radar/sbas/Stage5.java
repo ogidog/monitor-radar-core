@@ -1,6 +1,7 @@
 package org.myapp.satellite.radar.sbas;
 
 import org.myapp.utils.ConsoleArgsReader;
+import org.myapp.utils.Routines;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -55,4 +56,29 @@ public class Stage5 {
         }
     }
 
+    public static void process(String outputDir, String taskId) throws Exception {
+
+        String taskDir = outputDir + File.separator + taskId;
+        String snaphuexportDir = taskDir + File.separator + "snaphuexport";
+        String stage5Dir = taskDir + "" + File.separator + "stage5";
+
+        String[] files = Files.walk(Paths.get(snaphuexportDir)).filter(file -> file.toString().endsWith(".conf"))
+                .map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
+
+        if (Files.exists(Paths.get(stage5Dir))) {
+            Routines.deleteDir(new File(stage5Dir));
+        }
+        new File(stage5Dir).mkdirs();
+
+        for (int i = 0; i < files.length; i++) {
+            BufferedReader br = new BufferedReader(new FileReader(files[i]));
+            for (String line; (line = br.readLine()) != null; ) {
+                if (line.contains("snaphu.conf")) {
+                    String snaphuConfDir = Paths.get(files[i]).getParent().toString().trim();
+                    Routines.runScript("cd " + snaphuConfDir + "; " + line.replace("#", "").trim() + ";", "", "Stage5");
+                    break;
+                }
+            }
+        }
+    }
 }

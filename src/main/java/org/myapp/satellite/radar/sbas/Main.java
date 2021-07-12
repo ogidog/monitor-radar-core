@@ -10,7 +10,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        String outputDir, configDir, graphDir, filesList, taskId, taskDir = "";
+        String outputDir, configDir, graphDir, filesList, taskId, resultDir = "";
         int firstStep, lastStep;
 
         try {
@@ -26,11 +26,11 @@ public class Main {
 
             resultDir = Paths.get(configDir).getParent().toString();
 
-            if (Routines.checkPreviousErrors(taskDir)) {
+            if (Routines.checkPreviousErrors(resultDir)) {
                 return;
             }
 
-            Routines.writeStatus(taskDir, Routines.TaskStatus.PROCESSING, "");
+            Routines.writeStatus(resultDir, Routines.TaskStatus.PROCESSING, "");
 
             if (firstStep <= 1 && lastStep >= 1) {
                 Stage1.process(outputDir, configDir, graphDir, filesList, taskId);
@@ -45,10 +45,10 @@ public class Main {
             if (firstStep <= 4 && lastStep >= 4) {
                 Stage4.process(outputDir, configDir, graphDir, taskId);
             }
-            /*
             if (firstStep <= 5 && lastStep >= 5) {
-                Stage5.process(outputDir, graphDir, taskId);
+                Stage5.process(outputDir, taskId);
             }
+            /*
             if (firstStep <= 6 && lastStep >= 6) {
                 Stage6.process(outputDir, graphDir, taskId);
             }
@@ -59,10 +59,10 @@ public class Main {
                 Stage8.process(outputDir, taskId);
             }*/
 
-            Routines.writeStatus(taskDir, Routines.TaskStatus.COMPLETED, "");
+            Routines.writeStatus(resultDir, Routines.TaskStatus.COMPLETED, "");
 
         } catch (Exception e) {
-            Routines.writeStatus(taskDir, Routines.TaskStatus.ERROR, e.getMessage());
+            Routines.writeStatus(resultDir, Routines.TaskStatus.ERROR, e.getMessage());
 
             // TODO: убрать
             e.printStackTrace();
