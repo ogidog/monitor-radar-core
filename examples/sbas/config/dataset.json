@@ -60,9 +60,8 @@
     "networkModel": {
       "name": "networkModel",
       "options": [
-        "Sequential:NetworkModel2",
-        "Delaunay:NetworkModel2",
-        "Single Master:NetworkModel1"
+        "Sequential:sequential",
+        "Delaunay:delaunay"
       ],
       "index": 9,
       "defaultvalue": "Sequential:NetworkModel2",
