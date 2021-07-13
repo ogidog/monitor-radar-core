@@ -68,6 +68,22 @@
       "label": "Network Model",
       "type": "inputTypes.select",
       "value": "Delaunay:NetworkModel2"
+    },
+    "perpBaseMax": {
+      "name": "perpBaseMax",
+      "index": 10,
+      "defaultvalue": "110",
+      "label": "Perpendicular Baseline Max Value",
+      "type": "inputTypes.text",
+      "value": "110"
+    },
+    "perpTempMax": {
+      "name": "tempBaseMax",
+      "index": 12,
+      "defaultvalue": "90",
+      "label": "Temporal Baseline Max Value",
+      "type": "inputTypes.text",
+      "value": "90"
     }
   }
 }
