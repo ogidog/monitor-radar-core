@@ -121,7 +121,7 @@ public class Routines {
     }
 
     public static boolean checkPreviousErrors(String resultDir) {
-        if (Files.exists(Paths.get(resultDir + TaskStatus.valueOf("ERROR").label))) {
+        if (Files.exists(Paths.get(resultDir + File.separator + TaskStatus.valueOf("ERROR").label))) {
             return true;
         } else {
             return false;

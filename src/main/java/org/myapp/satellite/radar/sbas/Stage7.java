@@ -159,8 +159,8 @@ public class Stage7 {
         }
 
         String taskDir = outputDir + File.separator + taskId;
-        String subsetDir = outputDir + File.separator + "subset";
-        String snaphuimportDir = outputDir + File.separator + "snaphuimport";
+        String subsetDir = taskDir + File.separator + "subset";
+        String snaphuimportDir = taskDir + File.separator + "snaphuimport";
 
         String[] files1 = Files.walk(Paths.get(subsetDir)).filter(file -> file.toString().endsWith(".dim"))
                 .map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
