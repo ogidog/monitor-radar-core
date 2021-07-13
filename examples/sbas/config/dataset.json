@@ -56,34 +56,6 @@
       "label": "Database Name",
       "type": "inputTypes.text",
       "value": "satimgdb"
-    },
-    "networkModel": {
-      "name": "networkModel",
-      "options": [
-        "Sequential:sequential",
-        "Delaunay:delaunay"
-      ],
-      "index": 9,
-      "defaultvalue": "Sequential:sequential",
-      "label": "Network Model",
-      "type": "inputTypes.select",
-      "value": "Sequential:sequential"
-    },
-    "perpBaseMax": {
-      "name": "perpBaseMax",
-      "index": 10,
-      "defaultvalue": "110",
-      "label": "Perpendicular Baseline Max Value",
-      "type": "inputTypes.text",
-      "value": "110"
-    },
-    "perpTempMax": {
-      "name": "tempBaseMax",
-      "index": 12,
-      "defaultvalue": "90",
-      "label": "Temporal Baseline Max Value",
-      "type": "inputTypes.text",
-      "value": "90"
     }
   }
 }

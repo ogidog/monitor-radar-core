@@ -274,12 +274,12 @@ public class Stage2 {
         new File(stage2Dir).mkdirs();
 
         ArrayList<String[]> pairs = new ArrayList<>();
-        String networkModel = ((HashMap)parameters.get("DataSet")).get("networkModel").toString().split(":")[1];
+        String networkModel = ((HashMap)parameters.get("NetworkModel")).get("modelType").toString().split(":")[1];
         if (networkModel.contains("delaunay")) {
             InSARStackOverview.IfgStack[] stackOverview = InSARStackOverview.calculateInSAROverview(products);
 
-            int bPerpMax = Integer.valueOf(((HashMap)parameters.get("DataSet")).get("perpBaseMax").toString());
-            int bTempMax = Integer.valueOf(((HashMap)parameters.get("DataSet")).get("tempBaseMax").toString());
+            int bPerpMax = Integer.valueOf(((HashMap)parameters.get("NetworkModel")).get("perpBaseMax").toString());
+            int bTempMax = Integer.valueOf(((HashMap)parameters.get("NetworkModel")).get("tempBaseMax").toString());
             int currBPerp = 40, currBTemp = 45;
 
             Graph1 network = null;
@@ -426,6 +426,20 @@ public class Stage2 {
             stageParameters.put("BackGeocoding", parameters);
             fileReader.close();
 
+            // Network Model
+            parser = new JSONParser();
+            fileReader = new FileReader(configDir + File.separator + "network_model.json");
+            jsonObject = (JSONObject) parser.parse(fileReader);
+            jsonParameters = (HashMap) jsonObject.get("parameters");
+
+            parameters = new HashMap();
+            it = jsonParameters.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry pair = (Map.Entry) it.next();
+                parameters.put(pair.getKey().toString(), ((HashMap) jsonParameters.get(pair.getKey().toString())).get("value"));
+            }
+            stageParameters.put("NetworkModel", parameters);
+            fileReader.close();
 
             return stageParameters;
 
