@@ -60,6 +60,9 @@ public class Main {
             if (firstStep <= 9 && lastStep >= 9) {
                 Stage9.process(outputDir, kmlObjectUrl, taskId);
             }
+            if (firstStep <= 10 && lastStep >= 10) {
+                Stage10.process(outputDir, taskId);
+            }
 
             Routines.writeStatus(resultDir, Routines.TaskStatus.COMPLETED, "");
 
