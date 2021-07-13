@@ -274,15 +274,12 @@ public class Stage2 {
         new File(stage2Dir).mkdirs();
 
         ArrayList<String[]> pairs = new ArrayList<>();
-        String content = new String(Files.readAllBytes(Paths.get(configDir + File.separator + "selectNetwork.template")));
-
-        if (content.contains("delaunay")) {
+        String networkModel = ((HashMap)parameters.get("DataSet")).get("networkModel").toString().split(":")[1];
+        if (networkModel.contains("delaunay")) {
             InSARStackOverview.IfgStack[] stackOverview = InSARStackOverview.calculateInSAROverview(products);
 
-            List<String> configLines = Files.readAllLines(Paths.get(configDir + File.separator + "selectNetwork.template"));
-
-            int bPerpMax = Integer.valueOf(configLines.stream().filter(line -> line.contains("perpBaseMax")).toArray(String[]::new)[0].split("=")[1].trim());
-            int bTempMax = Integer.valueOf(configLines.stream().filter(line -> line.contains("tempBaseMax")).toArray(String[]::new)[0].split("=")[1].trim());
+            int bPerpMax = Integer.valueOf(((HashMap)parameters.get("DataSet")).get("perpBaseMax").toString());
+            int bTempMax = Integer.valueOf(((HashMap)parameters.get("DataSet")).get("tempBaseMax").toString());
             int currBPerp = 40, currBTemp = 45;
 
             Graph1 network = null;
@@ -347,7 +344,7 @@ public class Stage2 {
             }
         }
 
-        if (content.contains("sequential")) {
+        if (networkModel.contains("sequential")) {
             for (int i = 0; i < products.length - 3; i++) {
                 for (int j = i + 1; j < i + 3; j++) {
                     pairs.add(new String[]{products[i].getName(), products[j].getName()});
