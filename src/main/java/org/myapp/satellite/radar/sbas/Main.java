@@ -10,7 +10,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        String outputDir, configDir, graphDir, filesList, taskId, resultDir = "";
+        String outputDir, configDir, graphDir, filesList, taskId, kmlObjectUrl, resultDir = "";
         int firstStep, lastStep;
 
         try {
@@ -23,6 +23,7 @@ public class Main {
             firstStep = Integer.valueOf(consoleParameters.get("firstStep").toString());
             lastStep = Integer.valueOf(consoleParameters.get("lastStep").toString());
             taskId = consoleParameters.get("taskId").toString();
+            kmlObjectUrl = consoleParameters.get("kmlObjectUrl").toString();
 
             resultDir = Paths.get(configDir).getParent().toString();
 
@@ -41,7 +42,6 @@ public class Main {
             if (firstStep <= 3 && lastStep >= 3) {
                 Stage3.process(outputDir, configDir, graphDir, taskId);
             }
-
             if (firstStep <= 4 && lastStep >= 4) {
                 Stage4.process(outputDir, configDir, graphDir, taskId);
             }
@@ -54,10 +54,12 @@ public class Main {
             if (firstStep <= 7 && lastStep >= 7) {
                 Stage7.process(outputDir, configDir, graphDir, taskId);
             }
-            /*
             if (firstStep <= 8 && lastStep >= 8) {
                 Stage8.process(outputDir, taskId);
-            }*/
+            }
+            if (firstStep <= 9 && lastStep >= 9) {
+                Stage9.process(outputDir, kmlObjectUrl, taskId);
+            }
 
             Routines.writeStatus(resultDir, Routines.TaskStatus.COMPLETED, "");
 
