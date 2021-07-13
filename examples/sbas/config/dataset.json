@@ -64,10 +64,10 @@
         "Delaunay:delaunay"
       ],
       "index": 9,
-      "defaultvalue": "Sequential:NetworkModel2",
+      "defaultvalue": "Sequential:sequential",
       "label": "Network Model",
       "type": "inputTypes.select",
-      "value": "Delaunay:NetworkModel2"
+      "value": "Sequential:sequential"
     },
     "perpBaseMax": {
       "name": "perpBaseMax",
