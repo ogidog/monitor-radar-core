@@ -67,10 +67,10 @@ public class Routines {
         }
     }
 
-    public static void runScript(String scriptFile, String[] params, String stageName) throws Exception {
+    public static void runScript(String[] command, String execDir, String stageName) throws Exception {
         ProcessBuilder pb;
-        pb = new ProcessBuilder(params);
-        ffff
+        pb = new ProcessBuilder(command);
+        pb.directory(new File(execDir));
         pb.inheritIO();
         Process process = pb.start();
         int exitValue = process.waitFor();

@@ -75,7 +75,8 @@ public class Stage5 {
             for (String line; (line = br.readLine()) != null; ) {
                 if (line.contains("snaphu.conf")) {
                     String snaphuConfDir = Paths.get(files[i]).getParent().toString().trim();
-                    Routines.runScript("cd " + snaphuConfDir + "; " + line.replace("#", "").trim() + ";", "", "Stage5");
+                    String[] command = line.replace("#", "").trim().split(" ");
+                    Routines.runScript(command, snaphuConfDir, "Stage5");
                     break;
                 }
             }
