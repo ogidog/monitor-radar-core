@@ -48,10 +48,10 @@ public class Main {
             if (firstStep <= 5 && lastStep >= 5) {
                 Stage5.process(outputDir, taskId);
             }
-            /*
             if (firstStep <= 6 && lastStep >= 6) {
                 Stage6.process(outputDir, graphDir, taskId);
             }
+            /*
             if (firstStep <= 7 && lastStep >= 7) {
                 Stage7.process(outputDir, taskId);
             }

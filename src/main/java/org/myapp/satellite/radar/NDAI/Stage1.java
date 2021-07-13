@@ -99,7 +99,7 @@ public class Stage1 {
 
         HashMap parameters = getParameters(configDir);
         if (parameters == null) {
-            throw new Exception("Fail to read parameters.");
+            throw new Exception("Stage1: Fail to read parameters.");
         }
 
         String[] files;

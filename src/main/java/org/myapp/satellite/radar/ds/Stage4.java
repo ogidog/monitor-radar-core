@@ -158,7 +158,7 @@ public class Stage4 {
 
         HashMap parameters = getParameters(configDir);
         if (parameters == null) {
-            throw new Exception("Fail to read parameters.");
+            throw new Exception("Stage3: Fail to read parameters.");
         }
 
         FileReader fileReader = new FileReader(graphDir + File.separator + "topophaseremoval.xml");

@@ -82,7 +82,7 @@ public class Stage11 {
 
         HashMap parameters = getParameters(configDir);
         if (parameters == null) {
-            throw new Exception("Fail to read parameters.");
+            throw new Exception("Stage11: Fail to read parameters.");
         }
 
         if (Files.exists(Paths.get(stage11Dir))) {

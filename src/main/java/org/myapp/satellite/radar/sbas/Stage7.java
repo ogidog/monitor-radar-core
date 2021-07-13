@@ -7,6 +7,7 @@ import org.esa.snap.core.gpf.graph.GraphIO;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.myapp.utils.ConsoleArgsReader;
+import org.myapp.utils.Routines;
 
 import java.io.File;
 import java.io.FileReader;
@@ -21,6 +22,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class Stage7 {
+
     public static void main(String[] args) {
 
         try {
@@ -147,6 +149,115 @@ public class Stage7 {
             e.printStackTrace();
             return;
         }
+    }
+
+    public static void process(String outputDir, String configDir, String graphDir, String taskId) throws Exception {
+
+        HashMap parameters = getParameters(configDir);
+        if (parameters == null) {
+            throw new Exception("Stage7: Fail to read parameters.");
+        }
+
+        String taskDir = outputDir + File.separator + taskId;
+        String subsetDir = outputDir + File.separator + "subset";
+        String snaphuimportDir = outputDir + File.separator + "snaphuimport";
+
+        String[] files1 = Files.walk(Paths.get(subsetDir)).filter(file -> file.toString().endsWith(".dim"))
+                .map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
+
+        String[] files2 = Files.walk(Paths.get(snaphuimportDir)).filter(file -> file.toString().endsWith(".dim"))
+                .map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
+
+        String[][] pairs = new String[files1.length][2];
+        for (int i = 0; i < files1.length; i++) {
+            String date = Paths.get(files1[i]).getFileName().toString().replace(".dim","");
+            for (int j = 0; j < files2.length; j++) {
+                if (files2[j].contains(date)) {
+                    pairs[i][0] = files1[i];
+                    pairs[i][1] = files2[j];
+                    break;
+                }
+            }
+        }
+
+        String prepDir = taskDir + File.separator + "prep";
+        String stage7Dir = taskDir + "" + File.separator + "stage7";
+
+        if (Files.exists(Paths.get(stage7Dir))) {
+            Routines.deleteDir(new File(stage7Dir));
+        }
+        new File(stage7Dir).mkdirs();
+
+        if (Files.exists(Paths.get(prepDir))) {
+            Routines.deleteDir(new File(prepDir));
+        }
+        new File(prepDir).mkdirs();
+
+        FileReader fileReader = new FileReader(graphDir + File.separator + "tc.xml");
+        Graph graph = GraphIO.read(fileReader);
+        fileReader.close();
+
+        // Terrain Correction
+        ((HashMap) parameters.get("TerrainCorrection")).forEach((key, value) -> {
+            graph.getNode("Terrain-Correction").getConfiguration().getChild(key.toString())
+                    .setValue(value.toString());
+            graph.getNode("Terrain-Correction(2)").getConfiguration().getChild(key.toString())
+                    .setValue(value.toString());
+            graph.getNode("Terrain-Correction(4)").getConfiguration().getChild(key.toString())
+                    .setValue(value.toString());
+        });
+
+        Pattern p = Pattern.compile("[\\d]{1,}");
+        for (int i = 0; i < files1.length; i++) {
+            Product product = ProductIO.readProduct(files1[i]);
+            String[] bandNames = product.getBandNames();
+            product.closeIO();
+            String[] iqBandNames = Arrays.stream(bandNames).filter(name -> name.contains("i_") || name.contains("q_"))
+                    .toArray(String[]::new);
+            String[] fileNameSplitted = Paths.get(files1[i]).getFileName().toString().replace(".dim", "").split("_");
+            String datePair = Arrays.stream(fileNameSplitted).filter(str -> {
+                Matcher m = p.matcher(str);
+                if (m.matches()) {
+                    return (true);
+                } else {
+                    return (false);
+                }
+            }).collect(Collectors.joining("_"));
+            String pairDir = prepDir + File.separator + datePair;
+            new File(pairDir).mkdirs();
+            graph.getNode("Read").getConfiguration().getChild("file").setValue(pairs[i][0]);
+            graph.getNode("BandMaths").getConfiguration().getChild("targetBands").getChild("targetBand").getChild("expression").setValue(
+                    "atan2(" + iqBandNames[1] + "," + iqBandNames[0] + ")");
+            graph.getNode("Write").getConfiguration().getChild("file").setValue(pairDir + File.separator + datePair + "_filt_int_sub_tc.dim");
+            graph.getNode("Write(2)").getConfiguration().getChild("file").setValue(pairDir + File.separator + datePair + "_coh_tc.dim");
+            graph.getNode("Read(2)").getConfiguration().getChild("file").setValue(pairs[i][1]);
+            graph.getNode("Write(4)").getConfiguration().getChild("file").setValue(pairDir + File.separator + datePair + "_unw_tc.dim");
+
+            FileWriter fileWriter = new FileWriter(stage7Dir + File.separator
+                    + datePair + "_tc.xml");
+            GraphIO.write(graph, fileWriter);
+            fileWriter.flush();
+            fileWriter.close();
+
+            Routines.runGPTScript(stage7Dir + File.separator + datePair + "_tc.xml", "Stage7");
+        }
+
+        fileReader = new FileReader(graphDir + File.separator + "tc_dem.xml");
+        Graph graph1 = GraphIO.read(fileReader);
+        fileReader.close();
+
+        graph1.getNode("Read").getConfiguration().getChild("file").setValue(files1[0]);
+        graph1.getNode("Write").getConfiguration().getChild("file").setValue(prepDir + File.separator + "dem_tc.dim");
+        FileWriter fileWriter = new FileWriter(stage7Dir + File.separator
+                + "dem_tc.xml");
+        GraphIO.write(graph1, fileWriter);
+        fileWriter.flush();
+        fileWriter.close();
+
+        Routines.runGPTScript(stage7Dir + File.separator + "dem_tc.xml", "Stage7");
+
+        Files.copy(Paths.get(configDir + File.separator + "smallbaselineApp.cfg"), Paths.get(prepDir + File.separator + "smallbaselineApp.cfg"));
+
     }
 
     static HashMap getParameters(String configDir) {

@@ -107,7 +107,7 @@ public class Stage8 {
 
         HashMap parameters = getParameters(configDir);
         if (parameters == null) {
-            throw new Exception("Stage9: Fail to read parameters");
+            throw new Exception("Stage8: Fail to read parameters");
         }
 
         String taskDir = outputDir + "" + File.separator + taskId;
