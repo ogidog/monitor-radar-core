@@ -28,7 +28,7 @@ public class Main {
             resultDir = Paths.get(configDir).getParent().toString();
 
             if (Routines.checkPreviousErrors(resultDir)) {
-                //return;
+                return;
             }
 
             Routines.writeStatus(resultDir, Routines.TaskStatus.PROCESSING, "");
