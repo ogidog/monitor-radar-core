@@ -55,6 +55,7 @@ public class Main {
                 Stage7.process(outputDir, taskId);
             }
             if (firstStep <= 8 && lastStep >= 8) {
+                // TODO: Сделать копирование из папки geo одного файла с .lat с переименованием без .lat, чтобы считыватьего как мастернайм на стороне мидлеваре
                 Stage8.process(outputDir, taskId);
             }
 
