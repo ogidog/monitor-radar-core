@@ -23,7 +23,7 @@
       "type": "inputTypes.text",
       "value": "110"
     },
-    "perpTempMax": {
+    "tempBaseMax": {
       "name": "tempBaseMax",
       "index": 2,
       "defaultvalue": "90",
