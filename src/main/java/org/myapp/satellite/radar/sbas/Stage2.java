@@ -274,12 +274,12 @@ public class Stage2 {
         new File(stage2Dir).mkdirs();
 
         ArrayList<String[]> pairs = new ArrayList<>();
-        String networkModel = ((HashMap)parameters.get("NetworkModel")).get("modelType").toString().split(":")[1];
+        String networkModel = ((HashMap) parameters.get("NetworkModel")).get("modelType").toString().split(":")[1];
         if (networkModel.contains("delaunay")) {
             InSARStackOverview.IfgStack[] stackOverview = InSARStackOverview.calculateInSAROverview(products);
 
-            int bPerpMax = Integer.valueOf(((HashMap)parameters.get("NetworkModel")).get("perpBaseMax").toString());
-            int bTempMax = Integer.valueOf(((HashMap)parameters.get("NetworkModel")).get("tempBaseMax").toString());
+            int bPerpMax = Integer.valueOf(((HashMap) parameters.get("NetworkModel")).get("perpBaseMax").toString());
+            int bTempMax = Integer.valueOf(((HashMap) parameters.get("NetworkModel")).get("tempBaseMax").toString());
             int currBPerp = 40, currBTemp = 45;
 
             Graph1 network = null;
