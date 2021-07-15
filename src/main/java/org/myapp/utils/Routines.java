@@ -1,10 +1,9 @@
 package org.myapp.utils;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.Instant;
 
 public class Routines {
 
@@ -83,7 +82,10 @@ public class Routines {
 
     public static void writeStatus(String taskDir, TaskStatus status, String message) {
         try {
+
             PrintWriter pr;
+            BufferedReader br;
+
             switch (status) {
                 case COMPLETED:
                     Files.deleteIfExists(Paths.get(taskDir + File.separator + TaskStatus.valueOf("PROCESSING").label));
@@ -91,6 +93,17 @@ public class Routines {
                     pr.print("");
                     pr.flush();
                     pr.close();
+
+                    br = new BufferedReader(new FileReader(taskDir + File.separator + "start_time"));
+                    long startTimeInSeconds = Long.valueOf(br.readLine());
+                    br.close();
+                    long totalElapsedTime = Instant.now().getEpochSecond() -  startTimeInSeconds;
+                    Files.deleteIfExists(Paths.get(taskDir + File.separator + "total_elapsed_time"));
+                    pr = new PrintWriter(taskDir + File.separator + "total_elapsed_time");
+                    pr.print(totalElapsedTime);
+                    pr.flush();
+                    pr.close();
+
                     break;
 
                 case PROCESSING:
@@ -100,9 +113,19 @@ public class Routines {
                     pr.print("");
                     pr.flush();
                     pr.close();
+
+                    Files.deleteIfExists(Paths.get(taskDir + File.separator + "start_time"));
+                    pr = new PrintWriter(taskDir + File.separator + "start_time");
+                    pr.print(Instant.now().getEpochSecond());
+                    pr.flush();
+                    pr.close();
+
                     break;
 
                 case ERROR:
+                    Files.deleteIfExists(Paths.get(taskDir + File.separator + "start_time"));
+                    Files.deleteIfExists(Paths.get(taskDir + File.separator + "total_elapsed_time"));
+
                     Files.deleteIfExists(Paths.get(taskDir + TaskStatus.valueOf("COMPLETED").label));
                     Files.deleteIfExists(Paths.get(taskDir + File.separator + TaskStatus.valueOf("PROCESSING").label));
                     pr = new PrintWriter(taskDir + File.separator + TaskStatus.valueOf("ERROR").label);
