@@ -10,6 +10,7 @@ import org.esa.snap.core.gpf.graph.GraphIO;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.myapp.utils.ConsoleArgsReader;
+import org.myapp.utils.Routines;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -162,6 +163,122 @@ public class Stage2 {
             e.printStackTrace();
             return;
         }
+    }
+
+    public static void process(String outputDir, String configDir, String graphDir, String taskId) throws Exception {
+
+        String taskDir = outputDir + File.separator + taskId;
+
+        String applyorbitfileDir = taskDir + File.separator + "applyorbitfile";
+        String[] files = Files.walk(Paths.get(applyorbitfileDir)).filter(path -> {
+            if (path.toString().endsWith(".dim")) {
+                return true;
+            } else {
+                return false;
+            }
+
+        }).map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
+
+
+        String esdDir = taskDir + "" + File.separator + "esd";
+        if (Files.exists(Paths.get(esdDir))) {
+            Routines.deleteDir(new File(esdDir));
+        }
+        new File(esdDir).mkdirs();
+
+        String topophaseremovalDir = taskDir + "" + File.separator + "topophaseremoval";
+        if (Files.exists(Paths.get(topophaseremovalDir))) {
+            Routines.deleteDir(new File(topophaseremovalDir));
+        }
+        new File(topophaseremovalDir).mkdirs();
+
+        String stage2Dir = taskDir + "" + File.separator + "stage2";
+        if (Files.exists(Paths.get(stage2Dir))) {
+            Routines.deleteDir(new File(stage2Dir));
+        }
+        new File(stage2Dir).mkdirs();
+
+        Product[] products = Arrays.stream(files).map(file -> {
+            try {
+                return ProductIO.readProduct(file);
+            } catch (Exception e) {
+                return null;
+            }
+        }).toArray(Product[]::new);
+
+        HashMap parameters = getParameters(configDir);
+        if (parameters == null) {
+            throw new Exception("Stage2: Fail to read parameters.");
+        }
+
+        Sentinel1Utils s1u = new Sentinel1Utils(products[0]);
+        int numOfBurst = s1u.getNumOfBursts(s1u.getSubSwath()[0].subSwathName);
+        String graphFile;
+        if (numOfBurst > 1) {
+            graphFile = "stamps_prep.xml";
+        } else {
+            graphFile = "stamps_prep_without_esd.xml";
+        }
+        FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
+        Graph graph = GraphIO.read(fileReader);
+        fileReader.close();
+
+        // Subset
+        graph.getNode("Subset").getConfiguration().getChild("geoRegion")
+                .setValue("POLYGON((" + ((HashMap) parameters.get("Subset")).get("geoRegion").toString() + "))");
+        graph.getNode("Subset(2)").getConfiguration().getChild("geoRegion")
+                .setValue("POLYGON((" + ((HashMap) parameters.get("Subset")).get("geoRegion").toString() + "))");
+
+        // BackGeocoding
+        ((HashMap) parameters.get("BackGeocoding")).forEach((key, value) -> {
+            graph.getNode("Back-Geocoding").getConfiguration().getChild(key.toString())
+                    .setValue(value.toString());
+        });
+
+        // Interferogram
+        ((HashMap) parameters.get("Interferogram")).forEach((key, value) -> {
+            graph.getNode("Interferogram").getConfiguration().getChild(key.toString())
+                    .setValue(value.toString());
+        });
+
+        // TopoPhaseRemoval
+        ((HashMap) parameters.get("TopoPhaseRemoval")).forEach((key, value) -> {
+            graph.getNode("TopoPhaseRemoval").getConfiguration().getChild(key.toString())
+                    .setValue(value.toString());
+        });
+
+        String masterProductName = InSARStackOverview.findOptimalMasterProduct(products).getName();
+        String masterProductPath = applyorbitfileDir;
+
+        graph.getNode("Read").getConfiguration().getChild("file").setValue(masterProductPath + File.separator + masterProductName + ".dim");
+        for (int i = 0; i < products.length; i++) {
+            Product product = products[i];
+            String slaveProductName = product.getName();
+            if (!masterProductName.equals(slaveProductName)) {
+                graph.getNode("Read(2)").getConfiguration().getChild("file").setValue(masterProductPath + File.separator + slaveProductName + ".dim");
+                graph.getNode("Write").getConfiguration().getChild("file")
+                        .setValue(esdDir + File.separator + slaveProductName + "_Stack_Deb.dim");
+                graph.getNode("Write(2)").getConfiguration().getChild("file")
+                        .setValue(topophaseremovalDir + File.separator + slaveProductName + "_Stack_Ifg_Deb_DInSAR.dim");
+
+                FileWriter fileWriter = new FileWriter(stage2Dir + File.separator + slaveProductName + ".xml");
+                GraphIO.write(graph, fileWriter);
+                fileWriter.flush();
+                fileWriter.close();
+
+                Routines.runGPTScript(stage2Dir + File.separator + slaveProductName + ".xml","Stage2");
+
+            }
+        }
+
+        Arrays.stream(products).forEach(product -> {
+            try {
+                product.closeIO();
+            } catch (IOException e) {
+                System.out.println(e);
+            }
+        });
+
     }
 
     static HashMap getParameters(String configDir) {

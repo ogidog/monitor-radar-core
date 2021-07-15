@@ -1,4 +1,4 @@
-package org.myapp.satellite.radar.ds;
+package org.myapp.satellite.radar.ps;
 
 import org.myapp.utils.ConsoleArgsReader;
 import org.myapp.utils.Routines;
@@ -38,6 +38,7 @@ public class Main {
             if (firstStep <= 2 && lastStep >= 2) {
                 Stage2.process(outputDir, configDir, graphDir, taskId);
             }
+            /*
             if (firstStep <= 3 && lastStep >= 3) {
                 Stage3.process(outputDir, taskId);
             }
@@ -55,7 +56,7 @@ public class Main {
             }
             if (firstStep <= 8 && lastStep >= 8) {
                 Stage8.process(outputDir, taskId);
-            }
+            }*/
 
             Routines.writeStatus(taskDir, Routines.TaskStatus.COMPLETED, "");
 
