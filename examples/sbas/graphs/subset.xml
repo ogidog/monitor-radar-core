@@ -73,23 +73,10 @@
       <file>D:\Temp\kiyzasski_2018_sbas\results\intf\20180405_20180417.dim</file>
     </parameters>
   </node>
-  <node id="Multilook">
-    <operator>Multilook</operator>
-    <sources>
-      <sourceProduct refid="TopoPhaseRemoval"/>
-    </sources>
-    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <sourceBands/>
-      <nRgLooks>4</nRgLooks>
-      <nAzLooks>1</nAzLooks>
-      <outputIntensity>false</outputIntensity>
-      <grSquarePixel>false</grSquarePixel>
-    </parameters>
-  </node>
   <node id="GoldsteinPhaseFiltering">
     <operator>GoldsteinPhaseFiltering</operator>
     <sources>
-      <sourceProduct refid="Multilook"/>
+      <sourceProduct refid="TopoPhaseRemoval"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <alpha>1.0</alpha>
@@ -125,9 +112,6 @@
     </node>
     <node id="Read">
       <displayPosition x="35.0" y="52.0"/>
-    </node>
-    <node id="Multilook">
-      <displayPosition x="601.0" y="158.0"/>
     </node>
     <node id="GoldsteinPhaseFiltering">
       <displayPosition x="542.0" y="204.0"/>
