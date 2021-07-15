@@ -115,6 +115,7 @@ public class Routines {
                     pr.close();
 
                     Files.deleteIfExists(Paths.get(taskDir + File.separator + "start_time"));
+                    Files.deleteIfExists(Paths.get(taskDir + File.separator + "total_elapsed_time"));
                     pr = new PrintWriter(taskDir + File.separator + "start_time");
                     pr.print(Instant.now().getEpochSecond());
                     pr.flush();
