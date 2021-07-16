@@ -1,9 +1,7 @@
 package org.myapp.satellite.radar.NDAI;
 
-import com.bc.ceres.core.ProgressMonitor;
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
-import org.esa.snap.core.gpf.graph.GraphProcessor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.myapp.satellite.radar.shared.TOPSARSplitOpEnv;
