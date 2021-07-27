@@ -1,4 +1,4 @@
 /examples/
 /target/
 /.idea/
-/src/main/java/org/myapp/security
+/src/main/java/org/myapp/security/
