@@ -1,0 +1,35 @@
+{
+  "name": "network_model",
+  "description": "DataSet settings are used for the processing.",
+  "label": "Network Model",
+  "parameters": {
+    "modelType": {
+      "name": "modelType",
+      "options": [
+        "Sequential:sequential",
+        "Delaunay:delaunay"
+      ],
+      "index": 0,
+      "defaultvalue": "Sequential:sequential",
+      "label": "Model Type",
+      "type": "inputTypes.select",
+      "value": "Sequential:sequential"
+    },
+    "perpBaseMax": {
+      "name": "perpBaseMax",
+      "index": 1,
+      "defaultvalue": "110",
+      "label": "Perpendicular Baseline Max Value",
+      "type": "inputTypes.text",
+      "value": "110"
+    },
+    "tempBaseMax": {
+      "name": "tempBaseMax",
+      "index": 2,
+      "defaultvalue": "90",
+      "label": "Temporal Baseline Max Value",
+      "type": "inputTypes.text",
+      "value": "90"
+    }
+  }
+}
