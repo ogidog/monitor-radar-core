@@ -1,0 +1,173 @@
+<graph id="Graph">
+  <version>1.0</version>
+  <node id="Read">
+    <operator>Read</operator>
+    <sources/>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>D:\Temp\kiyzasski_NDAI\results\ndai\ndai.dim</file>
+    </parameters>
+  </node>
+  <node id="BandMaths(1)">
+    <operator>BandMaths</operator>
+    <sources>
+      <sourceProduct refid="Read"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <targetBands>
+        <targetBand>
+          <name>avg_coh_1</name>
+          <type>float32</type>
+          <expression>avg(coh_IW1_VV_11Jan2018_23Jan2018,coh_IW1_VV_23Jan2018_04Feb2018_slv1_23Jan2018,coh_IW1_VV_04Feb2018_16Feb2018_slv2_04Feb2018)</expression>
+          <description/>
+          <unit/>
+          <noDataValue>0.0</noDataValue>
+        </targetBand>
+      </targetBands>
+      <variables/>
+    </parameters>
+  </node>
+  <node id="BandMaths(2)">
+    <operator>BandMaths</operator>
+    <sources>
+      <sourceProduct refid="Read"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <targetBands>
+        <targetBand>
+          <name>avg_coh_2</name>
+          <type>float32</type>
+          <expression>avg(coh_IW1_VV_11Jan2018_23Jan2018,coh_IW1_VV_23Jan2018_04Feb2018_slv1_23Jan2018,coh_IW1_VV_04Feb2018_16Feb2018_slv2_04Feb2018)</expression>
+          <description/>
+          <unit/>
+          <noDataValue>0.0</noDataValue>
+        </targetBand>
+      </targetBands>
+      <variables/>
+    </parameters>
+  </node>
+  <node id="BandMaths(3)">
+    <operator>BandMaths</operator>
+    <sources>
+      <sourceProduct refid="Read"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <targetBands>
+        <targetBand>
+          <name>avg_coh_3</name>
+          <type>float32</type>
+          <expression>avg(coh_IW1_VV_11Jan2018_23Jan2018,coh_IW1_VV_23Jan2018_04Feb2018_slv1_23Jan2018,coh_IW1_VV_04Feb2018_16Feb2018_slv2_04Feb2018)</expression>
+          <description/>
+          <unit/>
+          <noDataValue>0.0</noDataValue>
+        </targetBand>
+      </targetBands>
+      <variables/>
+    </parameters>
+  </node>
+  <node id="BandMerge">
+    <operator>BandMerge</operator>
+    <sources>
+      <sourceProduct refid="BandMaths(1)"/>
+      <sourceProduct.1 refid="BandMaths(2)"/>
+      <sourceProduct.2 refid="BandMaths(3)"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <sourceBands/>
+      <geographicError>1.0E-5</geographicError>
+    </parameters>
+  </node>
+  <node id="Subset">
+    <operator>Subset</operator>
+    <sources>
+      <sourceProduct refid="BandMerge"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <sourceBands/>
+      <region>0,0,100,200</region>
+      <referenceBand/>
+      <geoRegion/>
+      <subSamplingX>1</subSamplingX>
+      <subSamplingY>1</subSamplingY>
+      <fullSwath>false</fullSwath>
+      <tiePointGridNames/>
+      <copyMetadata>true</copyMetadata>
+    </parameters>
+  </node>
+  <node id="Read(2)">
+    <operator>Read</operator>
+    <sources/>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>D:\Temp\kiyzasski_NDAI\results\avgstd\cohavgstd.dim</file>
+    </parameters>
+  </node>
+  <node id="Subset(2)">
+    <operator>Subset</operator>
+    <sources>
+      <sourceProduct refid="Read(2)"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <sourceBands/>
+      <region>0,0,100,200</region>
+      <referenceBand/>
+      <geoRegion/>
+      <subSamplingX>1</subSamplingX>
+      <subSamplingY>1</subSamplingY>
+      <fullSwath>false</fullSwath>
+      <tiePointGridNames/>
+      <copyMetadata>true</copyMetadata>
+    </parameters>
+  </node>
+  <node id="Write(2)">
+    <operator>Write</operator>
+    <sources>
+      <sourceProduct refid="Subset(2)"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>D:\Temp\target1.dim</file>
+      <formatName>BEAM-DIMAP</formatName>
+    </parameters>
+  </node>
+  <node id="Write">
+    <operator>Write</operator>
+    <sources>
+      <sourceProduct refid="Subset"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>D:\Temp\target.tif</file>
+      <formatName>BEAM-DIMAP</formatName>
+    </parameters>
+  </node>
+  <applicationData id="Presentation">
+    <Description/>
+    <node id="Read">
+            <displayPosition x="37.0" y="134.0"/>
+    </node>
+    <node id="BandMaths(1)">
+      <displayPosition x="212.0" y="22.0"/>
+    </node>
+    <node id="BandMaths(2)">
+      <displayPosition x="209.0" y="77.0"/>
+    </node>
+    <node id="BandMaths(3)">
+      <displayPosition x="213.0" y="131.0"/>
+    </node>
+    <node id="BandMerge">
+      <displayPosition x="369.0" y="60.0"/>
+    </node>
+    <node id="Subset">
+      <displayPosition x="468.0" y="113.0"/>
+    </node>
+    <node id="Read(2)">
+      <displayPosition x="72.0" y="255.0"/>
+    </node>
+    <node id="Subset(2)">
+      <displayPosition x="212.0" y="243.0"/>
+    </node>
+    <node id="Write(2)">
+      <displayPosition x="347.0" y="240.0"/>
+    </node>
+    <node id="Write">
+      <displayPosition x="557.0" y="113.0"/>
+    </node>
+  </applicationData>
+</graph>

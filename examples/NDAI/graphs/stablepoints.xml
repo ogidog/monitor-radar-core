@@ -1,0 +1,110 @@
+<graph id="Graph">
+  <version>1.0</version>
+  <node id="Read">
+    <operator>Read</operator>
+    <sources/>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>D:\Temp\kiyzassky_NDAI\results\avgstd\cohavgstd.dim</file>
+    </parameters>
+  </node>
+  <node id="BandMaths(1)">
+    <operator>BandMaths</operator>
+    <sources>
+      <sourceProduct refid="Read"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <targetBands>
+        <targetBand>
+          <name>newBand1</name>
+          <type>float32</type>
+          <expression>avg_coh_2018&gt;0.8 and std_coh_2018&lt;0.2</expression>
+          <description/>
+          <unit/>
+          <noDataValue>0.0</noDataValue>
+        </targetBand>
+      </targetBands>
+      <variables/>
+    </parameters>
+  </node>
+  <node id="BandMerge">
+    <operator>BandMerge</operator>
+    <sources>
+      <sourceProduct refid="BandMaths(1)"/>
+      <sourceProduct.1 refid="BandMaths(2)"/>
+      <sourceProduct.2 refid="BandMaths(3)"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <sourceBands/>
+      <geographicError>1.0E-5</geographicError>
+    </parameters>
+  </node>
+  <node id="BandMaths(2)">
+    <operator>BandMaths</operator>
+    <sources>
+      <sourceProduct refid="Read"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <targetBands>
+        <targetBand>
+          <name>newBand2</name>
+          <type>float32</type>
+          <expression>avg_coh_2018&gt;0.8 and std_coh_2018&lt;0.2</expression>
+          <description/>
+          <unit/>
+          <noDataValue>0.0</noDataValue>
+        </targetBand>
+      </targetBands>
+      <variables/>
+    </parameters>
+  </node>
+  <node id="BandMaths(3)">
+    <operator>BandMaths</operator>
+    <sources>
+      <sourceProduct refid="Read"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <targetBands>
+        <targetBand>
+          <name>newBand3</name>
+          <type>float32</type>
+          <expression>avg_coh_2018&gt;0.8 and std_coh_2018&lt;0.2</expression>
+          <description/>
+          <unit/>
+          <noDataValue>0.0</noDataValue>
+        </targetBand>
+      </targetBands>
+      <variables/>
+    </parameters>
+  </node>
+  <node id="Write">
+    <operator>Write</operator>
+    <sources>
+      <sourceProduct refid="BandMerge"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>D:\Temp\cohavgstd_BandMath1.dim</file>
+      <formatName>BEAM-DIMAP</formatName>
+    </parameters>
+  </node>
+  <applicationData id="Presentation">
+    <Description/>
+    <node id="Read">
+            <displayPosition x="32.0" y="83.0"/>
+    </node>
+    <node id="BandMaths">
+      <displayPosition x="162.0" y="59.0"/>
+    </node>
+    <node id="BandMerge">
+      <displayPosition x="279.0" y="56.0"/>
+    </node>
+    <node id="BandMaths(2)">
+      <displayPosition x="150.0" y="105.0"/>
+    </node>
+    <node id="BandMaths(3)">
+      <displayPosition x="149.0" y="158.0"/>
+    </node>
+    <node id="Write">
+            <displayPosition x="454.0" y="135.0"/>
+    </node>
+  </applicationData>
+</graph>

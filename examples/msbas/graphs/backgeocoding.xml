@@ -1,0 +1,61 @@
+<graph id="Graph">
+  <version>1.0</version>
+  <node id="Back-Geocoding">
+    <operator>Back-Geocoding</operator>
+    <sources>
+      <sourceProduct refid="Read"/>
+      <sourceProduct.1 refid="Read(2)"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <demName>SRTM 3Sec</demName>
+      <demResamplingMethod>BILINEAR_INTERPOLATION</demResamplingMethod>
+      <externalDEMFile/>
+      <externalDEMNoDataValue>0.0</externalDEMNoDataValue>
+      <resamplingType>BILINEAR_INTERPOLATION</resamplingType>
+      <maskOutAreaWithoutElevation>true</maskOutAreaWithoutElevation>
+      <outputRangeAzimuthOffset>false</outputRangeAzimuthOffset>
+      <outputDerampDemodPhase>false</outputDerampDemodPhase>
+      <disableReramp>false</disableReramp>
+    </parameters>
+  </node>
+  <node id="Read">
+    <operator>Read</operator>
+    <sources/>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>D:\Satellites\Sentinel-1A\norilsk\S1B_IW_SLC__1SDV_20191218T004022_20191218T004045_019412_024AB9_3C1C.zip</file>
+    </parameters>
+  </node>
+  <node id="Read(2)">
+    <operator>Read</operator>
+    <sources/>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>D:\Satellites\Sentinel-1A\norilsk\S1B_IW_SLC__1SDV_20191218T004022_20191218T004045_019412_024AB9_3C1C.zip</file>
+    </parameters>
+  </node>
+  <node id="Write">
+    <operator>Write</operator>
+    <sources>
+      <sourceProduct refid="Back-Geocoding"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>
+                D:\Temp\test1\123456789123\backgeocoding\S1B_IW_SLC__1SDV_20180920T002731_20180920T002801_012791_0179CD_D5A9_Orb_Stack.dim</file>
+      <formatName>BEAM-DIMAP</formatName>
+    </parameters>
+  </node>
+  <applicationData id="Presentation">
+    <Description/>
+    <node id="Back-Geocoding">
+            <displayPosition x="214.0" y="146.0"/>
+    </node>
+    <node id="Read">
+      <displayPosition x="50.0" y="146.0"/>
+    </node>
+    <node id="Read(2)">
+      <displayPosition x="48.0" y="198.0"/>
+    </node>
+    <node id="Write">
+            <displayPosition x="407.0" y="147.0"/>
+    </node>
+  </applicationData>
+</graph>

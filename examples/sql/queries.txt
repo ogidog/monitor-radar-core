@@ -1,0 +1,7 @@
+select replace(replace(string_agg(file_path, ',' order by name asc),'/','\'),'\mnt\satimg','Y:') from remote_sensing_data a
+where ST_Intersects(
+    a.geom ,
+    ST_GeomFromText('SRID=4326;POLYGON((87.62805498060708 53.58937440559718,87.73276842054848 53.58937440559718,87.73276842054848 53.542681765607895,87.62805498060708 53.542681765607895,87.62805498060708 53.58937440559718))'))
+and
+      a.rel_orbit=165
+and a.proc_time between '2018-04-01'and '2018-10-30'

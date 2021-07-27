@@ -1,0 +1,60 @@
+<graph id="Graph">
+  <version>1.0</version>
+  <node id="Read">
+    <operator>Read</operator>
+    <sources/>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>D:\Temp\kiyzassky_NDAI\results\applyorbitfile\S1B_IW_SLC__1SDV_20180111T002750_20180111T002818_009116_0104F0_1E96_Orb.dim</file>
+    </parameters>
+  </node>
+  <node id="Read(2)">
+    <operator>Read</operator>
+    <sources/>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>D:\Temp\kiyzassky_NDAI\results\applyorbitfile\S1B_IW_SLC__1SDV_20191102T002805_20191102T002833_018741_023530_90BD_Orb.dim</file>
+    </parameters>
+  </node>
+  <node id="Back-Geocoding">
+    <operator>Back-Geocoding</operator>
+    <sources>
+      <sourceProduct refid="Read"/>
+      <sourceProduct.1 refid="Read(2)"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <demName>SRTM 3Sec</demName>
+      <demResamplingMethod>BICUBIC_INTERPOLATION</demResamplingMethod>
+      <externalDEMFile/>
+      <externalDEMNoDataValue>0.0</externalDEMNoDataValue>
+      <resamplingType>BISINC_5_POINT_INTERPOLATION</resamplingType>
+      <maskOutAreaWithoutElevation>true</maskOutAreaWithoutElevation>
+      <outputRangeAzimuthOffset>false</outputRangeAzimuthOffset>
+      <outputDerampDemodPhase>false</outputDerampDemodPhase>
+      <disableReramp>false</disableReramp>
+    </parameters>
+  </node>
+  <node id="Write">
+    <operator>Write</operator>
+    <sources>
+      <sourceProduct refid="Back-Geocoding"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>D:\Temp\Subset_S1B_IW_SLC__1SDV_20190106T002757_20190106T002825_014366_01ABBB_71C4_Orb_Stack_Ifg_Deb_DInSAR_Flt_TC.dim</file>
+      <formatName>BEAM-DIMAP</formatName>
+    </parameters>
+  </node>
+  <applicationData id="Presentation">
+    <Description/>
+    <node id="Read">
+            <displayPosition x="38.0" y="53.0"/>
+    </node>
+    <node id="Read(2)">
+      <displayPosition x="40.0" y="127.0"/>
+    </node>
+    <node id="Back-Geocoding">
+      <displayPosition x="152.0" y="88.0"/>
+    </node>
+    <node id="Write">
+      <displayPosition x="476.0" y="93.0"/>
+    </node>
+  </applicationData>
+</graph>

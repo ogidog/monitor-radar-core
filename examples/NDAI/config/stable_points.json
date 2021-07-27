@@ -1,0 +1,31 @@
+{
+  "label": "Stable points",
+  "name": "stable_points",
+  "description": "Setting up average and standard deviation thresholds to compute stable points",
+  "parameters": {
+    "avgThres": {
+      "index": 0,
+      "name": "avgThres",
+      "label": "Average Threshold",
+      "type": "inputTypes.text",
+      "value": 0.6,
+      "defaultvalue": 0.8
+    },
+    "stdThres": {
+      "index": 1,
+      "name": "stdThres",
+      "label": "Standard Deviation Threshold",
+      "type": "inputTypes.text",
+      "value": 0.2,
+      "defaultvalue": 0.2
+    },
+    "rhoStableThres": {
+      "index": 0,
+      "name": "rhoStableThres",
+      "label": "Spatial Stable Point Value Threshold",
+      "type": "inputTypes.text",
+      "value": 0.6,
+      "defaultvalue": 0.8
+    }
+  }
+}

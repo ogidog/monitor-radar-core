@@ -1,0 +1,93 @@
+<graph id="Graph">
+  <version>1.0</version>
+  <node id="Read">
+    <operator>Read</operator>
+    <sources/>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>D:\Temp\kemerovo\results\applyorbitfile\S1B_IW_SLC__1SDV_20200101T002736_20200101T002806_019616_02512C_6AF3_Orb.dim</file>
+    </parameters>
+  </node>
+  <node id="Read(2)">
+    <operator>Read</operator>
+    <sources/>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>D:\Temp\kemerovo\results\applyorbitfile\S1B_IW_SLC__1SDV_20200113T002735_20200113T002805_019791_0256B4_F2AA_Orb.dim</file>
+    </parameters>
+  </node>
+  <node id="Back-Geocoding">
+    <operator>Back-Geocoding</operator>
+    <sources>
+      <sourceProduct refid="Read"/>
+      <sourceProduct.1 refid="Read(2)"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <demName>ACE30</demName>
+      <demResamplingMethod>BICUBIC_INTERPOLATION</demResamplingMethod>
+      <externalDEMFile/>
+      <externalDEMNoDataValue>0.0</externalDEMNoDataValue>
+      <resamplingType>BISINC_5_POINT_INTERPOLATION</resamplingType>
+      <maskOutAreaWithoutElevation>true</maskOutAreaWithoutElevation>
+      <outputRangeAzimuthOffset>false</outputRangeAzimuthOffset>
+      <outputDerampDemodPhase>false</outputDerampDemodPhase>
+      <disableReramp>false</disableReramp>
+    </parameters>
+  </node>
+  <node id="Subset">
+    <operator>Subset</operator>
+    <sources>
+      <sourceProduct refid="Back-Geocoding"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <sourceBands/>
+      <region>0,0,23955,3034</region>
+      <referenceBand/>
+      <geoRegion/>
+      <subSamplingX>1</subSamplingX>
+      <subSamplingY>1</subSamplingY>
+      <fullSwath>false</fullSwath>
+      <tiePointGridNames/>
+      <copyMetadata>true</copyMetadata>
+    </parameters>
+  </node>
+  <node id="Write(2)">
+    <operator>Write</operator>
+    <sources>
+      <sourceProduct refid="Subset"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>D:\Temp\test1\123456789123\esd\Subset_S1B_IW_SLC__1SDV_20200101T002736_20200101T002806_019616_02512C_6AF3_Orb_Stack.dim</file>
+      <formatName>BEAM-DIMAP</formatName>
+    </parameters>
+  </node>
+  <node id="Write">
+    <operator>Write</operator>
+    <sources>
+      <sourceProduct refid="Back-Geocoding"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>D:\Temp\test1\123456789123\esd\S1B_IW_SLC__1SDV_20200101T002736_20200101T002806_019616_02512C_6AF3_Orb_Stack.dim</file>
+      <formatName>BEAM-DIMAP</formatName>
+    </parameters>
+  </node>
+  <applicationData id="Presentation">
+    <Description/>
+    <node id="Read">
+            <displayPosition x="20.0" y="47.0"/>
+    </node>
+    <node id="Read(2)">
+      <displayPosition x="28.0" y="151.0"/>
+    </node>
+    <node id="Back-Geocoding">
+      <displayPosition x="135.0" y="122.0"/>
+    </node>
+    <node id="Subset">
+      <displayPosition x="192.0" y="172.0"/>
+    </node>
+    <node id="Write(2)">
+      <displayPosition x="273.0" y="226.0"/>
+    </node>
+    <node id="Write">
+      <displayPosition x="392.0" y="121.0"/>
+    </node>
+  </applicationData>
+</graph>

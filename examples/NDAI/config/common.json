@@ -1,0 +1,29 @@
+{
+  "label": "General",
+  "name": "common",
+  "description": "Common properties of the task",
+  "parameters": {
+    "method": {
+      "index": 0,
+      "name": "method",
+      "label": "Method",
+      "type": "inputTypes.select",
+      "value": "PS",
+      "defaultvalue": "PS",
+      "options": [
+        "PS:Persistent Scatterers (PS)",
+        "DS: Distributed Scatterers (DS)",
+        "SBAS:Small BAseline Subset (SBAS)",
+        "NDAI: Normalized Difference Activity Index (NDAI)"
+      ]
+    },
+    "description": {
+      "index": 1,
+      "name": "description",
+      "label": "Description",
+      "type": "inputTypes.text",
+      "value": "г. Кемерово, 2020 г.",
+      "defaultvalue": "Difference Index"
+    }
+  }
+}
