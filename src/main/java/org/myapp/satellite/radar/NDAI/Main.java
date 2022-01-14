@@ -6,7 +6,7 @@ import org.myapp.utils.Routines;
 import java.nio.file.Paths;
 import java.util.HashMap;
 
-public class Main {
+public class Main extends Stage1 {
 
     public static void main(String[] args) {
 
