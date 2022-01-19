@@ -178,6 +178,7 @@ public class Stage1 {
                     (HashMap) jsonParameters1.entrySet().stream
                             ().collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue().get("value")))
             );
+            //TODO: добавить также для ApplyOrbitFile
 
             fileReader.close();
 
