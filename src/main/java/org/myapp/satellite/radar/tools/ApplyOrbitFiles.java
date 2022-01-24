@@ -80,7 +80,7 @@ public class ApplyOrbitFiles {
                 String productDate = m.group();
 
                 graph.getNode("Write(2)").getConfiguration().getChild("file")
-                        .setValue(applyorbitfileResultDir + File.separator + productDate + ".png");
+                        .setValue(applyorbitfileResultDir + File.separator + productDate + "_sub.dim");
 
                 topsarSplitOpEnv.getSplitParameters(files[i], parameters);
 
