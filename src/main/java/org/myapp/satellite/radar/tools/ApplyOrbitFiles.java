@@ -1,6 +1,10 @@
 package org.myapp.satellite.radar.tools;
 
 import com.sun.jna.platform.win32.COM.util.annotation.ComObject;
+import org.esa.snap.core.dataio.ProductIO;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.VirtualBand;
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
 import org.json.simple.JSONObject;
@@ -14,6 +18,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,7 +42,7 @@ public class ApplyOrbitFiles {
 
             HashMap parameters = getParameters(configDir);
             if (parameters == null) {
-                throw new Exception("Stage1: Fail to read parameters.");
+                throw new Exception("ApplyOrbitFile: Fail to read parameters.");
             }
 
             String taskDir = outputDir + File.separator + taskId;
@@ -87,22 +92,22 @@ public class ApplyOrbitFiles {
 
                 graph.getNode("Read").getConfiguration().getChild("file").setValue(files[i]);
                 graph.getNode("Write").getConfiguration().getChild("file")
-                        .setValue(taskDir + File.separator + "applyorbitfile" + File.separator
-                                + Paths.get(files[i]).getFileName().toString().replace(".zip", "") + "_Orb.dim");
+                        .setValue(applyorbitfileTaskDir + File.separator + productDate + "_Orb.dim");
                 graph.getNode("TOPSAR-Split").getConfiguration().getChild("subswath").setValue(topsarSplitOpEnv.getSubSwath());
                 graph.getNode("TOPSAR-Split").getConfiguration().getChild("firstBurstIndex").setValue(topsarSplitOpEnv.getFirstBurstIndex());
                 graph.getNode("TOPSAR-Split").getConfiguration().getChild("lastBurstIndex").setValue(topsarSplitOpEnv.getLastBurstIndex());
 
-                FileWriter fileWriter = new FileWriter(applyorbitfileTaskDir + File.separator
-                        + Paths.get(files[i]).getFileName().toString().replace(".zip", "") + ".xml");
+                FileWriter fileWriter = new FileWriter(applyorbitfileTaskDir + File.separator + productDate + ".xml");
                 GraphIO.write(graph, fileWriter);
                 fileWriter.flush();
                 fileWriter.close();
 
-                Common.runGPTScript(applyorbitfileTaskDir + File.separator
-                        + Paths.get(files[i]).getFileName().toString().replace(".zip", "") + ".xml", "applyorbitfile");
+                Common.runGPTScript(applyorbitfileTaskDir + File.separator + productDate + ".xml", "applyorbitfile");
 
-                Common.exportProductToImg(applyorbitfileTaskDir + File.separator + productDate + "_sub.dim", applyorbitfileResultDir, 0.4f, 0.7f, "JPG");
+                Product product = ProductIO.readProduct(applyorbitfileTaskDir + File.separator + productDate + "_sub.dim");
+                VirtualBand sourceBand = (VirtualBand) Arrays.stream(product.getBands()).filter(band -> band.getName().toLowerCase().contains("intensity")).toArray()[0];
+                Common.exportProductToImg(sourceBand, 0.3f, 0.7f, new File(applyorbitfileResultDir + File.separator + productDate + "_sub.jpg"), "JPG");
+                product.closeIO();
 
                 Files.deleteIfExists(Paths.get(applyorbitfileTaskDir + File.separator + productDate + "_sub.dim"));
                 Common.deleteDir(new File(applyorbitfileTaskDir + File.separator + productDate + "_sub.data"));

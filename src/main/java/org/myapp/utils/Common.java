@@ -1,9 +1,8 @@
 package org.myapp.utils;
 
 import com.bc.ceres.core.ProgressMonitor;
-import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.datamodel.Band;
-import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.VirtualBand;
 import org.esa.snap.rcp.util.ProgressHandleMonitor;
 import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.api.progress.ProgressHandleFactory;
@@ -166,19 +165,19 @@ public class Common {
         }
     }
 
-    public static void exportProductToImg(String ProductFile, String resultDir, float resizeFactor, float compressFactor, String imageFormat) {
+    public static void exportProductToImg(VirtualBand sourceBand, float resizeFactor, float compressFactor, File targetFile, String imageFormat) {
         try {
 
             ProgressHandle handle = ProgressHandleFactory.createSystemHandle("");
             ProgressMonitor pm = new ProgressHandleMonitor(handle);
 
-            Product product = ProductIO.readProduct(ProductFile);
-            Band intensityBand = product.getBandAt(0);
-            int width = intensityBand.getRasterWidth();
-            int height = intensityBand.getRasterHeight();
-            intensityBand.readRasterDataFully();
+            //Product product = ProductIO.readProduct(ProductFile);
+            //Band intensityBand = Arrays.stream(product.getBands()).filter(band->band.getName().toLowerCase().contains("intensity")).toArray()[0];
+            int width = sourceBand.getRasterWidth();
+            int height = sourceBand.getRasterHeight();
+            sourceBand.readRasterDataFully();
 
-            BufferedImage bi = intensityBand.createRgbImage(pm);
+            BufferedImage bi = sourceBand.createColorIndexedImage(pm); //.createRgbImage(pm);
             BufferedImage resized = resize(bi, (int) (width * resizeFactor), (int) (height * resizeFactor));
 
             ImageWriter jpgWriter = ImageIO.getImageWritersByFormatName(imageFormat).next();
@@ -189,11 +188,11 @@ public class Common {
                 jpgWriteParam.setCompressionQuality(compressFactor);
             }
 
-            jpgWriter.setOutput(ImageIO.createImageOutputStream(new File(resultDir + File.separator + product.getName() + ".jpg")));
+            jpgWriter.setOutput(ImageIO.createImageOutputStream(targetFile));
             jpgWriter.write(null, new IIOImage(resized, null, null), jpgWriteParam);
             jpgWriter.dispose();
 
-            product.closeIO();
+            //product.closeIO();
 
         } catch (Exception ex) {
             ex.printStackTrace();
