@@ -85,32 +85,39 @@ public class ApplyOrbitFiles {
                 m.find();
                 String productDate = m.group();
 
+                String targetFile = applyorbitfileTaskDir + File.separator + productDate + Common.OperationPrefix.APPLY_ORBIT_FILE;
+                String targetGraphFile = applyorbitfileTaskDir + File.separator + productDate + Common.OperationPrefix.APPLY_ORBIT_FILE;
+                String subsetTargetFile = applyorbitfileTaskDir + File.separator + productDate + Common.OperationPrefix.APPLY_ORBIT_FILE + Common.OperationPrefix.SUBSET;
+                String subsetImgFile = applyorbitfileResultDir + File.separator + productDate + Common.OperationPrefix.APPLY_ORBIT_FILE + Common.OperationPrefix.SUBSET;
+
                 graph.getNode("Write(2)").getConfiguration().getChild("file")
-                        .setValue(applyorbitfileTaskDir + File.separator + productDate + "_sub.dim");
+                        .setValue(subsetTargetFile + ".dim");
 
                 topsarSplitOpEnv.getSplitParameters(files[i], parameters);
 
                 graph.getNode("Read").getConfiguration().getChild("file").setValue(files[i]);
                 graph.getNode("Write").getConfiguration().getChild("file")
-                        .setValue(applyorbitfileTaskDir + File.separator + productDate + "_Orb.dim");
+                        .setValue(targetFile + ".dim");
                 graph.getNode("TOPSAR-Split").getConfiguration().getChild("subswath").setValue(topsarSplitOpEnv.getSubSwath());
                 graph.getNode("TOPSAR-Split").getConfiguration().getChild("firstBurstIndex").setValue(topsarSplitOpEnv.getFirstBurstIndex());
                 graph.getNode("TOPSAR-Split").getConfiguration().getChild("lastBurstIndex").setValue(topsarSplitOpEnv.getLastBurstIndex());
 
-                FileWriter fileWriter = new FileWriter(applyorbitfileTaskDir + File.separator + productDate + ".xml");
+                FileWriter fileWriter = new FileWriter(targetGraphFile + ".xml");
                 GraphIO.write(graph, fileWriter);
                 fileWriter.flush();
                 fileWriter.close();
 
-                Common.runGPTScript(applyorbitfileTaskDir + File.separator + productDate + ".xml", "applyorbitfile");
+                Common.runGPTScript(targetGraphFile + ".xml", "applyorbitfile");
 
-                Product product = ProductIO.readProduct(applyorbitfileTaskDir + File.separator + productDate + "_sub.dim");
-                VirtualBand sourceBand = (VirtualBand) Arrays.stream(product.getBands()).filter(band -> band.getName().toLowerCase().contains("intensity")).toArray()[0];
-                Common.exportProductToImg(sourceBand, 0.3f, 0.7f, new File(applyorbitfileResultDir + File.separator + productDate + "_sub.jpg"), "JPG");
+                Product product = ProductIO.readProduct(subsetTargetFile + ".dim");
+                VirtualBand sourceBand = (VirtualBand) Arrays.stream(product.getBands())
+                        .filter(band -> band.getName().toLowerCase().contains("intensity"))
+                        .toArray()[0];
+                Common.exportProductToImg(sourceBand, 0.3f, 0.7f, new File(subsetImgFile + ".jpg"), "JPG");
                 product.closeIO();
 
-                Files.deleteIfExists(Paths.get(applyorbitfileTaskDir + File.separator + productDate + "_sub.dim"));
-                Common.deleteDir(new File(applyorbitfileTaskDir + File.separator + productDate + "_sub.data"));
+                Files.deleteIfExists(Paths.get(subsetTargetFile + ".dim"));
+                Common.deleteDir(new File(subsetTargetFile + ".data"));
             }
 
             topsarSplitOpEnv.Dispose();

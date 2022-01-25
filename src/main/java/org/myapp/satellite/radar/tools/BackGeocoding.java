@@ -87,36 +87,45 @@ public class BackGeocoding {
             Matcher m = p.matcher(Paths.get(files[0]).getFileName().toString());
             m.find();
             String masterProductDate = m.group();
-
             m = p.matcher(Paths.get(files[1]).getFileName().toString());
             m.find();
             String slaveProductDate = m.group();
 
-            String pairProduct = masterProductDate + "_" + slaveProductDate;
+            String productDate = masterProductDate + "_" + slaveProductDate;
+
+            String targetFile = backgeocodingTaskDir + File.separator + productDate + Common.OperationPrefix.BACK_GEOCODING;
+            String targetGraphFile = backgeocodingTaskDir + File.separator + productDate + Common.OperationPrefix.BACK_GEOCODING;
+            String subsetTargetFile = backgeocodingTaskDir + File.separator + productDate + Common.OperationPrefix.BACK_GEOCODING + Common.OperationPrefix.SUBSET;
+            String subsetImgFile = backgeocodingResultDir + File.separator + productDate + Common.OperationPrefix.BACK_GEOCODING + Common.OperationPrefix.SUBSET;
 
             graph.getNode("Write(2)").getConfiguration().getChild("file")
-                    .setValue(backgeocodingTaskDir + File.separator + pairProduct + "_sub.dim");
-
+                    .setValue(subsetTargetFile + ".dim");
 
             graph.getNode("Read").getConfiguration().getChild("file").setValue(files[0]);
             graph.getNode("Read(2)").getConfiguration().getChild("file").setValue(files[1]);
             graph.getNode("Write").getConfiguration().getChild("file")
-                    .setValue(backgeocodingTaskDir + File.separator + pairProduct + ".dim");
+                    .setValue(targetFile + ".dim");
 
-            FileWriter fileWriter = new FileWriter(backgeocodingTaskDir + File.separator + pairProduct + ".xml");
+            FileWriter fileWriter = new FileWriter(targetGraphFile + ".xml");
             GraphIO.write(graph, fileWriter);
             fileWriter.flush();
             fileWriter.close();
 
-            Common.runGPTScript(backgeocodingTaskDir + File.separator + pairProduct + ".xml", "backgeocoding");
+            Common.runGPTScript(targetGraphFile + ".xml", "backgeocoding");
 
-            /*Product product = ProductIO.readProduct(backgeocodingTaskDir + File.separator + pairProduct + "_sub.dim");
-            VirtualBand sourceBand = (VirtualBand) Arrays.stream(product.getBands()).filter(band -> band.getName().toLowerCase().contains("intensity")).toArray()[0];
-            Common.exportProductToImg(sourceBand, 0.3f, 0.7f, new File(backgeocodingTaskDir + File.separator + pairProduct + "_sub.jpg"), "JPG");
+            Product product = ProductIO.readProduct(subsetTargetFile + ".dim");
+            VirtualBand sourceBand = (VirtualBand) Arrays.stream(product.getBands())
+                    .filter(band -> band.getName().toLowerCase().contains("intensity") && band.getName().toLowerCase().contains("mst"))
+                    .toArray()[0];
+            Common.exportProductToImg(sourceBand, 0.3f, 0.7f, new File(subsetImgFile + "_mst.jpg"), "JPG");
+            sourceBand = (VirtualBand) Arrays.stream(product.getBands())
+                    .filter(band -> band.getName().toLowerCase().contains("intensity") && band.getName().toLowerCase().contains("slv"))
+                    .toArray()[0];
+            Common.exportProductToImg(sourceBand, 0.3f, 0.7f, new File(subsetImgFile + "_slv.jpg"), "JPG");
             product.closeIO();
 
-            Files.deleteIfExists(Paths.get(backgeocodingTaskDir + File.separator + pairProduct + "_sub.dim"));
-            Common.deleteDir(new File(backgeocodingTaskDir + File.separator + pairProduct + "_sub.data"));*/
+            Files.deleteIfExists(Paths.get(subsetTargetFile + ".dim"));
+            Common.deleteDir(new File(subsetTargetFile + ".data"));
 
 
         } catch (Exception ex) {

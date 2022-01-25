@@ -20,6 +20,13 @@ import java.time.Instant;
 
 public class Common {
 
+    public static class OperationPrefix {
+        public static String SUBSET = "_sub";
+        public static String APPLY_ORBIT_FILE = "_orb";
+        public static String BACK_GEOCODING = "_cor";
+
+    }
+
     public enum TaskStatus {
 
         COMPLETED("Completed"),
