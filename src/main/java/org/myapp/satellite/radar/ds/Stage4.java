@@ -1,16 +1,12 @@
 
 package org.myapp.satellite.radar.ds;
 
-import org.esa.s1tbx.commons.Sentinel1Utils;
-import org.esa.s1tbx.insar.gpf.InSARStackOverview;
-import org.esa.snap.core.dataio.ProductIO;
-import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.myapp.utils.ConsoleArgsReader;
-import org.myapp.utils.Routines;
+import org.myapp.utils.Common;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -140,19 +136,19 @@ public class Stage4 {
 
         String topophaseremovalDir = taskDir + "" + File.separator + "topophaseremoval";
         if (Files.exists(Paths.get(topophaseremovalDir))) {
-            Routines.deleteDir(new File(topophaseremovalDir));
+            Common.deleteDir(new File(topophaseremovalDir));
         }
         new File(topophaseremovalDir).mkdirs();
 
         String esdModifyDir = taskDir + "" + File.separator + "esdmodify";
         if (Files.exists(Paths.get(esdModifyDir))) {
-            Routines.deleteDir(new File(esdModifyDir));
+            Common.deleteDir(new File(esdModifyDir));
         }
         new File(esdModifyDir).mkdirs();
 
         String stage4Dir = taskDir + "" + File.separator + "stage4";
         if (Files.exists(Paths.get(stage4Dir))) {
-            Routines.deleteDir(new File(stage4Dir));
+            Common.deleteDir(new File(stage4Dir));
         }
         new File(stage4Dir).mkdirs();
 
@@ -196,7 +192,7 @@ public class Stage4 {
             fileWriter.flush();
             fileWriter.close();
 
-            Routines.runGPTScript(stage4Dir + File.separator + fileName + ".xml","Stage4");
+            Common.runGPTScript(stage4Dir + File.separator + fileName + ".xml","Stage4");
 
         }
 

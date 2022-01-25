@@ -3,7 +3,7 @@ package org.myapp.satellite.radar.NDAI;
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
 import org.myapp.utils.ConsoleArgsReader;
-import org.myapp.utils.Routines;
+import org.myapp.utils.Common;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -98,12 +98,12 @@ public class Stage4 {
         }).map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
 
         if (Files.exists(Paths.get(stackDir))) {
-            Routines.deleteDir(new File(stackDir));
+            Common.deleteDir(new File(stackDir));
         }
         new File(stackDir).mkdirs();
 
         if (Files.exists(Paths.get(stage4Dir))) {
-            Routines.deleteDir(new File(stage4Dir));
+            Common.deleteDir(new File(stage4Dir));
         }
         new File(stage4Dir).mkdirs();
 
@@ -122,6 +122,6 @@ public class Stage4 {
         fileWriter.flush();
         fileWriter.close();
 
-        Routines.runGPTScript( stage4Dir + File.separator + "stack.xml", "Stage4");
+        Common.runGPTScript( stage4Dir + File.separator + "stack.xml", "Stage4");
     }
 }

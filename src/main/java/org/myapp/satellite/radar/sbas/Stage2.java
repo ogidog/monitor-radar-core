@@ -11,7 +11,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.myapp.utils.ConsoleArgsReader;
 import org.myapp.utils.Graph1;
-import org.myapp.utils.Routines;
+import org.myapp.utils.Common;
 
 import java.io.File;
 import java.io.FileReader;
@@ -264,12 +264,12 @@ public class Stage2 {
         }).toArray(Product[]::new);
 
         if (Files.exists(Paths.get(backgeocodingDir))) {
-            Routines.deleteDir(new File(backgeocodingDir));
+            Common.deleteDir(new File(backgeocodingDir));
         }
         new File(backgeocodingDir).mkdirs();
 
         if (Files.exists(Paths.get(stage2Dir))) {
-            Routines.deleteDir(new File(stage2Dir));
+            Common.deleteDir(new File(stage2Dir));
         }
         new File(stage2Dir).mkdirs();
 
@@ -388,7 +388,7 @@ public class Stage2 {
             fileWriter.flush();
             fileWriter.close();
 
-            Routines.runGPTScript(stage2Dir + File.separator + masterProductDate + "_" + slaveProductDate + ".xml", "Stage2");
+            Common.runGPTScript(stage2Dir + File.separator + masterProductDate + "_" + slaveProductDate + ".xml", "Stage2");
         }
 
     }

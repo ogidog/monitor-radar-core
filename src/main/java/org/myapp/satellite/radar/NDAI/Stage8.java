@@ -7,7 +7,7 @@ import org.esa.snap.core.datamodel.ProductData;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.myapp.utils.ConsoleArgsReader;
-import org.myapp.utils.Routines;
+import org.myapp.utils.Common;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -117,7 +117,7 @@ public class Stage8 {
         String stackFile = taskDir + File.separator + "stack" + File.separator + "stack.dim";
 
         if (Files.exists(Paths.get(ndaiDir))) {
-            Routines.deleteDir(new File(ndaiDir));
+            Common.deleteDir(new File(ndaiDir));
         }
         new File(ndaiDir).mkdirs();
 

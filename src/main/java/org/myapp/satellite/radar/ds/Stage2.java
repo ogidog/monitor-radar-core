@@ -10,7 +10,7 @@ import org.esa.snap.core.gpf.graph.GraphIO;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.myapp.utils.ConsoleArgsReader;
-import org.myapp.utils.Routines;
+import org.myapp.utils.Common;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -164,19 +164,19 @@ public class Stage2 {
 
         String esdDir = taskDir + "" + File.separator + "esd";
         if (Files.exists(Paths.get(esdDir))) {
-            Routines.deleteDir(new File(esdDir));
+            Common.deleteDir(new File(esdDir));
         }
         new File(esdDir).mkdirs();
 
         String subsetEsdDir = taskDir + "" + File.separator + "subsetesd";
         if (Files.exists(Paths.get(subsetEsdDir))) {
-            Routines.deleteDir(new File(subsetEsdDir));
+            Common.deleteDir(new File(subsetEsdDir));
         }
         new File(subsetEsdDir).mkdirs();
 
         String stage2Dir = taskDir + "" + File.separator + "stage2";
         if (Files.exists(Paths.get(stage2Dir))) {
-            Routines.deleteDir(new File(stage2Dir));
+            Common.deleteDir(new File(stage2Dir));
         }
         new File(stage2Dir).mkdirs();
 
@@ -235,7 +235,7 @@ public class Stage2 {
                 fileWriter.flush();
                 fileWriter.close();
 
-                Routines.runGPTScript(stage2Dir + File.separator + slaveProductName + ".xml","Stage2");
+                Common.runGPTScript(stage2Dir + File.separator + slaveProductName + ".xml","Stage2");
 
             }
         }

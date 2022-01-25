@@ -7,7 +7,7 @@ import org.esa.snap.core.gpf.graph.GraphIO;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.myapp.utils.ConsoleArgsReader;
-import org.myapp.utils.Routines;
+import org.myapp.utils.Common;
 
 import java.io.File;
 import java.io.FileReader;
@@ -184,12 +184,12 @@ public class Stage7 {
         String stage7Dir = taskDir + "" + File.separator + "stage7";
 
         if (Files.exists(Paths.get(stage7Dir))) {
-            Routines.deleteDir(new File(stage7Dir));
+            Common.deleteDir(new File(stage7Dir));
         }
         new File(stage7Dir).mkdirs();
 
         if (Files.exists(Paths.get(prepDir))) {
-            Routines.deleteDir(new File(prepDir));
+            Common.deleteDir(new File(prepDir));
         }
         new File(prepDir).mkdirs();
 
@@ -239,7 +239,7 @@ public class Stage7 {
             fileWriter.flush();
             fileWriter.close();
 
-            Routines.runGPTScript(stage7Dir + File.separator + datePair + "_tc.xml", "Stage7");
+            Common.runGPTScript(stage7Dir + File.separator + datePair + "_tc.xml", "Stage7");
         }
 
         fileReader = new FileReader(graphDir + File.separator + "tc_dem.xml");
@@ -254,7 +254,7 @@ public class Stage7 {
         fileWriter.flush();
         fileWriter.close();
 
-        Routines.runGPTScript(stage7Dir + File.separator + "dem_tc.xml", "Stage7");
+        Common.runGPTScript(stage7Dir + File.separator + "dem_tc.xml", "Stage7");
 
         Files.copy(Paths.get(configDir + File.separator + "smallbaselineApp.cfg"), Paths.get(prepDir + File.separator + "smallbaselineApp.cfg"));
 

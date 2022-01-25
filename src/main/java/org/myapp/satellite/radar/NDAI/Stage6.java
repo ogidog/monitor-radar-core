@@ -7,7 +7,7 @@ import org.esa.snap.core.gpf.graph.GraphIO;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.myapp.utils.ConsoleArgsReader;
-import org.myapp.utils.Routines;
+import org.myapp.utils.Common;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -110,12 +110,12 @@ public class Stage6 {
         String avgStdFile = avgStdDir + File.separator + "cohavgstd.dim";
 
         if (Files.exists(Paths.get(stablePointDir))) {
-            Routines.deleteDir(new File(stablePointDir));
+            Common.deleteDir(new File(stablePointDir));
         }
         new File(stablePointDir).mkdirs();
 
         if (Files.exists(Paths.get(stage6Dir))) {
-            Routines.deleteDir(new File(stage6Dir));
+            Common.deleteDir(new File(stage6Dir));
         }
         new File(stage6Dir).mkdirs();
 
@@ -160,7 +160,7 @@ public class Stage6 {
         fileWriter.flush();
         fileWriter.close();
 
-        Routines.runGPTScript(stage6Dir + File.separator + "stablepoints.xml", "Stage6");
+        Common.runGPTScript(stage6Dir + File.separator + "stablepoints.xml", "Stage6");
 
     }
 

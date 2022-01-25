@@ -1,12 +1,13 @@
 package org.myapp.satellite.radar.tools;
 
+import com.sun.jna.platform.win32.COM.util.annotation.ComObject;
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.myapp.satellite.radar.shared.TOPSARSplitOpEnv;
 import org.myapp.utils.ConsoleArgsReader;
-import org.myapp.utils.Routines;
+import org.myapp.utils.Common;
 
 import java.io.File;
 import java.io.FileReader;
@@ -51,13 +52,13 @@ public class ApplyOrbitFiles {
 
             String applyorbitfileTaskDir = taskDir + "" + File.separator + "applyorbitfile";
             if (Files.exists(Paths.get(applyorbitfileTaskDir))) {
-                Routines.deleteDir(new File(applyorbitfileTaskDir));
+                Common.deleteDir(new File(applyorbitfileTaskDir));
             }
             new File(applyorbitfileTaskDir).mkdirs();
 
             String applyorbitfileResultDir = resultDir + File.separator + taskId + File.separator + "public" + File.separator + "applyorbitfile";
             if (Files.exists(Paths.get(applyorbitfileResultDir))) {
-                Routines.deleteDir(new File(applyorbitfileResultDir));
+                Common.deleteDir(new File(applyorbitfileResultDir));
             }
             new File(applyorbitfileResultDir).mkdirs();
 
@@ -98,8 +99,13 @@ public class ApplyOrbitFiles {
                 fileWriter.flush();
                 fileWriter.close();
 
-                Routines.runGPTScript(applyorbitfileTaskDir + File.separator
+                Common.runGPTScript(applyorbitfileTaskDir + File.separator
                         + Paths.get(files[i]).getFileName().toString().replace(".zip", "") + ".xml", "applyorbitfile");
+
+                Common.exportProductToImg(applyorbitfileTaskDir + File.separator + productDate + "_sub.dim", applyorbitfileResultDir, 0.4f, 0.7f, "JPG");
+
+                Files.deleteIfExists(Paths.get(applyorbitfileTaskDir + File.separator + productDate + "_sub.dim"));
+                Common.deleteDir(new File(applyorbitfileTaskDir + File.separator + productDate + "_sub.data"));
             }
 
             topsarSplitOpEnv.Dispose();

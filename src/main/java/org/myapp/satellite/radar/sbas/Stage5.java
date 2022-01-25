@@ -1,7 +1,7 @@
 package org.myapp.satellite.radar.sbas;
 
 import org.myapp.utils.ConsoleArgsReader;
-import org.myapp.utils.Routines;
+import org.myapp.utils.Common;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -66,7 +66,7 @@ public class Stage5 {
                 .map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
 
         if (Files.exists(Paths.get(stage5Dir))) {
-            Routines.deleteDir(new File(stage5Dir));
+            Common.deleteDir(new File(stage5Dir));
         }
         new File(stage5Dir).mkdirs();
 
@@ -76,7 +76,7 @@ public class Stage5 {
                 if (line.contains("snaphu.conf")) {
                     String snaphuConfDir = Paths.get(files[i]).getParent().toString().trim();
                     String[] command = line.replace("#", "").trim().split(" ");
-                    Routines.runScript(command, snaphuConfDir, "Stage5");
+                    Common.runScript(command, snaphuConfDir, "Stage5");
                     break;
                 }
             }

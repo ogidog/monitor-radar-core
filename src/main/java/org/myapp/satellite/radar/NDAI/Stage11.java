@@ -5,7 +5,7 @@ import org.esa.snap.core.gpf.graph.GraphIO;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.myapp.utils.ConsoleArgsReader;
-import org.myapp.utils.Routines;
+import org.myapp.utils.Common;
 
 import java.io.File;
 import java.io.FileReader;
@@ -86,7 +86,7 @@ public class Stage11 {
         }
 
         if (Files.exists(Paths.get(stage11Dir))) {
-            Routines.deleteDir(new File(stage11Dir));
+            Common.deleteDir(new File(stage11Dir));
         }
         new File(stage11Dir).mkdirs();
 
@@ -110,7 +110,7 @@ public class Stage11 {
         fileWriter.flush();
         fileWriter.close();
 
-        Routines.runGPTScript(stage11Dir + File.separator + "tcfilteredavgndai.xml", "Stage11");
+        Common.runGPTScript(stage11Dir + File.separator + "tcfilteredavgndai.xml", "Stage11");
     }
 
     static HashMap getParameters(String configDir) {

@@ -5,7 +5,7 @@ import org.esa.snap.core.gpf.graph.GraphIO;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.myapp.utils.ConsoleArgsReader;
-import org.myapp.utils.Routines;
+import org.myapp.utils.Common;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -118,12 +118,12 @@ public class Stage3 {
         }).map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
 
         if (Files.exists(Paths.get(subsetDir))) {
-            Routines.deleteDir(new File(subsetDir));
+            Common.deleteDir(new File(subsetDir));
         }
         new File(subsetDir).mkdirs();
 
         if (Files.exists(Paths.get(stage3Dir))) {
-            Routines.deleteDir(new File(stage3Dir));
+            Common.deleteDir(new File(stage3Dir));
         }
         new File(stage3Dir).mkdirs();
 
@@ -157,7 +157,7 @@ public class Stage3 {
             fileWriter.flush();
             fileWriter.close();
 
-            Routines.runGPTScript(stage3Dir + File.separator + fileName + ".xml", "Stage3");
+            Common.runGPTScript(stage3Dir + File.separator + fileName + ".xml", "Stage3");
         }
     }
 

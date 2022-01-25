@@ -1,11 +1,25 @@
 package org.myapp.utils;
 
+import com.bc.ceres.core.ProgressMonitor;
+import org.esa.snap.core.dataio.ProductIO;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.rcp.util.ProgressHandleMonitor;
+import org.netbeans.api.progress.ProgressHandle;
+import org.netbeans.api.progress.ProgressHandleFactory;
+
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Instant;
 
-public class Routines {
+public class Common {
 
     public enum TaskStatus {
 
@@ -97,7 +111,7 @@ public class Routines {
                     br = new BufferedReader(new FileReader(taskDir + File.separator + "start_time"));
                     long startTimeInSeconds = Long.valueOf(br.readLine());
                     br.close();
-                    long totalElapsedTime = Instant.now().getEpochSecond() -  startTimeInSeconds;
+                    long totalElapsedTime = Instant.now().getEpochSecond() - startTimeInSeconds;
                     Files.deleteIfExists(Paths.get(taskDir + File.separator + "total_elapsed_time"));
                     pr = new PrintWriter(taskDir + File.separator + "total_elapsed_time");
                     pr.print(totalElapsedTime);
@@ -150,5 +164,48 @@ public class Routines {
         } else {
             return false;
         }
+    }
+
+    public static void exportProductToImg(String ProductFile, String resultDir, float resizeFactor, float compressFactor, String imageFormat) {
+        try {
+
+            ProgressHandle handle = ProgressHandleFactory.createSystemHandle("");
+            ProgressMonitor pm = new ProgressHandleMonitor(handle);
+
+            Product product = ProductIO.readProduct(ProductFile);
+            Band intensityBand = product.getBandAt(0);
+            int width = intensityBand.getRasterWidth();
+            int height = intensityBand.getRasterHeight();
+            intensityBand.readRasterDataFully();
+
+            BufferedImage bi = intensityBand.createRgbImage(pm);
+            BufferedImage resized = resize(bi, (int) (width * resizeFactor), (int) (height * resizeFactor));
+
+            ImageWriter jpgWriter = ImageIO.getImageWritersByFormatName(imageFormat).next();
+            ImageWriteParam jpgWriteParam = jpgWriter.getDefaultWriteParam();
+
+            if (jpgWriteParam.canWriteCompressed()) {
+                jpgWriteParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+                jpgWriteParam.setCompressionQuality(compressFactor);
+            }
+
+            jpgWriter.setOutput(ImageIO.createImageOutputStream(new File(resultDir + File.separator + product.getName() + ".jpg")));
+            jpgWriter.write(null, new IIOImage(resized, null, null), jpgWriteParam);
+            jpgWriter.dispose();
+
+            product.closeIO();
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private static BufferedImage resize(BufferedImage img, int width, int height) {
+        Image tmp = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+        BufferedImage resized = new BufferedImage(width, height, BufferedImage.SCALE_SMOOTH);
+        Graphics2D g2d = resized.createGraphics();
+        g2d.drawImage(tmp, 0, 0, null);
+        g2d.dispose();
+        return resized;
     }
 }

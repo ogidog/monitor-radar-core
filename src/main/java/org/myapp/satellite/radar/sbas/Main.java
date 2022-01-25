@@ -1,7 +1,7 @@
 package org.myapp.satellite.radar.sbas;
 
 import org.myapp.utils.ConsoleArgsReader;
-import org.myapp.utils.Routines;
+import org.myapp.utils.Common;
 
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -27,11 +27,11 @@ public class Main {
 
             resultDir = Paths.get(configDir).getParent().toString();
 
-            if (Routines.checkPreviousErrors(resultDir)) {
+            if (Common.checkPreviousErrors(resultDir)) {
                 return;
             }
 
-            Routines.writeStatus(resultDir, Routines.TaskStatus.PROCESSING, "");
+            Common.writeStatus(resultDir, Common.TaskStatus.PROCESSING, "");
 
             if (firstStep <= 1 && lastStep >= 1) {
                 Stage1.process(outputDir, configDir, graphDir, filesList, taskId);
@@ -64,10 +64,10 @@ public class Main {
                 Stage10.process(outputDir, taskId);
             }
 
-            Routines.writeStatus(resultDir, Routines.TaskStatus.COMPLETED, "");
+            Common.writeStatus(resultDir, Common.TaskStatus.COMPLETED, "");
 
         } catch (Exception e) {
-            Routines.writeStatus(resultDir, Routines.TaskStatus.ERROR, e.getMessage());
+            Common.writeStatus(resultDir, Common.TaskStatus.ERROR, e.getMessage());
 
             // TODO: убрать
             e.printStackTrace();

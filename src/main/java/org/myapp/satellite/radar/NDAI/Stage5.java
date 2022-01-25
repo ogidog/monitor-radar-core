@@ -5,7 +5,7 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
 import org.myapp.utils.ConsoleArgsReader;
-import org.myapp.utils.Routines;
+import org.myapp.utils.Common;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -113,12 +113,12 @@ public class Stage5 {
         String stackFile = stackDir + File.separator + "stack.dim";
 
         if (Files.exists(Paths.get(avgStdDir))) {
-            Routines.deleteDir(new File(avgStdDir));
+            Common.deleteDir(new File(avgStdDir));
         }
         new File(avgStdDir).mkdirs();
 
         if (Files.exists(Paths.get(stage5Dir))) {
-            Routines.deleteDir(new File(stage5Dir));
+            Common.deleteDir(new File(stage5Dir));
         }
         new File(stage5Dir).mkdirs();
 
@@ -166,6 +166,6 @@ public class Stage5 {
         fileWriter.flush();
         fileWriter.close();
 
-        Routines.runGPTScript(  stage5Dir + File.separator + "cohavgstd.xml", "Stage5");
+        Common.runGPTScript(  stage5Dir + File.separator + "cohavgstd.xml", "Stage5");
     }
 }

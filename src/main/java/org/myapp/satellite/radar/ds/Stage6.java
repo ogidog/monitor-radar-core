@@ -5,7 +5,7 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
 import org.myapp.utils.ConsoleArgsReader;
-import org.myapp.utils.Routines;
+import org.myapp.utils.Common;
 
 import java.io.File;
 import java.io.FileReader;
@@ -104,7 +104,7 @@ public class Stage6 {
 
         String stage6Dir = taskDir + File.separator + "stage6";
         if (Files.exists(Paths.get(stage6Dir))) {
-            Routines.deleteDir(new File(stage6Dir));
+            Common.deleteDir(new File(stage6Dir));
         }
         new File(stage6Dir).mkdirs();
 
@@ -139,7 +139,7 @@ public class Stage6 {
         fileWriter.flush();
         fileWriter.close();
 
-        Routines.runGPTScript(stage6Dir + File.separator + fileName + ".xml", "Stage6");
+        Common.runGPTScript(stage6Dir + File.separator + fileName + ".xml", "Stage6");
 
     }
 

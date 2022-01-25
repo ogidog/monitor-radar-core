@@ -3,7 +3,7 @@ package org.myapp.satellite.radar.sbas;
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
 import org.myapp.utils.ConsoleArgsReader;
-import org.myapp.utils.Routines;
+import org.myapp.utils.Common;
 
 import java.io.File;
 import java.io.FileReader;
@@ -116,12 +116,12 @@ public class Stage4 {
         }
 
         if (Files.exists(Paths.get(snaphuexportDir))) {
-            Routines.deleteDir(new File(snaphuexportDir));
+            Common.deleteDir(new File(snaphuexportDir));
         }
         new File(snaphuexportDir).mkdirs();
 
         if (Files.exists(Paths.get(stage4Dir))) {
-            Routines.deleteDir(new File(stage4Dir));
+            Common.deleteDir(new File(stage4Dir));
         }
         new File(stage4Dir).mkdirs();
 
@@ -140,7 +140,7 @@ public class Stage4 {
             fileWriter.flush();
             fileWriter.close();
 
-            Routines.runGPTScript(stage4Dir + File.separator + Paths.get(files[i]).getFileName().toString().replace(".dim", ".xml"), "Stage4");
+            Common.runGPTScript(stage4Dir + File.separator + Paths.get(files[i]).getFileName().toString().replace(".dim", ".xml"), "Stage4");
 
         }
     }

@@ -4,7 +4,7 @@ package org.myapp.satellite.radar.ds;
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
 import org.myapp.utils.ConsoleArgsReader;
-import org.myapp.utils.Routines;
+import org.myapp.utils.Common;
 
 import java.io.File;
 import java.io.FileReader;
@@ -162,13 +162,13 @@ public class Stage5 {
 
         String stampsexportDir = taskDir + "" + File.separator + "stampsexport";
         if (Files.exists(Paths.get(stampsexportDir))) {
-            Routines.deleteDir(new File(stampsexportDir));
+            Common.deleteDir(new File(stampsexportDir));
         }
         new File(stampsexportDir).mkdirs();
 
         String stage5Dir = taskDir + "" + File.separator + "stage5";
         if (Files.exists(Paths.get(stage5Dir))) {
-            Routines.deleteDir(new File(stage5Dir));
+            Common.deleteDir(new File(stage5Dir));
         }
         new File(stage5Dir).mkdirs();
 
@@ -195,7 +195,7 @@ public class Stage5 {
             fileWriter.flush();
             fileWriter.close();
 
-            Routines.runGPTScript(stage5Dir + File.separator + fileName + ".xml", "Stage5");
+            Common.runGPTScript(stage5Dir + File.separator + fileName + ".xml", "Stage5");
         }
     }
 }

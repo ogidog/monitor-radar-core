@@ -7,7 +7,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.myapp.satellite.radar.shared.TOPSARSplitOpEnv;
 import org.myapp.utils.ConsoleArgsReader;
-import org.myapp.utils.Routines;
+import org.myapp.utils.Common;
 
 import java.io.File;
 import java.io.FileReader;
@@ -118,7 +118,7 @@ public class Stage1 {
         }
 
         if (Files.exists(Paths.get(taskDir))) {
-            Routines.deleteDir(new File(taskDir));
+            Common.deleteDir(new File(taskDir));
         }
         new File(taskDir).mkdirs();
         String stage1Dir = taskDir + "" + File.separator + "stage1";
@@ -150,7 +150,7 @@ public class Stage1 {
             fileWriter.flush();
             fileWriter.close();
 
-            Routines.runGPTScript(stage1Dir + File.separator
+            Common.runGPTScript(stage1Dir + File.separator
                     + Paths.get(files[i]).getFileName().toString().replace(".zip", "") + ".xml","Stage1");
 
         }
