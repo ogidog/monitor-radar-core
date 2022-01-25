@@ -1,6 +1,5 @@
 package org.myapp.satellite.radar.tools;
 
-import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
 import org.json.simple.JSONObject;
@@ -23,16 +22,17 @@ public class ApplyOrbitFiles {
 
     public static void main(String[] args) {
 
-        String outputDir, configDir, graphDir, filesList, taskId, resultDir = "";
+        String outputDir, filesList, taskId, resultDir = "";
 
         try {
             HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
             outputDir = consoleParameters.get("outputDir").toString();
-            configDir = consoleParameters.get("configDir").toString();
-            graphDir = consoleParameters.get("graphDir").toString();
-            filesList = consoleParameters.get("filesList").toString();
             resultDir = consoleParameters.get("resultDir").toString();
+            filesList = consoleParameters.get("filesList").toString();
             taskId = consoleParameters.get("taskId").toString();
+
+            String configDir = resultDir + File.separator + taskId + File.separator + "config";
+            String graphDir = resultDir + File.separator + taskId + File.separator + "graphs";
 
             HashMap parameters = getParameters(configDir);
             if (parameters == null) {
@@ -55,7 +55,7 @@ public class ApplyOrbitFiles {
             }
             new File(applyorbitfileTaskDir).mkdirs();
 
-            String applyorbitfileResultDir = resultDir + "" + File.separator + "public" + File.separator + "applyorbitfile";
+            String applyorbitfileResultDir = resultDir + File.separator + taskId + File.separator + "public" + File.separator + "applyorbitfile";
             if (Files.exists(Paths.get(applyorbitfileResultDir))) {
                 Routines.deleteDir(new File(applyorbitfileResultDir));
             }
@@ -80,7 +80,7 @@ public class ApplyOrbitFiles {
                 String productDate = m.group();
 
                 graph.getNode("Write(2)").getConfiguration().getChild("file")
-                        .setValue(applyorbitfileResultDir + File.separator + productDate + "_sub.dim");
+                        .setValue(applyorbitfileTaskDir + File.separator + productDate + "_sub.dim");
 
                 topsarSplitOpEnv.getSplitParameters(files[i], parameters);
 
