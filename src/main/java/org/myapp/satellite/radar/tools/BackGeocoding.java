@@ -103,8 +103,8 @@ public class BackGeocoding {
                 graph.getNode("Write(2)").getConfiguration().getChild("file")
                         .setValue(subsetTargetFile + ".dim");
 
-                graph.getNode("Read").getConfiguration().getChild("file").setValue(files[0]);
-                graph.getNode("Read(2)").getConfiguration().getChild("file").setValue(files[1]);
+                graph.getNode("Read").getConfiguration().getChild("file").setValue(files[2 * i]);
+                graph.getNode("Read(2)").getConfiguration().getChild("file").setValue(files[2 * i + 1]);
                 graph.getNode("Write").getConfiguration().getChild("file")
                         .setValue(targetFile + ".dim");
 
@@ -131,7 +131,6 @@ public class BackGeocoding {
             }
 
         } catch (Exception ex) {
-
             // TODO: delete
             ex.printStackTrace();
         }
