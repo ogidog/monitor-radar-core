@@ -1,0 +1,61 @@
+{
+  "name": "dataset",
+  "description": "DataSet settings are used for the processing.",
+  "label": "DataSet",
+  "parameters": {
+    "filesList": {
+      "name": "filesList",
+      "options": [
+        ""
+      ],
+      "index": 1,
+      "defaultvalue": "",
+      "label": "DataSet",
+      "type": "inputTypes.select",
+      "value": "/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20190424T002757_20190424T002825_015941_01DF44_0579.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20191021T002805_20191021T002833_018566_022FB2_49FB.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20191009T002805_20191009T002833_018391_022A52_7B47.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20190927T002805_20190927T002833_018216_0224CE_3A4E.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20190927T002805_20190927T002833_018216_0224CE_A280.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20190915T002805_20190915T002833_018041_021F69_DB97.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20190903T002804_20190903T002832_017866_0219F6_B17E.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20190822T002804_20190822T002832_017691_021488_89A8.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20190810T002803_20190810T002831_017516_020F11_A062.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20190729T002802_20190729T002830_017341_0209C7_AE41.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20190717T002801_20190717T002829_017166_0204AA_FA5B.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20190705T002801_20190705T002829_016991_01FF82_C637.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20190623T002800_20190623T002828_016816_01FA53_BD70.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20190611T002759_20190611T002827_016641_01F521_18C7.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20190530T002759_20190530T002826_016466_01EFEC_CA12.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20190518T002758_20190518T002826_016291_01EA92_5ADE.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20190506T002757_20190506T002825_016116_01E521_A0F5.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200418T002803_20200418T002831_021191_028362_BC5E.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200804T002809_20200804T002837_022766_02B353_5CC2.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200909T002811_20200909T002839_023291_02C3BB_011F.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200816T002810_20200816T002838_022941_02B8B9_0B9B.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200921T002811_20200921T002839_023466_02C934_BE6D.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200711T002808_20200711T002835_022416_02A8B7_FFA2.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200828T002811_20200828T002838_023116_02BE3C_EFC1.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200629T002807_20200629T002835_022241_02A364_1215.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200617T002806_20200617T002834_022066_029E0B_6064.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200605T002806_20200605T002833_021891_0298C0_42C8.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200524T002805_20200524T002833_021716_029380_4651.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200512T002804_20200512T002832_021541_028E5D_2589.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200430T002803_20200430T002831_021366_0288E6_3BB1.zip,/mnt/satimg/Satellites/Sentinel-1A/S1B_IW_SLC__1SDV_20200723T002808_20200723T002836_022591_02AE08_C77F.zip"
+    },
+    "masterName": {
+      "name": "masterName",
+      "options": [
+        ""
+      ],
+      "index": 2,
+      "defaultvalue": "",
+      "label": "Select master",
+      "type": "inputTypes.select",
+      "value": ""
+    },
+    "databaseIp": {
+      "name": "databaseIp",
+      "index": 5,
+      "defaultvalue": "10.101.80.252",
+      "label": "Database IP",
+      "type": "inputTypes.text",
+      "value": "localhost"
+    },
+    "databaseLogin": {
+      "name": "databaseLogin",
+      "index": 6,
+      "defaultvalue": "satimg_adm",
+      "label": "Database Login",
+      "type": "inputTypes.text",
+      "value": "satimg_adm"
+    },
+    "databasePasswd": {
+      "name": "databasePasswd",
+      "index": 7,
+      "defaultvalue": "rfnfkjucybvrjd",
+      "label": "Database Password",
+      "type": "inputTypes.text",
+      "value": "rfnfkjucybvrjd"
+    },
+    "databaseName": {
+      "name": "databaseName",
+      "index": 8,
+      "defaultvalue": "satimgdb",
+      "label": "Database Name",
+      "type": "inputTypes.text",
+      "value": "satimgdb"
+    }
+  }
+}

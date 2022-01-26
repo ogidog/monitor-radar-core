@@ -1,0 +1,29 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="ApplyOrbitFiles" type="Application" factoryName="Application" nameIsGenerated="true">
+    <option name="ALTERNATIVE_JRE_PATH" value="1.8" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+    <option name="MAIN_CLASS_NAME" value="org.myapp.satellite.radar.tools.ApplyOrbitFiles" />
+    <module name="monitor-radar-core-v3" />
+    <option name="PROGRAM_PARAMETERS" value="outputDir=&quot;D:\mnt\fast\dockers\monitor-radar-core\ogidog_mail_ru&quot; filesList=&quot;D:\mnt\satimg\Sentinel-1\Novokuznetsk\S1B_IW_SLC__1SDV_20190729T002802_20190729T002830_017341_0209C7_AE41.zip,D:\mnt\satimg\Sentinel-1\Novokuznetsk\S1B_IW_SLC__1SDV_20190810T002803_20190810T002831_017516_020F11_A062.zip,D:\mnt\satimg\Sentinel-1\Novokuznetsk\S1B_IW_SLC__1SDV_20190822T002804_20190822T002832_017691_021488_89A8.zip&quot; resultDir=&quot;D:\mnt\hdfs\user\ogidog_mail_ru\monitor-radar-core\results&quot; taskId=1642612066993" />
+    <shortenClasspath name="MANIFEST" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="org.myapp.satellite.radar.tools.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <extension name="net.ashald.envfile">
+      <option name="IS_ENABLED" value="false" />
+      <option name="IS_SUBST" value="false" />
+      <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
+      <option name="IS_IGNORE_MISSING_FILES" value="false" />
+      <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
+      <ENTRIES>
+        <ENTRY IS_ENABLED="true" PARSER="runconfig" />
+      </ENTRIES>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

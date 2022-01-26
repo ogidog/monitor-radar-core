@@ -1,0 +1,123 @@
+{
+  "label": "Interferogram",
+  "name": "interferogram",
+  "description": "This operator computes (complex) interferogram, with or without subtraction of the flat-earth (reference) phase. The reference phase is subtracted using a 2d-polynomial that is also estimated in this operator.",
+  "parameters": {
+    "subtractFlatEarthPhase": {
+      "index": 0,
+      "name": "subtractFlatEarthPhase",
+      "label": "Subtract flat-earth phase",
+      "type": "inputTypes.checkBox",
+      "value": true,
+      "defaultvalue": true
+    },
+    "srpPolynomialDegree": {
+      "index": 1,
+      "name": "srpPolynomialDegree",
+      "label": "Degree of Flat Earth polynomial",
+      "type": "inputTypes.select",
+      "value": 5,
+      "defaultvalue": 5,
+      "dependfrom": "subtractFlatEarthPhase",
+      "options": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "srpNumberPoints": {
+      "index": 2,
+      "name": "srpNumberPoints",
+      "label": "Number of Flat Earth estimation points",
+      "type": "inputTypes.select",
+      "value": 501,
+      "defaultvalue": 501,
+      "dependfrom": "subtractFlatEarthPhase",
+      "options": [
+        301,
+        401,
+        501,
+        601,
+        701,
+        801,
+        901,
+        1001
+      ]
+    },
+    "demName": {
+      "index": 1,
+      "name": "demName",
+      "label": "External DEM",
+      "type": "inputTypes.select",
+      "value": "SRTM 3Sec",
+      "defaultvalue": "SRTM 3Sec",
+      "options": [
+        "ACE2_5min",
+        "ACE30",
+        "CDEM",
+        "ASTER 1sec GDEM",
+        "GETASSE30",
+        "SRTM 1Sec Grid",
+        "SRTM 1Sec HGT",
+        "SRTM 3Sec"
+      ]
+    },
+    "orbitDegree": {
+      "index": 3,
+      "name": "orbitDegree",
+      "label": "Degree of orbit (polynomial) interpolator",
+      "type": "inputTypes.select",
+      "value": 3,
+      "defaultvalue": 3,
+      "dependfrom": "subtractFlatEarthPhase",
+      "options": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "includeCoherence": {
+      "index": 4,
+      "name": "includeCoherence",
+      "label": "Include coherence estimation",
+      "type": "inputTypes.checkBox",
+      "value": true,
+      "defaultvalue": true
+    },
+    "squarePixel": {
+      "index": 5,
+      "name": "squarePixel",
+      "label": "Use ground square pixel",
+      "type": "inputTypes.checkBox",
+      "value": true,
+      "defaultvalue": true,
+      "dependfrom": "includeCoherence"
+    },
+    "cohWinRg": {
+      "index": 6,
+      "name": "cohWinRg",
+      "label": "Coherence Range Window Size",
+      "type": "inputTypes.text",
+      "value": 10,
+      "defaultvalue": 10,
+      "dependfrom": "includeCoherence"
+    },
+    "cohWinAz": {
+      "index": 7,
+      "name": "cohWinAz",
+      "label": "Coherence Azimuth Window Size",
+      "type": "inputTypes.text",
+      "value": 2,
+      "defaultvalue": 10,
+      "inversdependfrom": "squarePixel",
+      "dependfrom": "includeCoherence"
+    }
+  }
+}

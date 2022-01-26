@@ -1,0 +1,28 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="BackGeocoding" type="Application" factoryName="Application" nameIsGenerated="true">
+    <option name="ALTERNATIVE_JRE_PATH" value="1.8.0_261" />
+    <option name="MAIN_CLASS_NAME" value="org.myapp.satellite.radar.tools.BackGeocoding" />
+    <module name="monitor-radar-core-v3" />
+    <option name="PROGRAM_PARAMETERS" value="outputDir=D:\mnt\fast\dockers\monitor-radar-core\ogidog_mail_ru resultDir=D:\mnt\hdfs\user\ogidog_mail_ru\monitor-radar-core\results filesList=D:\mnt\fast\dockers\monitor-radar-core\ogidog_mail_ru\1642612066993\applyorbitfile\20190729_orb.dim,D:\mnt\fast\dockers\monitor-radar-core\ogidog_mail_ru\1642612066993\applyorbitfile\20190810_orb.dim,D:\mnt\fast\dockers\monitor-radar-core\ogidog_mail_ru\1642612066993\applyorbitfile\20190810_orb.dim,D:\mnt\fast\dockers\monitor-radar-core\ogidog_mail_ru\1642612066993\applyorbitfile\20190822_orb.dim taskId=1642612066993" />
+    <shortenClasspath name="MANIFEST" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="org.myapp.satellite.radar.tools.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <extension name="net.ashald.envfile">
+      <option name="IS_ENABLED" value="false" />
+      <option name="IS_SUBST" value="false" />
+      <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
+      <option name="IS_IGNORE_MISSING_FILES" value="false" />
+      <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
+      <ENTRIES>
+        <ENTRY IS_ENABLED="true" PARSER="runconfig" />
+      </ENTRIES>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

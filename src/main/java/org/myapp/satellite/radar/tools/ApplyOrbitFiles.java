@@ -113,7 +113,7 @@ public class ApplyOrbitFiles {
                 VirtualBand sourceBand = (VirtualBand) Arrays.stream(product.getBands())
                         .filter(band -> band.getName().toLowerCase().contains("intensity"))
                         .toArray()[0];
-                Common.exportProductToImg(sourceBand, 0.3f, 0.7f, new File(subsetImgFile + ".jpg"), "JPG");
+                Common.exportProductToImg(sourceBand, 0.3f, 0.7f, new File(subsetImgFile + ".jpg"), "JPG", false);
                 product.closeIO();
 
                 Files.deleteIfExists(Paths.get(subsetTargetFile + ".dim"));

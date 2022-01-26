@@ -1,6 +1,7 @@
 package org.myapp.satellite.radar.tools;
 
 import org.esa.snap.core.dataio.ProductIO;
+import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.VirtualBand;
 import org.esa.snap.core.gpf.graph.Graph;
@@ -55,15 +56,15 @@ public class Interferogram {
 
             String interferogramTaskDir = taskDir + "" + File.separator + "interferogram";
             if (Files.exists(Paths.get(interferogramTaskDir))) {
-                //Common.deleteDir(new File(interferogramTaskDir));
+                Common.deleteDir(new File(interferogramTaskDir));
             }
-            //new File(interferogramTaskDir).mkdirs();
+            new File(interferogramTaskDir).mkdirs();
 
             String interferogramResultDir = resultDir + File.separator + taskId + File.separator + "public" + File.separator + "interferogram";
             if (Files.exists(Paths.get(interferogramResultDir))) {
-                //Common.deleteDir(new File(interferogramResultDir));
+                Common.deleteDir(new File(interferogramResultDir));
             }
-            //new File(interferogramResultDir).mkdirs();
+            new File(interferogramResultDir).mkdirs();
 
             String graphFile = "interferogram.xml";
             FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
@@ -88,7 +89,8 @@ public class Interferogram {
                 String targetFile = interferogramTaskDir + File.separator + productDate + Common.OperationPrefix.INTERFEROGRAM;
                 String targetGraphFile = interferogramTaskDir + File.separator + productDate + Common.OperationPrefix.INTERFEROGRAM;
                 String subsetTargetFile = interferogramTaskDir + File.separator + productDate + Common.OperationPrefix.INTERFEROGRAM + Common.OperationPrefix.SUBSET;
-                String subsetImgFile = interferogramResultDir + File.separator + productDate + Common.OperationPrefix.INTERFEROGRAM + Common.OperationPrefix.SUBSET;
+                String subsetImgFile1 = interferogramResultDir + File.separator + productDate + Common.OperationPrefix.INTERFEROGRAM + Common.OperationPrefix.SUBSET;
+                String subsetImgFile2 = interferogramResultDir + File.separator + productDate + Common.OperationPrefix.COHERENCE + Common.OperationPrefix.SUBSET;
 
                 graph.getNode("Write(2)").getConfiguration().getChild("file")
                         .setValue(subsetTargetFile + ".dim");
@@ -100,15 +102,21 @@ public class Interferogram {
                 fileWriter.flush();
                 fileWriter.close();
 
-                //Common.runGPTScript(targetGraphFile + ".xml", "interferogram");
+                Common.runGPTScript(targetGraphFile + ".xml", "interferogram");
 
                 Product product = ProductIO.readProduct(subsetTargetFile + ".dim");
-                VirtualBand sourceBand = (VirtualBand) Arrays.stream(product.getBands())
+                Band sourceBand = (Band) Arrays.stream(product.getBands())
                         .filter(band -> band.getName().toLowerCase().contains("phase"))
                         .toArray()[0];
-                Common.exportProductToImg(sourceBand, 0.3f, 0.7f, new File(subsetImgFile + ".jpg"), "JPG");
+                Common.exportProductToImg(sourceBand, 0.3f, 0.7f, new File(subsetImgFile1 + ".jpg"), "JPG", true);
+                sourceBand = (Band) Arrays.stream(product.getBands())
+                        .filter(band -> band.getName().toLowerCase().contains("coh"))
+                        .toArray()[0];
+                Common.exportProductToImg(sourceBand, 0.3f, 0.7f, new File(subsetImgFile2 + ".jpg"), "JPG", false);
                 product.closeIO();
 
+                Files.deleteIfExists(Paths.get(subsetTargetFile + ".dim"));
+                Common.deleteDir(new File(subsetTargetFile + ".data"));
             }
 
 
@@ -146,7 +154,7 @@ public class Interferogram {
 
             // Interferogram Formation
             parser = new JSONParser();
-            fileReader = new FileReader(configDir + File.separator + "interferogram_formation.json");
+            fileReader = new FileReader(configDir + File.separator + "interferogram.json");
             jsonObject = (JSONObject) parser.parse(fileReader);
             jsonParameters = (HashMap) jsonObject.get("parameters");
 
