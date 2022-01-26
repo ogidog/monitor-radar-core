@@ -24,6 +24,8 @@ public class Common {
         public static String SUBSET = "_sub";
         public static String APPLY_ORBIT_FILE = "_orb";
         public static String BACK_GEOCODING = "_cor";
+        public static String ENCHANCE_SPECTRAL_DIVERSITY = "_esd";
+        public static String INTERFEROGRAM = "_intf";
 
     }
 
@@ -172,34 +174,52 @@ public class Common {
         }
     }
 
-    public static void exportProductToImg(VirtualBand sourceBand, float resizeFactor, float compressFactor, File targetFile, String imageFormat) {
+    public static void exportProductToImg(VirtualBand sourceBand, float resizeFactor, float compressFactor, File targetFile, String imageFormat, boolean isColor) {
         try {
 
             ProgressHandle handle = ProgressHandleFactory.createSystemHandle("");
             ProgressMonitor pm = new ProgressHandleMonitor(handle);
 
-            //Product product = ProductIO.readProduct(ProductFile);
-            //Band intensityBand = Arrays.stream(product.getBands()).filter(band->band.getName().toLowerCase().contains("intensity")).toArray()[0];
             int width = sourceBand.getRasterWidth();
             int height = sourceBand.getRasterHeight();
             sourceBand.readRasterDataFully();
 
-            BufferedImage bi = sourceBand.createColorIndexedImage(pm); //.createRgbImage(pm);
-            BufferedImage resized = resize(bi, (int) (width * resizeFactor), (int) (height * resizeFactor));
+            //BufferedImage bi = sourceBand.createColorIndexedImage(pm);
+            //BufferedImage resized = resize(bi, (int) (width * resizeFactor), (int) (height * resizeFactor));
+
+
+            final BufferedImage bi =
+                    new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+
+            float max = 0;
+            float min = (float) (2.0f * Math.PI);
+
+            for (int y = 0; y < height; ++y) {
+                for (int x = 0; x < width; ++x) {
+                    float v = sourceBand.getPixelFloat(x, y);
+                    if (v + Math.PI < min) min = v;
+                    if (v + Math.PI >= max) max = v;
+                }
+            }
+            for (int y = 0; y < height; ++y) {
+                for (int x = 0; x < width; ++x) {
+                    bi.setRGB(x, y, Color.HSBtoRGB((float) (((sourceBand.getPixelFloat(x, y) + Math.PI) - min) / (max - min)), 1.0f, 1.0f));
+                }
+            }
+            //BufferedImage resized = resize(bi, (int) (width * resizeFactor), (int) (height * resizeFactor));
 
             ImageWriter jpgWriter = ImageIO.getImageWritersByFormatName(imageFormat).next();
             ImageWriteParam jpgWriteParam = jpgWriter.getDefaultWriteParam();
 
             if (jpgWriteParam.canWriteCompressed()) {
-                jpgWriteParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-                jpgWriteParam.setCompressionQuality(compressFactor);
+                //jpgWriteParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+                //jpgWriteParam.setCompressionQuality(compressFactor);
             }
 
             jpgWriter.setOutput(ImageIO.createImageOutputStream(targetFile));
-            jpgWriter.write(null, new IIOImage(resized, null, null), jpgWriteParam);
+            jpgWriter.write(null, new IIOImage(bi, null, null), jpgWriteParam);
             jpgWriter.dispose();
 
-            //product.closeIO();
 
         } catch (Exception ex) {
             ex.printStackTrace();
