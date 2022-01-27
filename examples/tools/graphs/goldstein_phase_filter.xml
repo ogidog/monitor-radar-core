@@ -1,0 +1,78 @@
+<graph id="Graph">
+  <version>1.0</version>
+  <node id="Subset">
+    <operator>Subset</operator>
+    <sources>
+      <sourceProduct refid="GoldsteinPhaseFiltering"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <sourceBands/>
+      <region>0,0,0,0</region>
+      <referenceBand/>
+      <geoRegion>POLYGON ((0 0, 0 0, 0 0, 0 0, 0 0, 0 0))</geoRegion>
+      <subSamplingX>1</subSamplingX>
+      <subSamplingY>1</subSamplingY>
+      <fullSwath>false</fullSwath>
+      <tiePointGrids/>
+      <copyMetadata>true</copyMetadata>
+    </parameters>
+  </node>
+  <node id="Read">
+    <operator>Read</operator>
+    <sources/>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>D:\Satellites\Sentinel-1A\norilsk\S1B_IW_SLC__1SDV_20191218T004022_20191218T004045_019412_024AB9_3C1C.zip</file>
+    </parameters>
+  </node>
+  <node id="GoldsteinPhaseFiltering">
+    <operator>GoldsteinPhaseFiltering</operator>
+    <sources>
+      <sourceProduct refid="Read"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <alpha>1.0</alpha>
+      <FFTSizeString>64</FFTSizeString>
+      <windowSizeString>3</windowSizeString>
+      <useCoherenceMask>false</useCoherenceMask>
+      <coherenceThreshold>0.2</coherenceThreshold>
+    </parameters>
+  </node>
+  <node id="Write(2)">
+    <operator>Write</operator>
+    <sources>
+      <sourceProduct refid="Subset"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>F:\mnt\fast\dockers\monitor-radar-core\monitor_radar_usr\processing\1580805641883\filter\target.dim</file>
+      <formatName>BEAM-DIMAP</formatName>
+    </parameters>
+  </node>
+  <node id="Write">
+    <operator>Write</operator>
+    <sources>
+      <sourceProduct refid="GoldsteinPhaseFiltering"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>F:\mnt\fast\dockers\monitor-radar-core\monitor_radar_usr\processing\1580805641883\filter\target.dim</file>
+      <formatName>BEAM-DIMAP</formatName>
+    </parameters>
+  </node>
+  <applicationData id="Presentation">
+    <Description/>
+    <node id="Subset">
+      <displayPosition x="205.0" y="155.0"/>
+    </node>
+    <node id="Read">
+      <displayPosition x="22.0" y="96.0"/>
+    </node>
+    <node id="GoldsteinPhaseFiltering">
+      <displayPosition x="161.0" y="96.0"/>
+    </node>
+    <node id="Write(2)">
+      <displayPosition x="379.0" y="154.0"/>
+    </node>
+    <node id="Write">
+      <displayPosition x="384.0" y="97.0"/>
+    </node>
+  </applicationData>
+</graph>
