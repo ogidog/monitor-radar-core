@@ -26,6 +26,7 @@ public class Common {
         public static String BACK_GEOCODING = "_cor";
         public static String ENCHANCE_SPECTRAL_DIVERSITY = "_esd";
         public static String INTERFEROGRAM = "_intf";
+        public static String GOLDSTEIN_PHASE_FILTERING = "_filt";
         public static String COHERENCE = "_coh";
 
     }
