@@ -1,0 +1,49 @@
+{
+			  "label": "Goldstein Phase Filtering",
+			  "name": "goldstein_phase_filtering",
+			  "description": "The method implemented in this operator is a nonlinear adaptive algorithm proposed by Goldstein and Werner.",
+			  "parameters": {
+				"alpha": {
+				    "index": 0,
+                				  "name": "alpha",
+                				  "label": "Adaptive Filter Exponent in [0, 1]",
+                				  "type": "inputTypes.text",
+                				  "value": 1.0,
+                				  "defaultvalue": 1.0,
+				},
+				"FFTSizeString": {
+				  "index": 1,
+				  "name": "FFTSizeString",
+				  "label": "FFT Size",
+				  "type": "inputTypes.select",
+				  "value": 64,
+				  "defaultvalue": 64,
+				  "options": [32, 64, 128, 256]
+				},
+				"windowSizeString": {
+				"index": 2,
+                				  "name": "windowSizeString",
+                				  "label": "Windows Size",
+                				  "type": "inputTypes.select",
+                				  "value": 3,
+                				  "defaultvalue": 3,
+                				  "options": [3, 5, 7]
+				},
+				"useCoherenceMask": {
+				"index": 3,
+                                				  "name": "useCoherenceMask",
+                                				  "label": "Use coherence mask",
+                                				  "type": "inputTypes.checkBox",
+                                				  "value": false,
+                                				  "defaultvalue": false,
+				},
+				"coherenceThreshold": {
+				"index": 4,
+                                                				  "name": "coherenceThreshold",
+                                                				  "label": "Coherence Threshold in [0, 1]",
+                                                				  "type": "inputTypes.text",
+                                                				  "value": 0.2,
+                                                				  "defaultvalue": 0.2,
+				}
+			  }
+			}
