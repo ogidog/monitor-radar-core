@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class GoldsteinPhaseFilter {
+public class GoldsteinPhaseFiltering {
 
     public static void main(String[] args) {
         String outputDir, filesList, taskId, resultDir = "";
