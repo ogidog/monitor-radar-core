@@ -69,8 +69,6 @@ public class Snaphu {
             Graph graph2 = GraphIO.read(fileReader);
             fileReader.close();
 
-            String[] files = Files.walk(Paths.get(intfDir)).filter(file -> file.toString().endsWith(".dim"))
-                    .map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
 
             for (int i = 0; i < files.length; i++) {
                 Path path = Paths.get(files[i]);
