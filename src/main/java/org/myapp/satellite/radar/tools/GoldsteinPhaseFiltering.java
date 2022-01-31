@@ -80,7 +80,7 @@ public class GoldsteinPhaseFiltering {
 
 
             for (int i = 0; i < files.length; i++) {
-                String productDate = Paths.get(files[i]).getFileName().toString().replace(Common.OperationPrefix.INTERFEROGRAM, "").replace(".dim", "");
+                String productDate = Paths.get(files[i]).getFileName().toString().replace(Common.OperationPrefix.TOPO_PHASE_REMOVAL, "").replace(".dim", "");
 
                 String targetFile = goldsteinphasefilteringTaskDir + File.separator + productDate + Common.OperationPrefix.GOLDSTEIN_PHASE_FILTERING;
                 String targetGraphFile = goldsteinphasefilteringTaskDir + File.separator + productDate + Common.OperationPrefix.GOLDSTEIN_PHASE_FILTERING;
@@ -88,10 +88,9 @@ public class GoldsteinPhaseFiltering {
                 String subsetImgFile1 = goldsteinphasefilteringResultDir + File.separator + productDate + Common.OperationPrefix.GOLDSTEIN_PHASE_FILTERING + Common.OperationPrefix.SUBSET;
                 String subsetImgFile2 = goldsteinphasefilteringResultDir + File.separator + productDate + Common.OperationPrefix.COHERENCE + Common.OperationPrefix.SUBSET;
 
-                graph.getNode("Write(2)").getConfiguration().getChild("file")
+                graph.getNode("Write").getConfiguration().getChild("file")
                         .setValue(subsetTargetFile + ".dim");
                 graph.getNode("Read").getConfiguration().getChild("file").setValue(files[i]);
-                graph.getNode("Write").getConfiguration().getChild("file").setValue(targetFile + ".dim");
 
                 FileWriter fileWriter = new FileWriter(targetGraphFile + ".xml");
                 GraphIO.write(graph, fileWriter);
@@ -111,8 +110,6 @@ public class GoldsteinPhaseFiltering {
                 Common.exportProductToImg(sourceBand, 0.3f, 0.7f, new File(subsetImgFile2 + ".jpg"), "JPG", false);
                 product.closeIO();
 
-                Files.deleteIfExists(Paths.get(subsetTargetFile + ".dim"));
-                Common.deleteDir(new File(subsetTargetFile + ".data"));
             }
 
 

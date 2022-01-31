@@ -37,20 +37,10 @@
       <coherenceThreshold>0.2</coherenceThreshold>
     </parameters>
   </node>
-  <node id="Write(2)">
-    <operator>Write</operator>
-    <sources>
-      <sourceProduct refid="Subset"/>
-    </sources>
-    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>F:\mnt\fast\dockers\monitor-radar-core\monitor_radar_usr\processing\1580805641883\filter\target.dim</file>
-      <formatName>BEAM-DIMAP</formatName>
-    </parameters>
-  </node>
   <node id="Write">
     <operator>Write</operator>
     <sources>
-      <sourceProduct refid="GoldsteinPhaseFiltering"/>
+      <sourceProduct refid="Subset"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <file>F:\mnt\fast\dockers\monitor-radar-core\monitor_radar_usr\processing\1580805641883\filter\target.dim</file>
@@ -68,11 +58,8 @@
     <node id="GoldsteinPhaseFiltering">
       <displayPosition x="161.0" y="96.0"/>
     </node>
-    <node id="Write(2)">
-      <displayPosition x="379.0" y="154.0"/>
-    </node>
     <node id="Write">
-      <displayPosition x="384.0" y="97.0"/>
+      <displayPosition x="379.0" y="154.0"/>
     </node>
   </applicationData>
 </graph>
