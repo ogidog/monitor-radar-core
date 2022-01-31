@@ -28,6 +28,8 @@ public class Common {
         public static String INTERFEROGRAM = "_intf";
         public static String GOLDSTEIN_PHASE_FILTERING = "_filt";
         public static String COHERENCE = "_coh";
+        public static String TOPO_PHASE_REMOVAL = "_topo";
+        public static String ELEVATION = "_elev";
 
     }
 

@@ -20,8 +20,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+public class TopoPhaseRemoval {
 
-public class Interferogram {
     public static void main(String[] args) {
         String outputDir, filesList, taskId, resultDir = "";
 
@@ -38,7 +38,7 @@ public class Interferogram {
 
             HashMap parameters = getParameters(configDir);
             if (parameters == null) {
-                throw new Exception("Interferogram: Fail to read parameters.");
+                throw new Exception("TopoPhaseRemoval: Fail to read parameters.");
             }
 
             String taskDir = outputDir + File.separator + taskId;
@@ -51,19 +51,19 @@ public class Interferogram {
                 files = filesList.split(",");
             }
 
-            String interferogramTaskDir = taskDir + "" + File.separator + "interferogram";
-            if (Files.exists(Paths.get(interferogramTaskDir))) {
-                Common.deleteDir(new File(interferogramTaskDir));
+            String topophaseremovalTaskDir = taskDir + "" + File.separator + "topophaseremoval";
+            if (Files.exists(Paths.get(topophaseremovalTaskDir))) {
+                Common.deleteDir(new File(topophaseremovalTaskDir));
             }
-            new File(interferogramTaskDir).mkdirs();
+            new File(topophaseremovalTaskDir).mkdirs();
 
-            String interferogramResultDir = resultDir + File.separator + taskId + File.separator + "public" + File.separator + "interferogram";
-            if (Files.exists(Paths.get(interferogramResultDir))) {
-                Common.deleteDir(new File(interferogramResultDir));
+            String topophaseremovalResultDir = resultDir + File.separator + taskId + File.separator + "public" + File.separator + "topophaseremoval";
+            if (Files.exists(Paths.get(topophaseremovalResultDir))) {
+                Common.deleteDir(new File(topophaseremovalResultDir));
             }
-            new File(interferogramResultDir).mkdirs();
+            new File(topophaseremovalResultDir).mkdirs();
 
-            String graphFile = "interferogram.xml";
+            String graphFile = "topo_phase_removal.xml";
             FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
             Graph graph = GraphIO.read(fileReader);
             fileReader.close();
@@ -73,21 +73,23 @@ public class Interferogram {
                     .setValue("POLYGON((" + ((HashMap) parameters.get("Subset")).get("geoRegion").toString() + "))");
 
             // Interferogram
-            ((HashMap) parameters.get("Interferogram")).forEach((key, value) -> {
-                graph.getNode("Interferogram").getConfiguration().getChild(key.toString())
+            ((HashMap) parameters.get("TopoPhaseRemoval")).forEach((key, value) -> {
+                graph.getNode("TopoPhaseRemoval").getConfiguration().getChild(key.toString())
                         .setValue(value.toString());
             });
 
 
             for (int i = 0; i < files.length; i++) {
-                String productDate = Paths.get(files[i]).getFileName().toString().replace(Common.OperationPrefix.BACK_GEOCODING, "")
-                        .replace(Common.OperationPrefix.ENCHANCE_SPECTRAL_DIVERSITY, "").replace(".dim", "");
+                String productDate = Paths.get(files[i]).getFileName().toString().replace(Common.OperationPrefix.INTERFEROGRAM, "").replace(".dim", "");
 
-                String targetFile = interferogramTaskDir + File.separator + productDate + Common.OperationPrefix.INTERFEROGRAM;
-                String targetGraphFile = interferogramTaskDir + File.separator + productDate + Common.OperationPrefix.INTERFEROGRAM;
-                String subsetTargetFile = interferogramTaskDir + File.separator + productDate + Common.OperationPrefix.INTERFEROGRAM + Common.OperationPrefix.SUBSET;
-                String subsetImgFile1 = interferogramResultDir + File.separator + productDate + Common.OperationPrefix.INTERFEROGRAM + Common.OperationPrefix.SUBSET;
-                String subsetImgFile2 = interferogramResultDir + File.separator + productDate + Common.OperationPrefix.COHERENCE + Common.OperationPrefix.SUBSET;
+                String targetFile = topophaseremovalTaskDir + File.separator + productDate + Common.OperationPrefix.TOPO_PHASE_REMOVAL;
+                String targetGraphFile = topophaseremovalTaskDir + File.separator + productDate + Common.OperationPrefix.TOPO_PHASE_REMOVAL;
+                String subsetTargetFile = topophaseremovalTaskDir + File.separator + productDate + Common.OperationPrefix.TOPO_PHASE_REMOVAL + Common.OperationPrefix.SUBSET;
+                String subsetImgFile1 = topophaseremovalResultDir + File.separator + productDate + Common.OperationPrefix.INTERFEROGRAM + Common.OperationPrefix.SUBSET;
+                String subsetImgFile2 = topophaseremovalResultDir + File.separator + productDate + Common.OperationPrefix.COHERENCE + Common.OperationPrefix.SUBSET;
+                String subsetImgFile3 = topophaseremovalResultDir + File.separator + productDate + Common.OperationPrefix.ELEVATION + Common.OperationPrefix.SUBSET;
+                String subsetImgFile4 = topophaseremovalResultDir + File.separator + productDate + Common.OperationPrefix.TOPO_PHASE_REMOVAL + Common.OperationPrefix.SUBSET;
+
 
                 graph.getNode("Write(2)").getConfiguration().getChild("file")
                         .setValue(subsetTargetFile + ".dim");
@@ -99,7 +101,7 @@ public class Interferogram {
                 fileWriter.flush();
                 fileWriter.close();
 
-                Common.runGPTScript(targetGraphFile + ".xml", "interferogram");
+                Common.runGPTScript(targetGraphFile + ".xml", "topophaseremoval");
 
                 Product product = ProductIO.readProduct(subsetTargetFile + ".dim");
                 Band sourceBand = (Band) Arrays.stream(product.getBands())
@@ -110,6 +112,14 @@ public class Interferogram {
                         .filter(band -> band.getName().toLowerCase().contains("coh"))
                         .toArray()[0];
                 Common.exportProductToImg(sourceBand, 0.3f, 0.7f, new File(subsetImgFile2 + ".jpg"), "JPG", false);
+                sourceBand = (Band) Arrays.stream(product.getBands())
+                        .filter(band -> band.getName().toLowerCase().contains("elevation"))
+                        .toArray()[0];
+                Common.exportProductToImg(sourceBand, 0.3f, 0.7f, new File(subsetImgFile3 + ".jpg"), "JPG", true);
+                sourceBand = (Band) Arrays.stream(product.getBands())
+                        .filter(band -> band.getName().toLowerCase().contains("topo"))
+                        .toArray()[0];
+                Common.exportProductToImg(sourceBand, 0.3f, 0.7f, new File(subsetImgFile4 + ".jpg"), "JPG", true);
                 product.closeIO();
 
                 Files.deleteIfExists(Paths.get(subsetTargetFile + ".dim"));
@@ -149,9 +159,9 @@ public class Interferogram {
 
             fileReader.close();
 
-            // Interferogram Formation
+            // Topo Phase Removal Formation
             parser = new JSONParser();
-            fileReader = new FileReader(configDir + File.separator + "interferogram.json");
+            fileReader = new FileReader(configDir + File.separator + "topo_phase_removal.json");
             jsonObject = (JSONObject) parser.parse(fileReader);
             jsonParameters = (HashMap) jsonObject.get("parameters");
 
@@ -161,7 +171,7 @@ public class Interferogram {
                 Map.Entry pair = (Map.Entry) it.next();
                 parameters.put(pair.getKey().toString(), ((HashMap) jsonParameters.get(pair.getKey().toString())).get("value"));
             }
-            stageParameters.put("Interferogram", parameters);
+            stageParameters.put("TopoPhaseRemoval", parameters);
             fileReader.close();
 
             return stageParameters;
@@ -171,4 +181,5 @@ public class Interferogram {
             return null;
         }
     }
+
 }
