@@ -41,19 +41,19 @@ public class Snaphu {
                 files = filesList.split(",");
             }
 
-            String snaphuexportTaskDir = taskDir + "" + File.separator + "snaphuexport";
+            String snaphuexportTaskDir = taskDir + "" + File.separator + "snaphu_export";
             if (Files.exists(Paths.get(snaphuexportTaskDir))) {
                 Common.deleteDir(new File(snaphuexportTaskDir));
             }
             new File(snaphuexportTaskDir).mkdirs();
 
-            String snaphuimportTaskDir = taskDir + "" + File.separator + "snaphuimport";
+            String snaphuimportTaskDir = taskDir + "" + File.separator + "snaphu_import";
             if (Files.exists(Paths.get(snaphuimportTaskDir))) {
                 Common.deleteDir(new File(snaphuimportTaskDir));
             }
             new File(snaphuimportTaskDir).mkdirs();
 
-            String snaphuimportResultDir = resultDir + File.separator + taskId + File.separator + "public" + File.separator + "snaphuimport";
+            String snaphuimportResultDir = resultDir + File.separator + taskId + File.separator + "public" + File.separator + "snaphu_import";
             if (Files.exists(Paths.get(snaphuimportResultDir))) {
                 Common.deleteDir(new File(snaphuimportResultDir));
             }

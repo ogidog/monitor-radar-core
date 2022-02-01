@@ -51,13 +51,13 @@ public class GoldsteinPhaseFiltering {
                 files = filesList.split(",");
             }
 
-            String goldsteinphasefilteringTaskDir = taskDir + "" + File.separator + "goldsteinphasefiltering";
+            String goldsteinphasefilteringTaskDir = taskDir + "" + File.separator + "goldstein_phase_filtering";
             if (Files.exists(Paths.get(goldsteinphasefilteringTaskDir))) {
                 Common.deleteDir(new File(goldsteinphasefilteringTaskDir));
             }
             new File(goldsteinphasefilteringTaskDir).mkdirs();
 
-            String goldsteinphasefilteringResultDir = resultDir + File.separator + taskId + File.separator + "public" + File.separator + "goldsteinphasefiltering";
+            String goldsteinphasefilteringResultDir = resultDir + File.separator + taskId + File.separator + "public" + File.separator + "goldstein_phase_filtering";
             if (Files.exists(Paths.get(goldsteinphasefilteringResultDir))) {
                 Common.deleteDir(new File(goldsteinphasefilteringResultDir));
             }
@@ -97,7 +97,7 @@ public class GoldsteinPhaseFiltering {
                 fileWriter.flush();
                 fileWriter.close();
 
-                Common.runGPTScript(targetGraphFile + ".xml", "goldsteinphasefiltering");
+                Common.runGPTScript(targetGraphFile + ".xml", "GoldsteinPhaseFiltering");
 
                 Product product = ProductIO.readProduct(subsetTargetFile + ".dim");
                 Band sourceBand = (Band) Arrays.stream(product.getBands())

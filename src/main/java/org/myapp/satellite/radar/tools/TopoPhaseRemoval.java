@@ -51,13 +51,13 @@ public class TopoPhaseRemoval {
                 files = filesList.split(",");
             }
 
-            String topophaseremovalTaskDir = taskDir + "" + File.separator + "topophaseremoval";
+            String topophaseremovalTaskDir = taskDir + "" + File.separator + "topo_phase_removal";
             if (Files.exists(Paths.get(topophaseremovalTaskDir))) {
                 Common.deleteDir(new File(topophaseremovalTaskDir));
             }
             new File(topophaseremovalTaskDir).mkdirs();
 
-            String topophaseremovalResultDir = resultDir + File.separator + taskId + File.separator + "public" + File.separator + "topophaseremoval";
+            String topophaseremovalResultDir = resultDir + File.separator + taskId + File.separator + "public" + File.separator + "topo_phase_removal";
             if (Files.exists(Paths.get(topophaseremovalResultDir))) {
                 Common.deleteDir(new File(topophaseremovalResultDir));
             }
@@ -101,7 +101,7 @@ public class TopoPhaseRemoval {
                 fileWriter.flush();
                 fileWriter.close();
 
-                Common.runGPTScript(targetGraphFile + ".xml", "topophaseremoval");
+                Common.runGPTScript(targetGraphFile + ".xml", "TopoPhaseRemoval");
 
                 Product product = ProductIO.readProduct(subsetTargetFile + ".dim");
                 Band sourceBand = (Band) Arrays.stream(product.getBands())

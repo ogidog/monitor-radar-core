@@ -55,20 +55,20 @@ public class ApplyOrbitFiles {
                 files = filesList.split(",");
             }
 
-            String applyorbitfileTaskDir = taskDir + "" + File.separator + "applyorbitfile";
+            String applyorbitfileTaskDir = taskDir + "" + File.separator + "apply_orbit_file";
             if (Files.exists(Paths.get(applyorbitfileTaskDir))) {
                 Common.deleteDir(new File(applyorbitfileTaskDir));
             }
             new File(applyorbitfileTaskDir).mkdirs();
 
-            String applyorbitfileResultDir = resultDir + File.separator + taskId + File.separator + "public" + File.separator + "applyorbitfile";
+            String applyorbitfileResultDir = resultDir + File.separator + taskId + File.separator + "public" + File.separator + "apply_orbit_file";
             if (Files.exists(Paths.get(applyorbitfileResultDir))) {
                 Common.deleteDir(new File(applyorbitfileResultDir));
             }
             new File(applyorbitfileResultDir).mkdirs();
 
             TOPSARSplitOpEnv topsarSplitOpEnv = new TOPSARSplitOpEnv();
-            String graphFile = "applyorbitfile.xml";
+            String graphFile = "apply_orbit_file.xml";
             FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
             Graph graph = GraphIO.read(fileReader);
             fileReader.close();
@@ -107,7 +107,7 @@ public class ApplyOrbitFiles {
                 fileWriter.flush();
                 fileWriter.close();
 
-                Common.runGPTScript(targetGraphFile + ".xml", "applyorbitfile");
+                Common.runGPTScript(targetGraphFile + ".xml", "ApplyOrbitFile");
 
                 Product product = ProductIO.readProduct(subsetTargetFile + ".dim");
                 VirtualBand sourceBand = (VirtualBand) Arrays.stream(product.getBands())

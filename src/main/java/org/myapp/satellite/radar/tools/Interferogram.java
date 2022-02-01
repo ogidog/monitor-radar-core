@@ -99,7 +99,7 @@ public class Interferogram {
                 fileWriter.flush();
                 fileWriter.close();
 
-                Common.runGPTScript(targetGraphFile + ".xml", "interferogram");
+                Common.runGPTScript(targetGraphFile + ".xml", "Interferogram");
 
                 Product product = ProductIO.readProduct(subsetTargetFile + ".dim");
                 Band sourceBand = (Band) Arrays.stream(product.getBands())

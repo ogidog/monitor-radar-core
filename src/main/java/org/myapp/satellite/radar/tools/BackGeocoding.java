@@ -56,13 +56,13 @@ public class BackGeocoding {
                 files = filesList.split(",");
             }
 
-            String backgeocodingTaskDir = taskDir + "" + File.separator + "backgeocoding";
+            String backgeocodingTaskDir = taskDir + "" + File.separator + "back_geocoding";
             if (Files.exists(Paths.get(backgeocodingTaskDir))) {
                 Common.deleteDir(new File(backgeocodingTaskDir));
             }
             new File(backgeocodingTaskDir).mkdirs();
 
-            String backgeocodingResultDir = resultDir + File.separator + taskId + File.separator + "public" + File.separator + "backgeocoding";
+            String backgeocodingResultDir = resultDir + File.separator + taskId + File.separator + "public" + File.separator + "back_geocoding";
             if (Files.exists(Paths.get(backgeocodingResultDir))) {
                 Common.deleteDir(new File(backgeocodingResultDir));
             }
@@ -113,7 +113,7 @@ public class BackGeocoding {
                 fileWriter.flush();
                 fileWriter.close();
 
-                Common.runGPTScript(targetGraphFile + ".xml", "backgeocoding");
+                Common.runGPTScript(targetGraphFile + ".xml", "BackGeocoding");
 
                 Product product = ProductIO.readProduct(subsetTargetFile + ".dim");
                 VirtualBand sourceBand = (VirtualBand) Arrays.stream(product.getBands())
