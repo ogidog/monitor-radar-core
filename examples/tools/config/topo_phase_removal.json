@@ -44,7 +44,7 @@
     "tileExtensionPercent": {
       "index": 2,
       "name": "tileExtensionPercent",
-      "label": "Define extension of tile for DEM simulation (optimization parameter) [%].",
+      "label": "Define extension of tile for DEM simulation [%]",
       "type": "inputTypes.select",
       "value": 100,
       "defaultvalue": 100,
