@@ -86,8 +86,8 @@ public class Interferogram {
                 String targetFile = interferogramTaskDir + File.separator + productDate + Common.OperationPrefix.INTERFEROGRAM;
                 String targetGraphFile = interferogramTaskDir + File.separator + productDate + Common.OperationPrefix.INTERFEROGRAM;
                 String subsetTargetFile = interferogramTaskDir + File.separator + productDate + Common.OperationPrefix.INTERFEROGRAM + Common.OperationPrefix.SUBSET;
-                String subsetImgFile1 = interferogramResultDir + File.separator + productDate + Common.OperationPrefix.INTERFEROGRAM + Common.OperationPrefix.SUBSET;
-                String subsetImgFile2 = interferogramResultDir + File.separator + productDate + Common.OperationPrefix.COHERENCE + Common.OperationPrefix.SUBSET;
+                String subsetImgFile1 = interferogramResultDir + File.separator + productDate + Common.OperationPrefix.INTERFEROGRAM;
+                String subsetImgFile2 = interferogramResultDir + File.separator + productDate + Common.OperationPrefix.COHERENCE;
 
                 graph.getNode("Write(2)").getConfiguration().getChild("file")
                         .setValue(subsetTargetFile + ".dim");

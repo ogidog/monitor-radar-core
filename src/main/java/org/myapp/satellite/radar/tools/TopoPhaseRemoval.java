@@ -85,10 +85,10 @@ public class TopoPhaseRemoval {
                 String targetFile = topophaseremovalTaskDir + File.separator + productDate + Common.OperationPrefix.TOPO_PHASE_REMOVAL;
                 String targetGraphFile = topophaseremovalTaskDir + File.separator + productDate + Common.OperationPrefix.TOPO_PHASE_REMOVAL;
                 String subsetTargetFile = topophaseremovalTaskDir + File.separator + productDate + Common.OperationPrefix.TOPO_PHASE_REMOVAL + Common.OperationPrefix.SUBSET;
-                String subsetImgFile1 = topophaseremovalResultDir + File.separator + productDate + Common.OperationPrefix.INTERFEROGRAM + Common.OperationPrefix.SUBSET;
-                String subsetImgFile2 = topophaseremovalResultDir + File.separator + productDate + Common.OperationPrefix.COHERENCE + Common.OperationPrefix.SUBSET;
-                String subsetImgFile3 = topophaseremovalResultDir + File.separator + productDate + Common.OperationPrefix.ELEVATION + Common.OperationPrefix.SUBSET;
-                String subsetImgFile4 = topophaseremovalResultDir + File.separator + productDate + Common.OperationPrefix.TOPO_PHASE_REMOVAL + Common.OperationPrefix.SUBSET;
+                String subsetImgFile1 = topophaseremovalResultDir + File.separator + productDate + Common.OperationPrefix.INTERFEROGRAM;
+                String subsetImgFile2 = topophaseremovalResultDir + File.separator + productDate + Common.OperationPrefix.COHERENCE;
+                String subsetImgFile3 = topophaseremovalResultDir + File.separator + productDate + Common.OperationPrefix.ELEVATION;
+                String subsetImgFile4 = topophaseremovalResultDir + File.separator + productDate + Common.OperationPrefix.TOPO_PHASE_REMOVAL;
 
 
                 graph.getNode("Write(2)").getConfiguration().getChild("file")

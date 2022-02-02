@@ -85,8 +85,8 @@ public class GoldsteinPhaseFiltering {
                 String targetFile = goldsteinphasefilteringTaskDir + File.separator + productDate + Common.OperationPrefix.GOLDSTEIN_PHASE_FILTERING;
                 String targetGraphFile = goldsteinphasefilteringTaskDir + File.separator + productDate + Common.OperationPrefix.GOLDSTEIN_PHASE_FILTERING;
                 String subsetTargetFile = goldsteinphasefilteringTaskDir + File.separator + productDate + Common.OperationPrefix.GOLDSTEIN_PHASE_FILTERING + Common.OperationPrefix.SUBSET;
-                String subsetImgFile1 = goldsteinphasefilteringResultDir + File.separator + productDate + Common.OperationPrefix.GOLDSTEIN_PHASE_FILTERING + Common.OperationPrefix.SUBSET;
-                String subsetImgFile2 = goldsteinphasefilteringResultDir + File.separator + productDate + Common.OperationPrefix.COHERENCE + Common.OperationPrefix.SUBSET;
+                String subsetImgFile1 = goldsteinphasefilteringResultDir + File.separator + productDate + Common.OperationPrefix.GOLDSTEIN_PHASE_FILTERING;
+                String subsetImgFile2 = goldsteinphasefilteringResultDir + File.separator + productDate + Common.OperationPrefix.COHERENCE;
 
                 graph.getNode("Write").getConfiguration().getChild("file")
                         .setValue(subsetTargetFile + ".dim");

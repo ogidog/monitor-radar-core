@@ -98,7 +98,7 @@ public class BackGeocoding {
                 String targetFile = backgeocodingTaskDir + File.separator + productDate + Common.OperationPrefix.BACK_GEOCODING;
                 String targetGraphFile = backgeocodingTaskDir + File.separator + productDate + Common.OperationPrefix.BACK_GEOCODING;
                 String subsetTargetFile = backgeocodingTaskDir + File.separator + productDate + Common.OperationPrefix.BACK_GEOCODING + Common.OperationPrefix.SUBSET;
-                String subsetImgFile = backgeocodingResultDir + File.separator + productDate + Common.OperationPrefix.BACK_GEOCODING + Common.OperationPrefix.SUBSET;
+                String subsetImgFile = backgeocodingResultDir + File.separator + productDate + Common.OperationPrefix.BACK_GEOCODING;
 
                 graph.getNode("Write(2)").getConfiguration().getChild("file")
                         .setValue(subsetTargetFile + ".dim");

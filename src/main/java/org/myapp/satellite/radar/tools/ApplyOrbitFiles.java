@@ -88,7 +88,7 @@ public class ApplyOrbitFiles {
                 String targetFile = applyorbitfileTaskDir + File.separator + productDate + Common.OperationPrefix.APPLY_ORBIT_FILE;
                 String targetGraphFile = applyorbitfileTaskDir + File.separator + productDate + Common.OperationPrefix.APPLY_ORBIT_FILE;
                 String subsetTargetFile = applyorbitfileTaskDir + File.separator + productDate + Common.OperationPrefix.APPLY_ORBIT_FILE + Common.OperationPrefix.SUBSET;
-                String subsetImgFile = applyorbitfileResultDir + File.separator + productDate + Common.OperationPrefix.APPLY_ORBIT_FILE + Common.OperationPrefix.SUBSET;
+                String subsetImgFile = applyorbitfileResultDir + File.separator + productDate + Common.OperationPrefix.APPLY_ORBIT_FILE;
 
                 graph.getNode("Write(2)").getConfiguration().getChild("file")
                         .setValue(subsetTargetFile + ".dim");
