@@ -1,0 +1,211 @@
+{
+  "label": "Persistent Scatterers",
+  "name": "persistent_scatterers",
+  "description": "The remote sensing technique able to measure displacements of the Earth’s surface over time. Persistent scatterer (PS)\nInSAR overcomes the decorrelation problem by identifying resolution elements whose echo is dominated by a single scatterer in a series of interferograms.",
+  "parameters": {
+    "max_topo_err": {
+      "index": 0,
+      "name": "max_topo_err",
+      "label": "Maximum uncorrelated DEM error",
+      "type": "inputTypes.text",
+      "value": 5,
+      "defaultvalue": 5
+    },
+    "filter_grid_size": {
+      "index": 1,
+      "name": "filter_grid_size",
+      "label": "Pixel size of grid",
+      "type": "inputTypes.text",
+      "value": 50,
+      "defaultvalue": 50
+    },
+    "filter_weighting": {
+      "index": 2,
+      "name": "filter_weighting",
+      "label": "Weighting scheme (PS probability squared)",
+      "type": "inputTypes.select",
+      "value": "P-square",
+      "defaultvalue": "P-square",
+      "options": [
+        "P-square",
+        "SNR"
+      ]
+    },
+    "clap_win": {
+      "index": 3,
+      "name": "clap_win",
+      "label": "CLAP filter window size",
+      "type": "inputTypes.text",
+      "value": 50,
+      "defaultvalue": 50
+    },
+    "clap_low_pass_wavelength": {
+      "index": 4,
+      "name": "clap_low_pass_wavelength",
+      "label": "CLAP filter cut-off spatial wavelength",
+      "type": "inputTypes.text",
+      "value": 800,
+      "defaultvalue": 800
+    },
+    "clap_alpha": {
+      "index": 5,
+      "name": "clap_alpha",
+      "label": "CLAP filter alpha term",
+      "type": "inputTypes.text",
+      "value": 1,
+      "defaultvalue": 1
+    },
+    "cohWinRg": {
+      "index": 6,
+      "name": "clap_beta",
+      "label": "CLAP filter beta term",
+      "type": "inputTypes.text",
+      "value": 0.3,
+      "defaultvalue": 0.3
+    },
+    "gamma_change_convergence": {
+      "index": 7,
+      "name": "gamma_change_convergence",
+      "label": "Threshold for change in mean value of gamma",
+      "type": "inputTypes.text",
+      "value": 0.005,
+      "defaultvalue": 0.005
+    },
+    "gamma_max_iterations": {
+      "index": 8,
+      "name": "gamma_change_convergence",
+      "label": "Maximum number of iterations",
+      "type": "inputTypes.text",
+      "value": 3,
+      "defaultvalue": 3
+    },
+    "select_method": {
+      "index": 9,
+      "name": "select_method",
+      "label": "PS selection method",
+      "type": "inputTypes.select",
+      "value": "DENSITY",
+      "defaultvalue": "DENSITY",
+      "options": [
+        "DENSITY",
+        "PERCENT"
+      ]
+    },
+    "density_rand": {
+      "index": 10,
+      "name": "density_rand",
+      "label": "Maximum acceptable spatial density",
+      "type": "inputTypes.text",
+      "value": 20,
+      "defaultvalue": 20
+    },
+    "percent_rand": {
+      "index": 11,
+      "name": "percent_rand",
+      "label": "Maximum acceptable spatial density",
+      "type": "inputTypes.text",
+      "value": 20,
+      "defaultvalue": 20
+    },
+    "weed_standard_dev": {
+      "index": 12,
+      "name": "weed_standard_dev",
+      "label": "Threshold standard deviation",
+      "type": "inputTypes.text",
+      "value": 1.0,
+      "defaultvalue": 1.0
+    },
+    "weed_time_win": {
+      "index": 13,
+      "name": "weed_time_win",
+      "label": "Smoothing window (in days)",
+      "type": "inputTypes.text",
+      "value": 730,
+      "defaultvalue": 730
+    },
+    "unwrap_prefilter_flag": {
+      "index": 14,
+      "name": "unwrap_prefilter_flag",
+      "label": "Prefilter phase before unwrapping",
+      "type": "inputTypes.checkBox",
+      "value": true,
+      "defaultvalue": true
+    },
+    "unwrap_patch_phase": {
+      "index": 15,
+      "name": "unwrap_patch_phase",
+      "label": "Use the patch phase",
+      "type": "inputTypes.checkBox",
+      "value": false,
+      "defaultvalue": false
+    },
+    "unwrap_grid_size": {
+      "index": 16,
+      "name": "unwrap_grid_size",
+      "label": "Resampling grid spacing",
+      "type": "inputTypes.text",
+      "value": 200,
+      "defaultvalue": 200
+    },
+    "unwrap_gold_n_win": {
+      "index": 17,
+      "name": "unwrap_gold_n_win",
+      "label": "Window size for Goldstein filter",
+      "type": "inputTypes.text",
+      "value": 32,
+      "defaultvalue": 32
+    },
+    "unwrap_time_win": {
+      "index": 18,
+      "name": "unwrap_time_win",
+      "label": "Smoothing window (in days)",
+      "type": "inputTypes.text",
+      "value": 730,
+      "defaultvalue": 730
+    },
+    "unwrap_time_win": {
+      "index": 18,
+      "name": "unwrap_time_win",
+      "label": "Smoothing window (in days)",
+      "type": "inputTypes.text",
+      "value": 730,
+      "defaultvalue": 730
+    },
+    "unwrap_gold_alpha": {
+      "index": 19,
+      "name": "unwrap_gold_alpha",
+      "label": "Value of alpha for Goldstein filter",
+      "type": "inputTypes.text",
+      "value": 0.8,
+      "defaultvalue": 0.8
+    },
+    "subtr_tropo": {
+      "index": 20,
+      "name": "subtr_tropo",
+      "label": "Removes an estimate before unwrapping",
+      "type": "inputTypes.checkBox",
+      "value": false,
+      "defaultvalue": false
+    },
+    "tropo_method": {
+      "index": 20,
+      "name": "tropo_method",
+      "label": "Type of tropospheric correction",
+      "type": "inputTypes.select",
+      "value": "a_l",
+      "defaultvalue": "a_l",
+      "options": [
+        "a_l",
+        "a_e"
+      ]
+    },
+    "scla_deramp": {
+      "index": 21,
+      "name": "scla_deramp",
+      "label": "Type of tropospheric correction",
+      "type": "inputTypes.checkBox",
+      "value": false,
+      "defaultvalue": false
+    }
+  }
+}
