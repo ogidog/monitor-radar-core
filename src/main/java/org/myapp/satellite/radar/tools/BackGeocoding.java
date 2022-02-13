@@ -29,24 +29,25 @@ public class BackGeocoding {
 
     public static void main(String[] args) {
 
-        String outputDir, filesList, taskId, resultDir = "";
+        String outputDir, filesList, taskId, resultDir, username;
 
         try {
             HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
             outputDir = consoleParameters.get("outputDir").toString();
             resultDir = consoleParameters.get("resultDir").toString();
+            username  = consoleParameters.get("username").toString();
             filesList = consoleParameters.get("filesList").toString();
             taskId = consoleParameters.get("taskId").toString();
 
-            String configDir = resultDir + File.separator + taskId + File.separator + "config";
-            String graphDir = resultDir + File.separator + taskId + File.separator + "graphs";
+            String configDir = resultDir + File.separator + username + File.separator + taskId + File.separator + "config";
+            String graphDir = resultDir + File.separator + username + File.separator + taskId + File.separator + "graphs";
 
             HashMap parameters = getParameters(configDir);
             if (parameters == null) {
                 throw new Exception("BackGeocoding: Fail to read parameters.");
             }
 
-            String taskDir = outputDir + File.separator + taskId;
+            String taskDir = outputDir + File.separator + username + File.separator + taskId;
 
             String[] files;
             if (!filesList.contains(",")) {
@@ -62,7 +63,7 @@ public class BackGeocoding {
             }
             new File(backgeocodingTaskDir).mkdirs();
 
-            String backgeocodingResultDir = resultDir + File.separator + taskId + File.separator + "public" + File.separator + "back_geocoding";
+            String backgeocodingResultDir = resultDir + File.separator + username + File.separator + taskId + File.separator + "public" + File.separator + "back_geocoding";
             if (Files.exists(Paths.get(backgeocodingResultDir))) {
                 Common.deleteDir(new File(backgeocodingResultDir));
             }

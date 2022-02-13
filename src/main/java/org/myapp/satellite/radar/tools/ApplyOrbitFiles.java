@@ -28,24 +28,25 @@ public class ApplyOrbitFiles {
 
     public static void main(String[] args) {
 
-        String outputDir, filesList, taskId, resultDir = "";
+        String outputDir, filesList, taskId, resultDir = "", username;
 
         try {
             HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
             outputDir = consoleParameters.get("outputDir").toString();
             resultDir = consoleParameters.get("resultDir").toString();
             filesList = consoleParameters.get("filesList").toString();
+            username = consoleParameters.get("username").toString();
             taskId = consoleParameters.get("taskId").toString();
 
-            String configDir = resultDir + File.separator + taskId + File.separator + "config";
-            String graphDir = resultDir + File.separator + taskId + File.separator + "graphs";
+            String configDir = resultDir + File.separator + username + File.separator + taskId + File.separator + "config";
+            String graphDir = resultDir + File.separator + username + File.separator + taskId + File.separator + "graphs";
 
             HashMap parameters = getParameters(configDir);
             if (parameters == null) {
                 throw new Exception("ApplyOrbitFile: Fail to read parameters.");
             }
 
-            String taskDir = outputDir + File.separator + taskId;
+            String taskDir = outputDir + File.separator + username + File.separator + taskId;
 
             String[] files;
             if (!filesList.contains(",")) {
@@ -61,7 +62,7 @@ public class ApplyOrbitFiles {
             }
             new File(applyorbitfileTaskDir).mkdirs();
 
-            String applyorbitfileResultDir = resultDir + File.separator + taskId + File.separator + "public" + File.separator + "apply_orbit_file";
+            String applyorbitfileResultDir = resultDir + File.separator + username + File.separator + taskId + File.separator + "public" + File.separator + "apply_orbit_file";
             if (Files.exists(Paths.get(applyorbitfileResultDir))) {
                 Common.deleteDir(new File(applyorbitfileResultDir));
             }
