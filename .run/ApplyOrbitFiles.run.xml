@@ -4,7 +4,7 @@
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <option name="MAIN_CLASS_NAME" value="org.myapp.satellite.radar.tools.ApplyOrbitFiles" />
     <module name="monitor-radar-core-v3" />
-    <option name="PROGRAM_PARAMETERS" value="outputDir=&quot;D:\mnt\dockers\monitor-radar-tools\output&quot; resultDir=&quot;D:\mnt\dockers\monitor-radar-tools\results&quot; filesList=&quot;D:\mnt\satimg\Satellites\Sentinel-1\S1B_IW_SLC__1SDV_20190729T002802_20190729T002830_017341_0209C7_AE41.zip,D:\mnt\satimg\Satellites\Sentinel-1\S1B_IW_SLC__1SDV_20190810T002803_20190810T002831_017516_020F11_A062.zip,D:\mnt\satimg\Satellites\Sentinel-1\S1B_IW_SLC__1SDV_20190822T002804_20190822T002832_017691_021488_89A8.zip&quot; taskId=1642612066993 username=ogidog_mail_ru" />
+    <option name="PROGRAM_PARAMETERS" value="tasksDir=&quot;D:\mnt\dockers\monitor-radar-tools\tasks&quot; resultsDir=&quot;D:\mnt\dockers\monitor-radar-tools\results&quot; filesList=&quot;D:\mnt\satimg\Satellites\Sentinel-1\S1B_IW_SLC__1SDV_20190729T002802_20190729T002830_017341_0209C7_AE41.zip,D:\mnt\satimg\Satellites\Sentinel-1\S1B_IW_SLC__1SDV_20190810T002803_20190810T002831_017516_020F11_A062.zip,D:\mnt\satimg\Satellites\Sentinel-1\S1B_IW_SLC__1SDV_20190822T002804_20190822T002832_017691_021488_89A8.zip&quot; taskId=1642612066993 username=ogidog_mail_ru" />
     <shortenClasspath name="MANIFEST" />
     <extension name="coverage">
       <pattern>

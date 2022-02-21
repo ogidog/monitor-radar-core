@@ -23,31 +23,38 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class BackGeocoding {
 
     public static void main(String[] args) {
 
-        String outputDir, filesList, taskId, resultDir, username;
+
+        String resultDir = "";
 
         try {
-            HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
-            outputDir = consoleParameters.get("outputDir").toString();
-            resultDir = consoleParameters.get("resultDir").toString();
-            username  = consoleParameters.get("username").toString();
-            filesList = consoleParameters.get("filesList").toString();
-            taskId = consoleParameters.get("taskId").toString();
 
-            String configDir = resultDir + File.separator + username + File.separator + taskId + File.separator + "config";
-            String graphDir = resultDir + File.separator + username + File.separator + taskId + File.separator + "graphs";
+            HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
+            String tasksDir = consoleParameters.get("tasksDir").toString();
+            String resultsDir = consoleParameters.get("resultsDir").toString();
+            String username = consoleParameters.get("username").toString();
+            String filesList = consoleParameters.get("filesList").toString();
+            String taskId = consoleParameters.get("taskId").toString();
+
+            String configDir = resultsDir + File.separator + username + File.separator + taskId + File.separator + "config";
+            String graphDir = resultsDir + File.separator + username + File.separator + taskId + File.separator + "graphs";
+            resultDir = resultsDir + File.separator + username + File.separator + taskId;
+            String taskDir = tasksDir + File.separator + username + File.separator + taskId;
+
+            if (Common.checkPreviousErrors(resultDir)) {
+                return;
+            }
+            Common.writeStatus(resultDir, Common.TaskStatus.PROCESSING, "");
 
             HashMap parameters = getParameters(configDir);
             if (parameters == null) {
                 throw new Exception("BackGeocoding: Fail to read parameters.");
             }
 
-            String taskDir = outputDir + File.separator + username + File.separator + taskId;
 
             String[] files;
             if (!filesList.contains(",")) {
@@ -129,9 +136,13 @@ public class BackGeocoding {
 
                 Files.deleteIfExists(Paths.get(subsetTargetFile + ".dim"));
                 Common.deleteDir(new File(subsetTargetFile + ".data"));
+
+                Common.writeStatus(resultDir, Common.TaskStatus.COMPLETED, "");
             }
 
         } catch (Exception ex) {
+            Common.writeStatus(resultDir, Common.TaskStatus.ERROR, ex.getMessage());
+
             // TODO: delete
             ex.printStackTrace();
         }

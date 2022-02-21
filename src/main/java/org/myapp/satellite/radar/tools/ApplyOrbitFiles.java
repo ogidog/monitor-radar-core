@@ -1,8 +1,6 @@
 package org.myapp.satellite.radar.tools;
 
-import com.sun.jna.platform.win32.COM.util.annotation.ComObject;
 import org.esa.snap.core.dataio.ProductIO;
-import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.VirtualBand;
 import org.esa.snap.core.gpf.graph.Graph;
@@ -28,25 +26,31 @@ public class ApplyOrbitFiles {
 
     public static void main(String[] args) {
 
-        String outputDir, filesList, taskId, resultDir = "", username;
+        String resultDir = "";
 
         try {
-            HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
-            outputDir = consoleParameters.get("outputDir").toString();
-            resultDir = consoleParameters.get("resultDir").toString();
-            filesList = consoleParameters.get("filesList").toString();
-            username = consoleParameters.get("username").toString();
-            taskId = consoleParameters.get("taskId").toString();
 
-            String configDir = resultDir + File.separator + username + File.separator + taskId + File.separator + "config";
-            String graphDir = resultDir + File.separator + username + File.separator + taskId + File.separator + "graphs";
+            HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
+            String tasksDir = consoleParameters.get("tasksDir").toString();
+            String resultsDir = consoleParameters.get("resultsDir").toString();
+            String filesList = consoleParameters.get("filesList").toString();
+            String username = consoleParameters.get("username").toString();
+            String taskId = consoleParameters.get("taskId").toString();
+
+            String configDir = resultsDir + File.separator + username + File.separator + taskId + File.separator + "config";
+            String graphDir = resultsDir + File.separator + username + File.separator + taskId + File.separator + "graphs";
+            resultDir = resultsDir + File.separator + username + File.separator + taskId;
+            String taskDir = tasksDir + File.separator + username + File.separator + taskId;
+
+            if (Common.checkPreviousErrors(resultDir)) {
+                return;
+            }
+            Common.writeStatus(resultDir, Common.TaskStatus.PROCESSING, "");
 
             HashMap parameters = getParameters(configDir);
             if (parameters == null) {
                 throw new Exception("ApplyOrbitFile: Fail to read parameters.");
             }
-
-            String taskDir = outputDir + File.separator + username + File.separator + taskId;
 
             String[] files;
             if (!filesList.contains(",")) {
@@ -62,7 +66,7 @@ public class ApplyOrbitFiles {
             }
             new File(applyorbitfileTaskDir).mkdirs();
 
-            String applyorbitfileResultDir = resultDir + File.separator + username + File.separator + taskId + File.separator + "public" + File.separator + "apply_orbit_file";
+            String applyorbitfileResultDir = resultsDir + File.separator + username + File.separator + taskId + File.separator + "public" + File.separator + "apply_orbit_file";
             if (Files.exists(Paths.get(applyorbitfileResultDir))) {
                 Common.deleteDir(new File(applyorbitfileResultDir));
             }
@@ -123,7 +127,11 @@ public class ApplyOrbitFiles {
 
             topsarSplitOpEnv.Dispose();
 
+            Common.writeStatus(resultDir, Common.TaskStatus.COMPLETED, "");
+
         } catch (Exception ex) {
+
+            Common.writeStatus(resultDir, Common.TaskStatus.ERROR, ex.getMessage());
 
             // TODO: delete
             ex.printStackTrace();
