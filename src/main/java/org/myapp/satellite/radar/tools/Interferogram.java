@@ -23,25 +23,33 @@ import java.util.Map;
 
 public class Interferogram {
     public static void main(String[] args) {
-        String outputDir, filesList, taskId, resultDir = "";
+
+        String resultDir = "";
 
         try {
 
             HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
-            outputDir = consoleParameters.get("outputDir").toString();
-            resultDir = consoleParameters.get("resultDir").toString();
-            filesList = consoleParameters.get("filesList").toString();
-            taskId = consoleParameters.get("taskId").toString();
 
-            String configDir = resultDir + File.separator + taskId + File.separator + "config";
-            String graphDir = resultDir + File.separator + taskId + File.separator + "graphs";
+            String tasksDir = consoleParameters.get("tasksDir").toString();
+            String resultsDir = consoleParameters.get("resultsDir").toString();
+            String username = consoleParameters.get("username").toString();
+            String filesList = consoleParameters.get("filesList").toString();
+            String taskId = consoleParameters.get("taskId").toString();
+
+            String configDir = resultsDir + File.separator + username + File.separator + taskId + File.separator + "config";
+            String graphDir = resultsDir + File.separator + username + File.separator + taskId + File.separator + "graphs";
+            resultDir = resultsDir + File.separator + username + File.separator + taskId;
+            String taskDir = tasksDir + File.separator + username + File.separator + taskId;
+
+            if (Common.checkPreviousErrors(resultDir)) {
+                return;
+            }
+            Common.writeStatus(resultDir, Common.TaskStatus.PROCESSING, "");
 
             HashMap parameters = getParameters(configDir);
             if (parameters == null) {
                 throw new Exception("Interferogram: Fail to read parameters.");
             }
-
-            String taskDir = outputDir + File.separator + taskId;
 
             String[] files;
             if (!filesList.contains(",")) {
@@ -116,8 +124,12 @@ public class Interferogram {
                 Common.deleteDir(new File(subsetTargetFile + ".data"));
             }
 
+            Common.writeStatus(resultDir, Common.TaskStatus.COMPLETED, "");
+
 
         } catch (Exception ex) {
+            Common.writeStatus(resultDir, Common.TaskStatus.ERROR, "");
+
             //TODO: delete
             ex.printStackTrace();
         }

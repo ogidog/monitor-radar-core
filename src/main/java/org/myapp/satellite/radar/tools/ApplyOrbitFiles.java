@@ -66,7 +66,7 @@ public class ApplyOrbitFiles {
             }
             new File(applyorbitfileTaskDir).mkdirs();
 
-            String applyorbitfileResultDir = resultsDir + File.separator + username + File.separator + taskId + File.separator + "public" + File.separator + "apply_orbit_file";
+            String applyorbitfileResultDir = resultsDir + File.separator + "public" + File.separator + "apply_orbit_file";
             if (Files.exists(Paths.get(applyorbitfileResultDir))) {
                 Common.deleteDir(new File(applyorbitfileResultDir));
             }

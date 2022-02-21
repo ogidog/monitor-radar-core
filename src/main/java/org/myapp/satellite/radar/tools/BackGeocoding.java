@@ -55,7 +55,6 @@ public class BackGeocoding {
                 throw new Exception("BackGeocoding: Fail to read parameters.");
             }
 
-
             String[] files;
             if (!filesList.contains(",")) {
                 files = Files.walk(Paths.get(filesList)).skip(1)
