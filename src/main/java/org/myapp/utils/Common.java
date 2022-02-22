@@ -30,7 +30,57 @@ public class Common {
         public static String COHERENCE = "_coh";
         public static String TOPO_PHASE_REMOVAL = "_topo";
         public static String ELEVATION = "_elev";
+    }
 
+    public static class OperationName {
+        public static String SUBSET = "subset";
+        public static String APPLY_ORBIT_FILE = "apply_orbit_file";
+        public static String BACK_GEOCODING = "back_geocoding";
+        public static String ENCHANCE_SPECTRAL_DIVERSITY = "enchance_spectral_diversity";
+        public static String INTERFEROGRAM = "interferogram";
+        public static String GOLDSTEIN_PHASE_FILTERING = "goldstein_phase_filtering";
+        public static String TOPO_PHASE_REMOVAL = "topo_phase_removal";
+    }
+
+    private static String getGPTScriptName() {
+        String osName = System.getProperty("os.name");
+        if (osName.toLowerCase().contains("windows")) {
+            return "gpt.exe";
+        } else {
+            return "/usr/local/snap/bin/gpt";
+        }
+    }
+
+    private static BufferedImage resize(BufferedImage img, int width, int height) {
+        Image tmp = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+        BufferedImage resized = new BufferedImage(width, height, BufferedImage.SCALE_SMOOTH);
+        Graphics2D g2d = resized.createGraphics();
+        g2d.drawImage(tmp, 0, 0, null);
+        g2d.dispose();
+        return resized;
+    }
+
+    private static BufferedImage getColoredBufferedImage(Band sourceBand, int width, int height) {
+        final BufferedImage bufferedImage =
+                new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+
+        float max = 0;
+        float min = (float) (2.0f * Math.PI);
+
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
+                float v = sourceBand.getPixelFloat(x, y);
+                if (v + Math.PI < min) min = v;
+                if (v + Math.PI >= max) max = v;
+            }
+        }
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
+                bufferedImage.setRGB(x, y, Color.HSBtoRGB((float) (((sourceBand.getPixelFloat(x, y) + Math.PI) - min) / (max - min)), 1.0f, 1.0f));
+            }
+        }
+
+        return bufferedImage;
     }
 
     public enum TaskStatus {
@@ -41,7 +91,7 @@ public class Common {
 
         public final String label;
 
-        private TaskStatus(String label) {
+        TaskStatus(String label) {
             this.label = label;
         }
     }
@@ -56,15 +106,6 @@ public class Common {
             }
         }
         file.delete();
-    }
-
-    public static String getGPTScriptName() {
-        String osName = System.getProperty("os.name");
-        if (osName.toLowerCase().contains("windows")) {
-            return "gpt.exe";
-        } else {
-            return "/usr/local/snap/bin/gpt";
-        }
     }
 
     public static void runGPTScript(String graphFile, String stageName) throws Exception {
@@ -217,35 +258,27 @@ public class Common {
         }
     }
 
-    private static BufferedImage resize(BufferedImage img, int width, int height) {
-        Image tmp = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
-        BufferedImage resized = new BufferedImage(width, height, BufferedImage.SCALE_SMOOTH);
-        Graphics2D g2d = resized.createGraphics();
-        g2d.drawImage(tmp, 0, 0, null);
-        g2d.dispose();
-        return resized;
+    public static String getResultDir(String resultsDir, String username, String taskId) {
+        return resultsDir + File.separator + username + File.separator + taskId;
     }
 
-    private static BufferedImage getColoredBufferedImage(Band sourceBand, int width, int height) {
-        final BufferedImage bufferedImage =
-                new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+    public static String getTaskDir(String tasksDir, String username, String taskId) {
+        return tasksDir + File.separator + username + File.separator + taskId;
+    }
 
-        float max = 0;
-        float min = (float) (2.0f * Math.PI);
+    public static String getConfigDir(String resultsDir, String username, String taskId) {
+        return getResultDir(resultsDir, username, taskId) + File.separator + "config";
+    }
 
-        for (int y = 0; y < height; ++y) {
-            for (int x = 0; x < width; ++x) {
-                float v = sourceBand.getPixelFloat(x, y);
-                if (v + Math.PI < min) min = v;
-                if (v + Math.PI >= max) max = v;
-            }
-        }
-        for (int y = 0; y < height; ++y) {
-            for (int x = 0; x < width; ++x) {
-                bufferedImage.setRGB(x, y, Color.HSBtoRGB((float) (((sourceBand.getPixelFloat(x, y) + Math.PI) - min) / (max - min)), 1.0f, 1.0f));
-            }
-        }
+    public static String getGraphDir(String resultsDir, String username, String taskId) {
+        return getResultDir(resultsDir, username, taskId) + File.separator + "graphs";
+    }
 
-        return bufferedImage;
+    public static String getOperationTaskDir(String tasksDir, String username, String taskId, String operationName) {
+        return getTaskDir(tasksDir, username, taskId) + File.separator + operationName;
+    }
+
+    public static String getOperationResultDir(String resultsDir, String username, String taskId, String operationName) {
+        return getResultDir(resultsDir, username, taskId) + File.separator + "public" + File.separator + operationName;
     }
 }

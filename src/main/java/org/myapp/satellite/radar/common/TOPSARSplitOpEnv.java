@@ -1,4 +1,4 @@
-package org.myapp.satellite.radar.shared;
+package org.myapp.satellite.radar.common;
 
 import org.esa.s1tbx.commons.Sentinel1Utils;
 import org.esa.s1tbx.sentinel1.gpf.TOPSARSplitOp;

@@ -52,7 +52,6 @@ public class Stage5 {
 
         } catch (Exception e) {
             e.printStackTrace();
-            return;
         }
     }
 

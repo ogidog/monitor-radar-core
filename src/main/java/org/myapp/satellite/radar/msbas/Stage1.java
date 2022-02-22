@@ -4,7 +4,7 @@ import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.myapp.satellite.radar.shared.TOPSARSplitOpEnv;
+import org.myapp.satellite.radar.common.TOPSARSplitOpEnv;
 import org.myapp.utils.ConsoleArgsReader;
 
 import java.io.File;

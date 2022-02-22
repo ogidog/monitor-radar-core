@@ -1,13 +1,13 @@
 package org.myapp.satellite.radar.tools;
 
 import org.esa.snap.core.dataio.ProductIO;
+import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.VirtualBand;
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.myapp.satellite.radar.shared.TOPSARSplitOpEnv;
+import org.myapp.satellite.radar.common.TOPSARSplitOpEnv;
 import org.myapp.utils.ConsoleArgsReader;
 import org.myapp.utils.Common;
 
@@ -26,7 +26,7 @@ public class ApplyOrbitFiles {
 
     public static void main(String[] args) {
 
-        String resultDir = "";
+        String operationResultDir = "";
 
         try {
 
@@ -37,15 +37,8 @@ public class ApplyOrbitFiles {
             String username = consoleParameters.get("username").toString();
             String taskId = consoleParameters.get("taskId").toString();
 
-            String configDir = resultsDir + File.separator + username + File.separator + taskId + File.separator + "config";
-            String graphDir = resultsDir + File.separator + username + File.separator + taskId + File.separator + "graphs";
-            resultDir = resultsDir + File.separator + username + File.separator + taskId;
-            String taskDir = tasksDir + File.separator + username + File.separator + taskId;
-
-            if (Common.checkPreviousErrors(resultDir)) {
-                Common.deletePreviousErrors(resultDir);
-            }
-            Common.writeStatus(resultDir, Common.TaskStatus.PROCESSING, "");
+            String configDir = Common.getConfigDir(resultsDir, username, taskId);
+            String graphDir = Common.getGraphDir(resultsDir, username, taskId);
 
             HashMap parameters = getParameters(configDir);
             if (parameters == null) {
@@ -60,20 +53,26 @@ public class ApplyOrbitFiles {
                 files = filesList.split(",");
             }
 
-            String applyorbitfileTaskDir = taskDir + File.separator + "apply_orbit_file";
-            if (Files.exists(Paths.get(applyorbitfileTaskDir))) {
-                Common.deleteDir(new File(applyorbitfileTaskDir));
+            String operationTaskDir = Common.getOperationTaskDir(tasksDir, username, taskId, Common.OperationName.APPLY_ORBIT_FILE);
+            if (Files.exists(Paths.get(operationTaskDir))) {
+                Common.deleteDir(new File(operationTaskDir));
             }
-            new File(applyorbitfileTaskDir).mkdirs();
+            new File(operationTaskDir).mkdirs();
 
-            String applyorbitfileResultDir = resultsDir + File.separator + "public" + File.separator + "apply_orbit_file";
-            if (Files.exists(Paths.get(applyorbitfileResultDir))) {
-                Common.deleteDir(new File(applyorbitfileResultDir));
+            operationResultDir = Common.getOperationResultDir(resultsDir, username, taskId, Common.OperationName.APPLY_ORBIT_FILE);
+            if (Files.exists(Paths.get(operationResultDir))) {
+                Common.deleteDir(new File(operationResultDir));
             }
-            new File(applyorbitfileResultDir).mkdirs();
+            new File(operationResultDir).mkdirs();
+
+            if (Common.checkPreviousErrors(operationResultDir)) {
+                Common.deletePreviousErrors(operationResultDir);
+            }
+            Common.writeStatus(operationResultDir, Common.TaskStatus.PROCESSING, "");
 
             TOPSARSplitOpEnv topsarSplitOpEnv = new TOPSARSplitOpEnv();
-            String graphFile = "apply_orbit_file.xml";
+
+            String graphFile = Common.OperationName.APPLY_ORBIT_FILE + ".xml";
             FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
             Graph graph = GraphIO.read(fileReader);
             fileReader.close();
@@ -115,7 +114,7 @@ public class ApplyOrbitFiles {
                 Common.runGPTScript(targetGraphFile + ".xml", "ApplyOrbitFile");
 
                 Product product = ProductIO.readProduct(subsetTargetFile + ".dim");
-                VirtualBand sourceBand = (VirtualBand) Arrays.stream(product.getBands())
+                Band sourceBand = (Band) Arrays.stream(product.getBands())
                         .filter(band -> band.getName().toLowerCase().contains("intensity"))
                         .toArray()[0];
                 Common.exportProductToImg(sourceBand, 0.3f, 0.7f, new File(subsetImgFile + ".jpg"), "JPG", false);
@@ -127,11 +126,10 @@ public class ApplyOrbitFiles {
 
             topsarSplitOpEnv.Dispose();
 
-            Common.writeStatus(resultDir, Common.TaskStatus.COMPLETED, "");
+            Common.writeStatus(operationResultDir, Common.TaskStatus.COMPLETED, "");
 
         } catch (Exception ex) {
-
-            Common.writeStatus(resultDir, Common.TaskStatus.ERROR, ex.getMessage());
+            Common.writeStatus(operationResultDir, Common.TaskStatus.ERROR, ex.getMessage());
 
             // TODO: delete
             ex.printStackTrace();
