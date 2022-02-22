@@ -20,6 +20,19 @@ import java.time.Instant;
 
 public class Common {
 
+    public enum TaskStatus {
+
+        COMPLETED("Completed"),
+        ERROR("Error"),
+        PROCESSING("Processing");
+
+        public final String label;
+
+        TaskStatus(String label) {
+            this.label = label;
+        }
+    }
+
     public static class OperationPrefix {
         public static String SUBSET = "_sub";
         public static String APPLY_ORBIT_FILE = "_orb";
@@ -81,19 +94,6 @@ public class Common {
         }
 
         return bufferedImage;
-    }
-
-    public enum TaskStatus {
-
-        COMPLETED("Completed"),
-        ERROR("Error"),
-        PROCESSING("Processing");
-
-        public final String label;
-
-        TaskStatus(String label) {
-            this.label = label;
-        }
     }
 
     public static void deleteDir(File file) {
@@ -280,5 +280,16 @@ public class Common {
 
     public static String getOperationResultDir(String resultsDir, String username, String taskId, String operationName) {
         return getResultDir(resultsDir, username, taskId) + File.separator + "public" + File.separator + operationName;
+    }
+
+    public static String[] getFiles(String filesList) throws Exception {
+        String[] files;
+        if (!filesList.contains(",")) {
+            files = Files.walk(Paths.get(filesList)).skip(1)
+                    .map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
+        } else {
+            files = filesList.split(",");
+        }
+        return files;
     }
 }

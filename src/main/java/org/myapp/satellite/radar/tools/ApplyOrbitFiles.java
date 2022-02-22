@@ -45,13 +45,7 @@ public class ApplyOrbitFiles {
                 throw new Exception("ApplyOrbitFile: Fail to read parameters.");
             }
 
-            String[] files;
-            if (!filesList.contains(",")) {
-                files = Files.walk(Paths.get(filesList)).skip(1)
-                        .map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
-            } else {
-                files = filesList.split(",");
-            }
+            String[] files = Common.getFiles(filesList);
 
             String operationTaskDir = Common.getOperationTaskDir(tasksDir, username, taskId, Common.OperationName.APPLY_ORBIT_FILE);
             if (Files.exists(Paths.get(operationTaskDir))) {
@@ -89,10 +83,10 @@ public class ApplyOrbitFiles {
                 m.find();
                 String productDate = m.group();
 
-                String targetFile = applyorbitfileTaskDir + File.separator + productDate + Common.OperationPrefix.APPLY_ORBIT_FILE;
-                String targetGraphFile = applyorbitfileTaskDir + File.separator + productDate + Common.OperationPrefix.APPLY_ORBIT_FILE;
-                String subsetTargetFile = applyorbitfileTaskDir + File.separator + productDate + Common.OperationPrefix.APPLY_ORBIT_FILE + Common.OperationPrefix.SUBSET;
-                String subsetImgFile = applyorbitfileResultDir + File.separator + productDate + Common.OperationPrefix.APPLY_ORBIT_FILE;
+                String targetFile = operationTaskDir + File.separator + productDate + Common.OperationPrefix.APPLY_ORBIT_FILE;
+                String targetGraphFile = operationTaskDir + File.separator + productDate + Common.OperationPrefix.APPLY_ORBIT_FILE;
+                String subsetTargetFile = operationTaskDir + File.separator + productDate + Common.OperationPrefix.APPLY_ORBIT_FILE + Common.OperationPrefix.SUBSET;
+                String subsetImgFile = operationResultDir + File.separator + productDate + Common.OperationPrefix.APPLY_ORBIT_FILE;
 
                 graph.getNode("Write(2)").getConfiguration().getChild("file")
                         .setValue(subsetTargetFile + ".dim");
