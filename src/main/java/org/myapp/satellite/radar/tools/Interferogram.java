@@ -42,7 +42,7 @@ public class Interferogram {
             String taskDir = tasksDir + File.separator + username + File.separator + taskId;
 
             if (Common.checkPreviousErrors(resultDir)) {
-                return;
+                Common.deletePreviousErrors(resultDir);
             }
             Common.writeStatus(resultDir, Common.TaskStatus.PROCESSING, "");
 
@@ -59,13 +59,13 @@ public class Interferogram {
                 files = filesList.split(",");
             }
 
-            String interferogramTaskDir = taskDir + "" + File.separator + "interferogram";
+            String interferogramTaskDir = taskDir + File.separator + "interferogram";
             if (Files.exists(Paths.get(interferogramTaskDir))) {
                 Common.deleteDir(new File(interferogramTaskDir));
             }
             new File(interferogramTaskDir).mkdirs();
 
-            String interferogramResultDir = resultDir + File.separator + taskId + File.separator + "public" + File.separator + "interferogram";
+            String interferogramResultDir = resultDir + File.separator + "public" + File.separator + "interferogram";
             if (Files.exists(Paths.get(interferogramResultDir))) {
                 Common.deleteDir(new File(interferogramResultDir));
             }

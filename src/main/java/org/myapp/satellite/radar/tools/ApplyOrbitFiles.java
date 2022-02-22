@@ -43,7 +43,7 @@ public class ApplyOrbitFiles {
             String taskDir = tasksDir + File.separator + username + File.separator + taskId;
 
             if (Common.checkPreviousErrors(resultDir)) {
-                return;
+                Common.deletePreviousErrors(resultDir);
             }
             Common.writeStatus(resultDir, Common.TaskStatus.PROCESSING, "");
 
@@ -60,7 +60,7 @@ public class ApplyOrbitFiles {
                 files = filesList.split(",");
             }
 
-            String applyorbitfileTaskDir = taskDir + "" + File.separator + "apply_orbit_file";
+            String applyorbitfileTaskDir = taskDir + File.separator + "apply_orbit_file";
             if (Files.exists(Paths.get(applyorbitfileTaskDir))) {
                 Common.deleteDir(new File(applyorbitfileTaskDir));
             }

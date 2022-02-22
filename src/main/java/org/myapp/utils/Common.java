@@ -178,6 +178,10 @@ public class Common {
         }
     }
 
+    public static void deletePreviousErrors(String resultDir) throws Exception {
+        Files.deleteIfExists(Paths.get(resultDir + File.separator + TaskStatus.valueOf("ERROR").label));
+    }
+
     public static void exportProductToImg(Band sourceBand, float resizeFactor, float compressFactor, File targetFile, String imageFormat, boolean isColor) {
         try {
 

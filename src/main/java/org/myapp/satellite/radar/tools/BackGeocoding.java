@@ -46,7 +46,7 @@ public class BackGeocoding {
             String taskDir = tasksDir + File.separator + username + File.separator + taskId;
 
             if (Common.checkPreviousErrors(resultDir)) {
-                return;
+                Common.deletePreviousErrors(resultDir);
             }
             Common.writeStatus(resultDir, Common.TaskStatus.PROCESSING, "");
 
@@ -63,13 +63,13 @@ public class BackGeocoding {
                 files = filesList.split(",");
             }
 
-            String backgeocodingTaskDir = taskDir + "" + File.separator + "back_geocoding";
+            String backgeocodingTaskDir = taskDir + File.separator + "back_geocoding";
             if (Files.exists(Paths.get(backgeocodingTaskDir))) {
                 Common.deleteDir(new File(backgeocodingTaskDir));
             }
             new File(backgeocodingTaskDir).mkdirs();
 
-            String backgeocodingResultDir = resultDir + File.separator + username + File.separator + taskId + File.separator + "public" + File.separator + "back_geocoding";
+            String backgeocodingResultDir = resultDir + File.separator + "public" + File.separator + "back_geocoding";
             if (Files.exists(Paths.get(backgeocodingResultDir))) {
                 Common.deleteDir(new File(backgeocodingResultDir));
             }
