@@ -27,7 +27,7 @@ public class BackGeocoding {
     public static void main(String[] args) {
 
 
-        String resultDir = "";
+        String operationResultDir = "";
 
         try {
 
@@ -38,56 +38,40 @@ public class BackGeocoding {
             String filesList = consoleParameters.get("filesList").toString();
             String taskId = consoleParameters.get("taskId").toString();
 
-            String configDir = resultsDir + File.separator + username + File.separator + taskId + File.separator + "config";
-            String graphDir = resultsDir + File.separator + username + File.separator + taskId + File.separator + "graphs";
-            resultDir = resultsDir + File.separator + username + File.separator + taskId;
-            String taskDir = tasksDir + File.separator + username + File.separator + taskId;
 
-            if (Common.checkPreviousErrors(resultDir)) {
-                Common.deletePreviousErrors(resultDir);
+            HashMap parameters = Common.getParameters(Common.getConfigDir(resultsDir, username, taskId), new String[]{
+                    Common.OperationName.BACK_GEOCODING, Common.OperationName.SUBSET
+            });
+
+            String operationTaskDir = Common.getOperationTaskDir(tasksDir, username, taskId, Common.OperationName.BACK_GEOCODING);
+            if (Files.exists(Paths.get(operationTaskDir))) {
+                Common.deleteDir(new File(operationTaskDir));
             }
-            Common.writeStatus(resultDir, Common.TaskStatus.PROCESSING, "");
+            new File(operationTaskDir).mkdirs();
 
-            HashMap parameters = getParameters(configDir);
-            if (parameters == null) {
-                throw new Exception("BackGeocoding: Fail to read parameters.");
+            operationResultDir = Common.getOperationResultDir(resultsDir, username, taskId, Common.OperationName.BACK_GEOCODING);
+            if (Files.exists(Paths.get(operationResultDir))) {
+                Common.deleteDir(new File(operationResultDir));
             }
+            new File(operationResultDir).mkdirs();
 
-            String[] files;
-            if (!filesList.contains(",")) {
-                files = Files.walk(Paths.get(filesList)).skip(1)
-                        .map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
-            } else {
-                files = filesList.split(",");
+            if (Common.checkPreviousErrors(operationResultDir)) {
+                Common.deletePreviousErrors(operationResultDir);
             }
+            Common.writeStatus(operationResultDir, Common.TaskStatus.PROCESSING, "");
 
-            String backgeocodingTaskDir = taskDir + File.separator + "back_geocoding";
-            if (Files.exists(Paths.get(backgeocodingTaskDir))) {
-                Common.deleteDir(new File(backgeocodingTaskDir));
-            }
-            new File(backgeocodingTaskDir).mkdirs();
-
-            String backgeocodingResultDir = resultDir + File.separator + "public" + File.separator + "back_geocoding";
-            if (Files.exists(Paths.get(backgeocodingResultDir))) {
-                Common.deleteDir(new File(backgeocodingResultDir));
-            }
-            new File(backgeocodingResultDir).mkdirs();
-
-            String graphFile = "back_geocoding.xml";
-            FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
-            Graph graph = GraphIO.read(fileReader);
-            fileReader.close();
-
+            // Set graph
+            Graph graph = Common.readGraphFile(Common.getGraphFile(resultsDir, username, taskId, Common.OperationName.BACK_GEOCODING));
             // BackGeocoding
-            ((HashMap) parameters.get("BackGeocoding")).forEach((key, value) -> {
+            ((HashMap) parameters.get(Common.OperationName.BACK_GEOCODING)).forEach((key, value) -> {
                 graph.getNode("Back-Geocoding").getConfiguration().getChild(key.toString())
                         .setValue(value.toString());
             });
-
             // Subset
             graph.getNode("Subset").getConfiguration().getChild("geoRegion")
-                    .setValue("POLYGON((" + ((HashMap) parameters.get("Subset")).get("geoRegion").toString() + "))");
+                    .setValue("POLYGON((" + ((HashMap) parameters.get(Common.OperationName.SUBSET)).get("geoRegion").toString() + "))");
 
+            String[] files = Common.getFiles(filesList);
             for (int i = 0; i < files.length / 2; i++) {
 
                 Pattern p = Pattern.compile("\\d{8}");
@@ -100,10 +84,10 @@ public class BackGeocoding {
 
                 String productDate = masterProductDate + "_" + slaveProductDate;
 
-                String targetFile = backgeocodingTaskDir + File.separator + productDate + Common.OperationPrefix.BACK_GEOCODING;
-                String targetGraphFile = backgeocodingTaskDir + File.separator + productDate + Common.OperationPrefix.BACK_GEOCODING;
-                String subsetTargetFile = backgeocodingTaskDir + File.separator + productDate + Common.OperationPrefix.BACK_GEOCODING + Common.OperationPrefix.SUBSET;
-                String subsetImgFile = backgeocodingResultDir + File.separator + productDate + Common.OperationPrefix.BACK_GEOCODING;
+                String targetFile = operationTaskDir + File.separator + productDate + Common.OperationPrefix.BACK_GEOCODING;
+                String targetGraphFile = operationTaskDir + File.separator + productDate + Common.OperationPrefix.BACK_GEOCODING;
+                String subsetTargetFile = operationTaskDir + File.separator + productDate + Common.OperationPrefix.BACK_GEOCODING + Common.OperationPrefix.SUBSET;
+                String subsetImgFile = operationResultDir + File.separator + productDate + Common.OperationPrefix.BACK_GEOCODING;
 
                 graph.getNode("Write(2)").getConfiguration().getChild("file")
                         .setValue(subsetTargetFile + ".dim");
@@ -118,7 +102,7 @@ public class BackGeocoding {
                 fileWriter.flush();
                 fileWriter.close();
 
-                Common.runGPTScript(targetGraphFile + ".xml", "BackGeocoding");
+                Common.runGPTScript(targetGraphFile + ".xml", Common.OperationName.BACK_GEOCODING);
 
                 Product product = ProductIO.readProduct(subsetTargetFile + ".dim");
                 VirtualBand sourceBand = (VirtualBand) Arrays.stream(product.getBands())
@@ -134,11 +118,11 @@ public class BackGeocoding {
                 Files.deleteIfExists(Paths.get(subsetTargetFile + ".dim"));
                 Common.deleteDir(new File(subsetTargetFile + ".data"));
 
-                Common.writeStatus(resultDir, Common.TaskStatus.COMPLETED, "");
+                Common.writeStatus(operationResultDir, Common.TaskStatus.COMPLETED, "");
             }
 
         } catch (Exception ex) {
-            Common.writeStatus(resultDir, Common.TaskStatus.ERROR, ex.getMessage());
+            Common.writeStatus(operationResultDir, Common.TaskStatus.ERROR, ex.getMessage());
 
             // TODO: delete
             ex.printStackTrace();

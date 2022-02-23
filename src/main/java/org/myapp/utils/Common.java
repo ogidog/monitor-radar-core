@@ -278,8 +278,8 @@ public class Common {
         return getResultDir(resultsDir, username, taskId) + File.separator + "config";
     }
 
-    public static String getGraphDir(String resultsDir, String username, String taskId) {
-        return getResultDir(resultsDir, username, taskId) + File.separator + "graphs";
+    public static String getGraphFile(String resultsDir, String username, String taskId, String operationName) {
+        return getResultDir(resultsDir, username, taskId) + File.separator + "graphs" + File.separator + operationName + ".xml";
     }
 
     public static String getOperationTaskDir(String tasksDir, String username, String taskId, String operationName) {

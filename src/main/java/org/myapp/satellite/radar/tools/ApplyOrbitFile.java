@@ -60,7 +60,7 @@ public class ApplyOrbitFile {
             Common.writeStatus(operationResultDir, Common.TaskStatus.PROCESSING, "");
 
             // Set graph
-            Graph graph = Common.readGraphFile(Common.getGraphDir(resultsDir, username, taskId) + File.separator + Common.OperationName.APPLY_ORBIT_FILE + ".xml");
+            Graph graph = Common.readGraphFile(Common.getGraphFile(resultsDir, username, taskId, Common.OperationName.APPLY_ORBIT_FILE));
             // Subset
             graph.getNode("Subset").getConfiguration().getChild("geoRegion")
                     .setValue("POLYGON((" + ((HashMap) parameters.get(Common.OperationName.SUBSET)).get("geoRegion").toString() + "))");
