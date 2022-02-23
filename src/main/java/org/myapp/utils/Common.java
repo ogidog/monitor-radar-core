@@ -6,6 +6,8 @@ import org.esa.snap.core.datamodel.VirtualBand;
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
 import org.esa.snap.rcp.util.ProgressHandleMonitor;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.api.progress.ProgressHandleFactory;
 
@@ -19,6 +21,8 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.stream.Collectors;
 
 public class Common {
 
@@ -302,5 +306,24 @@ public class Common {
         Graph graph = GraphIO.read(fileReader);
         fileReader.close();
         return graph;
+    }
+
+    public static HashMap getParameters(String configDir, String[] operationNames) throws Exception {
+
+        HashMap<String, HashMap> parameters = new HashMap<>();
+
+        for (String operationName : operationNames) {
+            JSONParser parser = new JSONParser();
+            FileReader fileReader = new FileReader(configDir + File.separator + operationName + ".json");
+            JSONObject jsonObject = (JSONObject) parser.parse(fileReader);
+            HashMap<String, HashMap> jsonParameters = (HashMap) jsonObject.get("parameters");
+            parameters.put(operationName,
+                    (HashMap) jsonParameters.entrySet().stream
+                            ().collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue().get("value")))
+            );
+            fileReader.close();
+        }
+
+        return parameters;
     }
 }

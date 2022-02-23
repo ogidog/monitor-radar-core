@@ -5,6 +5,7 @@ import org.esa.s1tbx.sentinel1.gpf.TOPSARSplitOp;
 import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.OperatorSpi;
+import org.myapp.utils.Common;
 
 import java.io.File;
 import java.sql.Connection;
@@ -32,9 +33,9 @@ public class TOPSARSplitOpEnv {
 
         try {
 
-            subsetParameters = (HashMap) stageParameters.get("Subset");
-            topSarSplitParameters = (HashMap) stageParameters.get("TOPSARSplit");
-            dataSetParameters = (HashMap) stageParameters.get("DataSet");
+            subsetParameters = (HashMap) stageParameters.get(Common.OperationName.SUBSET);
+            topSarSplitParameters = (HashMap) stageParameters.get(Common.OperationName.S1_TOPS_SPLIT);
+            dataSetParameters = (HashMap) stageParameters.get(Common.OperationName.DATASET);
 
             String dbms = dataSetParameters.get("databaseIp").toString(); // "172.16.1.4"; // "10.101.80.252";
 

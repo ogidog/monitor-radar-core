@@ -22,7 +22,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class ApplyOrbitFiles {
+public class ApplyOrbitFile {
 
     public static void main(String[] args) {
 
@@ -37,10 +37,10 @@ public class ApplyOrbitFiles {
             String username = consoleParameters.get("username").toString();
             String taskId = consoleParameters.get("taskId").toString();
 
-            HashMap parameters = getParameters(Common.getConfigDir(resultsDir, username, taskId));
-            if (parameters == null) {
-                throw new Exception("ApplyOrbitFile: Fail to read parameters.");
-            }
+            HashMap parameters = Common.getParameters(Common.getConfigDir(resultsDir, username, taskId), new String[]{
+                    Common.OperationName.APPLY_ORBIT_FILE, Common.OperationName.DATASET, Common.OperationName.S1_TOPS_SPLIT,
+                    Common.OperationName.DATASET, Common.OperationName.SUBSET
+            });
 
             String operationTaskDir = Common.getOperationTaskDir(tasksDir, username, taskId, Common.OperationName.APPLY_ORBIT_FILE);
             if (Files.exists(Paths.get(operationTaskDir))) {
@@ -63,7 +63,7 @@ public class ApplyOrbitFiles {
             Graph graph = Common.readGraphFile(Common.getGraphDir(resultsDir, username, taskId) + File.separator + Common.OperationName.APPLY_ORBIT_FILE + ".xml");
             // Subset
             graph.getNode("Subset").getConfiguration().getChild("geoRegion")
-                    .setValue("POLYGON((" + ((HashMap) parameters.get("Subset")).get("geoRegion").toString() + "))");
+                    .setValue("POLYGON((" + ((HashMap) parameters.get(Common.OperationName.SUBSET)).get("geoRegion").toString() + "))");
 
             TOPSARSplitOpEnv topsarSplitOpEnv = new TOPSARSplitOpEnv();
             String[] files = Common.getFiles(filesList);
@@ -112,15 +112,15 @@ public class ApplyOrbitFiles {
 
             Common.writeStatus(operationResultDir, Common.TaskStatus.COMPLETED, "");
 
-        } catch (Exception ex) {
-            Common.writeStatus(operationResultDir, Common.TaskStatus.ERROR, ex.getMessage());
+        } catch (Exception e) {
+            Common.writeStatus(operationResultDir, Common.TaskStatus.ERROR, e.getMessage());
 
             // TODO: delete
-            ex.printStackTrace();
+            e.printStackTrace();
         }
     }
 
-    static HashMap getParameters(String configDir) {
+    static HashMap getParameters1(String configDir) {
 
         HashMap<String, HashMap> stageParameters = null;
 
