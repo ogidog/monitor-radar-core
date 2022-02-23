@@ -37,15 +37,10 @@ public class ApplyOrbitFiles {
             String username = consoleParameters.get("username").toString();
             String taskId = consoleParameters.get("taskId").toString();
 
-            String configDir = Common.getConfigDir(resultsDir, username, taskId);
-            String graphDir = Common.getGraphDir(resultsDir, username, taskId);
-
-            HashMap parameters = getParameters(configDir);
+            HashMap parameters = getParameters(Common.getConfigDir(resultsDir, username, taskId));
             if (parameters == null) {
                 throw new Exception("ApplyOrbitFile: Fail to read parameters.");
             }
-
-            String[] files = Common.getFiles(filesList);
 
             String operationTaskDir = Common.getOperationTaskDir(tasksDir, username, taskId, Common.OperationName.APPLY_ORBIT_FILE);
             if (Files.exists(Paths.get(operationTaskDir))) {
@@ -64,19 +59,15 @@ public class ApplyOrbitFiles {
             }
             Common.writeStatus(operationResultDir, Common.TaskStatus.PROCESSING, "");
 
-            TOPSARSplitOpEnv topsarSplitOpEnv = new TOPSARSplitOpEnv();
-
-            String graphFile = Common.OperationName.APPLY_ORBIT_FILE + ".xml";
-            FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
-            Graph graph = GraphIO.read(fileReader);
-            fileReader.close();
-
+            // Set graph
+            Graph graph = Common.readGraphFile(Common.getGraphDir(resultsDir, username, taskId) + File.separator + Common.OperationName.APPLY_ORBIT_FILE + ".xml");
             // Subset
             graph.getNode("Subset").getConfiguration().getChild("geoRegion")
                     .setValue("POLYGON((" + ((HashMap) parameters.get("Subset")).get("geoRegion").toString() + "))");
 
+            TOPSARSplitOpEnv topsarSplitOpEnv = new TOPSARSplitOpEnv();
+            String[] files = Common.getFiles(filesList);
             Pattern p = Pattern.compile("\\d{8}");
-
             for (int i = 0; i < files.length; i++) {
 
                 Matcher m = p.matcher(files[i]);
@@ -105,7 +96,7 @@ public class ApplyOrbitFiles {
                 fileWriter.flush();
                 fileWriter.close();
 
-                Common.runGPTScript(targetGraphFile + ".xml", "ApplyOrbitFile");
+                Common.runGPTScript(targetGraphFile + ".xml", Common.OperationName.APPLY_ORBIT_FILE);
 
                 Product product = ProductIO.readProduct(subsetTargetFile + ".dim");
                 Band sourceBand = (Band) Arrays.stream(product.getBands())
@@ -117,7 +108,6 @@ public class ApplyOrbitFiles {
                 Files.deleteIfExists(Paths.get(subsetTargetFile + ".dim"));
                 Common.deleteDir(new File(subsetTargetFile + ".data"));
             }
-
             topsarSplitOpEnv.Dispose();
 
             Common.writeStatus(operationResultDir, Common.TaskStatus.COMPLETED, "");

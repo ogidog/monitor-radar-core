@@ -123,7 +123,6 @@ public class Stage3 {
                 cmdWriter.println("gpt " + stage3Dir + File.separator + fileName + ".xml");
             }
 
-
             cmdWriter.close();
 
             return;

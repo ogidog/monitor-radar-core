@@ -3,6 +3,8 @@ package org.myapp.utils;
 import com.bc.ceres.core.ProgressMonitor;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.VirtualBand;
+import org.esa.snap.core.gpf.graph.Graph;
+import org.esa.snap.core.gpf.graph.GraphIO;
 import org.esa.snap.rcp.util.ProgressHandleMonitor;
 import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.api.progress.ProgressHandleFactory;
@@ -46,6 +48,8 @@ public class Common {
     }
 
     public static class OperationName {
+        public static String DATASET = "dataset";
+        public static String S1_TOPS_SPLIT = "s1_tops_split";
         public static String SUBSET = "subset";
         public static String APPLY_ORBIT_FILE = "apply_orbit_file";
         public static String BACK_GEOCODING = "back_geocoding";
@@ -291,5 +295,12 @@ public class Common {
             files = filesList.split(",");
         }
         return files;
+    }
+
+    public static Graph readGraphFile(String graphFile) throws Exception {
+        FileReader fileReader = new FileReader(graphFile);
+        Graph graph = GraphIO.read(fileReader);
+        fileReader.close();
+        return graph;
     }
 }
