@@ -3,7 +3,7 @@
     <option name="ALTERNATIVE_JRE_PATH" value="1.8.0_261" />
     <option name="MAIN_CLASS_NAME" value="org.myapp.satellite.radar.tools.BackGeocoding" />
     <module name="monitor-radar-core-v3" />
-    <option name="PROGRAM_PARAMETERS" value="tasksDir=&quot;D:\mnt\dockers\monitor-radar-tools\tasks&quot; resultsDir=&quot;D:\mnt\dockers\monitor-radar-tools\results&quot; filesList=D:\mnt\dockers\monitor-radar-tools\tasks\ogidog_mail_ru\1642612066993\apply_orbit_file\20190729_orb.dim,D:\mnt\dockers\monitor-radar-tools\tasks\ogidog_mail_ru\1642612066993\apply_orbit_file\20190810_orb.dim,D:\mnt\dockers\monitor-radar-tools\tasks\ogidog_mail_ru\1642612066993\apply_orbit_file\20190810_orb.dim,D:\mnt\dockers\monitor-radar-tools\tasks\ogidog_mail_ru\1642612066993\apply_orbit_file\20190822_orb.dim taskId=1642612066993 username=ogidog_mail_ru" />
+    <option name="PROGRAM_PARAMETERS" value="tasksDir=&quot;D:\mnt\dockers\monitor-radar-core\tasks&quot; resultsDir=&quot;D:\mnt\dockers\monitor-radar-core\results&quot; filesList=D:\mnt\dockers\monitor-radar-core\tasks\ogidog_mail_ru\1642612066993\apply_orbit_file\20190729_orb.dim,D:\mnt\dockers\monitor-radar-core\tasks\ogidog_mail_ru\1642612066993\apply_orbit_file\20190810_orb.dim,D:\mnt\dockers\monitor-radar-core\tasks\ogidog_mail_ru\1642612066993\apply_orbit_file\20190810_orb.dim,D:\mnt\dockers\monitor-radar-core\tasks\ogidog_mail_ru\1642612066993\apply_orbit_file\20190822_orb.dim taskId=1642612066993 username=ogidog_mail_ru" />
     <shortenClasspath name="MANIFEST" />
     <extension name="coverage">
       <pattern>
