@@ -21,7 +21,7 @@ public class TestCopyFilesFromDataset {
 
             JSONParser parser = new JSONParser();
             FileReader fileReader = null;
-            fileReader = new FileReader(configDir + File.separator + "dataset.json");
+            fileReader = new FileReader(configDir + File.separator + "database.json");
 
             JSONObject jsonObject = (JSONObject) parser.parse(fileReader);
             HashMap<String, HashMap> jsonParameters = (HashMap) jsonObject.get("parameters");

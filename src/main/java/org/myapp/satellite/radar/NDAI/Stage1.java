@@ -159,7 +159,7 @@ public class Stage1 {
 
             // DataSet
             JSONParser parser = new JSONParser();
-            FileReader fileReader = new FileReader(configDir + File.separator + "dataset.json");
+            FileReader fileReader = new FileReader(configDir + File.separator + "database.json");
             JSONObject jsonObject = (JSONObject) parser.parse(fileReader);
             HashMap<String, HashMap> jsonParameters1 = (HashMap) jsonObject.get("parameters");
 

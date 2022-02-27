@@ -38,8 +38,8 @@ public class ApplyOrbitFile {
             String taskId = consoleParameters.get("taskId").toString();
 
             HashMap parameters = Common.getParameters(Common.getConfigDir(resultsDir, username, taskId), new String[]{
-                    Common.OperationName.APPLY_ORBIT_FILE, Common.OperationName.DATASET, Common.OperationName.S1_TOPS_SPLIT,
-                    Common.OperationName.DATASET, Common.OperationName.SUBSET
+                    Common.OperationName.APPLY_ORBIT_FILE, Common.OperationName.DATABASE, Common.OperationName.S1_TOPS_SPLIT,
+                    Common.OperationName.DATABASE, Common.OperationName.SUBSET
             });
 
             String operationTaskDir = Common.getOperationTaskDir(tasksDir, username, taskId, Common.OperationName.APPLY_ORBIT_FILE);

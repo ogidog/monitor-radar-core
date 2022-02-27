@@ -35,7 +35,7 @@ public class TOPSARSplitOpEnv {
 
             subsetParameters = (HashMap) stageParameters.get(Common.OperationName.SUBSET);
             topSarSplitParameters = (HashMap) stageParameters.get(Common.OperationName.S1_TOPS_SPLIT);
-            dataSetParameters = (HashMap) stageParameters.get(Common.OperationName.DATASET);
+            dataSetParameters = (HashMap) stageParameters.get(Common.OperationName.DATABASE);
 
             String dbms = dataSetParameters.get("databaseIp").toString(); // "172.16.1.4"; // "10.101.80.252";
 

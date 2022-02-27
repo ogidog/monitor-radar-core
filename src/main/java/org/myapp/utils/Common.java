@@ -52,7 +52,7 @@ public class Common {
     }
 
     public static class OperationName {
-        public static String DATASET = "dataset";
+        public static String DATABASE = "database";
         public static String S1_TOPS_SPLIT = "s1_tops_split";
         public static String SUBSET = "subset";
         public static String APPLY_ORBIT_FILE = "apply_orbit_file";
