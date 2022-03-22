@@ -1,5 +1,5 @@
 
-package org.myapp.satellite.radar.ps;
+package org.myapp.satellite.radar.stamps;
 
 import org.esa.s1tbx.commons.Sentinel1Utils;
 import org.esa.s1tbx.insar.gpf.InSARStackOverview;

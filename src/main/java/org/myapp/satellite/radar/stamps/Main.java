@@ -1,4 +1,4 @@
-package org.myapp.satellite.radar.ps;
+package org.myapp.satellite.radar.stamps;
 
 import org.myapp.utils.ConsoleArgsReader;
 import org.myapp.utils.Common;

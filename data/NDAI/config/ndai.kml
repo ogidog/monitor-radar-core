@@ -9,8 +9,8 @@
       <altitudeMode>clampToGround</altitudeMode>
       <LatLonBox>
         <north>55.67267401115953</north>
-        <east>86.2265693652137</east>
         <south>55.51392304388446</south>
+        <east>86.2265693652137</east>
         <west>85.99267295574887</west>
       </LatLonBox>
     </GroundOverlay>

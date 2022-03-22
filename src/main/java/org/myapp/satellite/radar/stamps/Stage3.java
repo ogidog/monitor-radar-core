@@ -1,5 +1,5 @@
 
-package org.myapp.satellite.radar.ps;
+package org.myapp.satellite.radar.stamps;
 
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;

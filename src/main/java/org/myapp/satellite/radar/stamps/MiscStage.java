@@ -1,4 +1,4 @@
-package org.myapp.satellite.radar.ps;
+package org.myapp.satellite.radar.stamps;
 
 import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.datamodel.Product;
