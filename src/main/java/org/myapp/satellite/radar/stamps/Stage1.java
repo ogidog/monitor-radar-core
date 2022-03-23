@@ -18,63 +18,56 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 
 public class Stage1 {
 
-    public static void process(String outputDir, String configDir, String graphDir, String filesList, String taskId) throws Exception {
+    public static void process(String tasksDir, String resultsDir, String username, String taskId, String filesList) throws Exception {
 
-        HashMap parameters = getParameters(configDir);
-        if (parameters == null) {
-            throw new Exception("Stage1: Fail to read parameters.");
+        HashMap parameters = Common.getParameters(Common.getConfigDir(resultsDir, username, taskId), new String[]{
+                Common.OperationName.APPLY_ORBIT_FILE, Common.OperationName.S1_TOPS_SPLIT,
+                Common.OperationName.DATABASE, Common.OperationName.SUBSET
+        });
+
+        String operationTaskDir = Common.getOperationTaskDir(tasksDir, username, taskId, Common.OperationName.STAMPS_STAGE1);
+        if (Files.exists(Paths.get(operationTaskDir))) {
+            Common.deleteDir(new File(operationTaskDir));
         }
+        new File(operationTaskDir).mkdirs();
 
-        String taskDir = outputDir + File.separator + taskId;
+        // Set graph
+        Graph graph = Common.readGraphFile(Common.getGraphFile(resultsDir, username, taskId, Common.OperationName.APPLY_ORBIT_FILE));
 
-        String[] files;
-        if (!filesList.contains(",")) {
-            files = Files.walk(Paths.get(filesList)).skip(1)
-                    .map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
-        } else {
-            files = filesList.split(",");
-        }
-
-        if (Files.exists(Paths.get(taskDir))) {
-            Common.deleteDir(new File(taskDir));
-        }
-        new File(taskDir).mkdirs();
-        String stage1Dir = taskDir + "" + File.separator + "stage1";
-        new File(taskDir + File.separator + "applyorbitfile").mkdirs();
-        new File(stage1Dir).mkdirs();
-
+        String[] files = Common.getFiles(filesList);
         TOPSARSplitOpEnv topsarSplitOpEnv = new TOPSARSplitOpEnv();
-        String graphFile = "applyorbitfile.xml";
-        FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
-        Graph graph = GraphIO.read(fileReader);
-        fileReader.close();
 
-
+        Pattern p = Pattern.compile("\\d{8}");
         for (int i = 0; i < files.length; i++) {
+
+            Matcher m = p.matcher(files[i]);
+            m.find();
+            String productDate = m.group();
+
+            String targetFile = operationTaskDir + File.separator + productDate + Common.OperationPrefix.APPLY_ORBIT_FILE + ".dim";
+            String targetGraphFile = operationTaskDir + File.separator + productDate + Common.OperationPrefix.APPLY_ORBIT_FILE + ".xml";
 
             topsarSplitOpEnv.getSplitParameters(files[i], parameters);
 
             graph.getNode("Read").getConfiguration().getChild("file").setValue(files[i]);
-            graph.getNode("Write").getConfiguration().getChild("file")
-                    .setValue(taskDir + File.separator + "applyorbitfile" + File.separator
-                            + Paths.get(files[i]).getFileName().toString().replace(".zip", "") + "_Orb.dim");
+            graph.getNode("Write").getConfiguration().getChild("file").setValue(targetFile);
             graph.getNode("TOPSAR-Split").getConfiguration().getChild("subswath").setValue(topsarSplitOpEnv.getSubSwath());
             graph.getNode("TOPSAR-Split").getConfiguration().getChild("firstBurstIndex").setValue(topsarSplitOpEnv.getFirstBurstIndex());
             graph.getNode("TOPSAR-Split").getConfiguration().getChild("lastBurstIndex").setValue(topsarSplitOpEnv.getLastBurstIndex());
 
-            FileWriter fileWriter = new FileWriter(stage1Dir + File.separator
-                    + Paths.get(files[i]).getFileName().toString().replace(".zip", "") + ".xml");
+            FileWriter fileWriter = new FileWriter(targetGraphFile);
             GraphIO.write(graph, fileWriter);
             fileWriter.flush();
             fileWriter.close();
 
-            Common.runGPTScript(stage1Dir + File.separator
-                    + Paths.get(files[i]).getFileName().toString().replace(".zip", "") + ".xml","Stage1");
+            Common.runGPTScript(targetGraphFile, Common.OperationName.STAMPS_STAGE1);
         }
 
         topsarSplitOpEnv.Dispose();

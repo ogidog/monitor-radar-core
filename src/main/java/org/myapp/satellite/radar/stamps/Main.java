@@ -10,33 +10,31 @@ public class Main {
 
     public static void main(String[] args) {
 
-        String outputDir, configDir, graphDir, filesList, taskId, taskDir = "";
-        int firstStep, lastStep;
+        String resultDir = "", graphDir="", outputDir = "", configDir = "";
 
         try {
 
             HashMap consoleParameters = ConsoleArgsReader.readConsoleArgs(args);
-            outputDir = consoleParameters.get("outputDir").toString();
-            configDir = consoleParameters.get("configDir").toString();
-            graphDir = consoleParameters.get("graphDir").toString();
-            filesList = consoleParameters.get("filesList").toString();
-            firstStep = Integer.valueOf(consoleParameters.get("firstStep").toString());
-            lastStep = Integer.valueOf(consoleParameters.get("lastStep").toString());
-            taskId = consoleParameters.get("taskId").toString();
+            String tasksDir = consoleParameters.get("tasksDir").toString();
+            String resultsDir = consoleParameters.get("resultsDir").toString();
+            String filesList = consoleParameters.get("filesList").toString();
+            String username = consoleParameters.get("username").toString();
+            String taskId = consoleParameters.get("taskId").toString();
+            int firstStep = Integer.valueOf(consoleParameters.get("firstStep").toString());
+            int lastStep = Integer.valueOf(consoleParameters.get("lastStep").toString());
 
-            taskDir = Paths.get(configDir).getParent().toString();
+            resultDir = Common.getResultDir(resultsDir, username, taskId);
 
-            if (Common.checkPreviousErrors(taskDir)) {
-                return;
+            if (Common.checkPreviousErrors(resultDir)) {
+                Common.deletePreviousErrors(resultDir);
             }
-
-            Common.writeStatus(taskDir, Common.TaskStatus.PROCESSING, "");
+            Common.writeStatus(resultDir, Common.TaskStatus.PROCESSING, "");
 
             if (firstStep <= 1 && lastStep >= 1) {
-                Stage1.process(outputDir, configDir, graphDir, filesList, taskId);
+                Stage1.process(tasksDir, resultsDir,username, taskId, filesList);
             }
             if (firstStep <= 2 && lastStep >= 2) {
-                Stage2.process(outputDir, configDir, graphDir, taskId);
+                Stage2.process(tasksDir, resultsDir, username, taskId);
             }
             if (firstStep <= 3 && lastStep >= 3) {
                 Stage3.process(outputDir, graphDir, taskId);
@@ -51,10 +49,10 @@ public class Main {
                 Stage6.process(outputDir, taskId);
             }
 
-            Common.writeStatus(taskDir, Common.TaskStatus.COMPLETED, "");
+            Common.writeStatus(resultDir, Common.TaskStatus.COMPLETED, "");
 
         } catch (Exception e) {
-            Common.writeStatus(taskDir, Common.TaskStatus.ERROR, e.getMessage());
+            Common.writeStatus(resultDir, Common.TaskStatus.ERROR, e.getMessage());
 
             // TODO: убрать
             e.printStackTrace();

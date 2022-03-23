@@ -52,7 +52,8 @@ public class Common {
     }
 
     public static class OperationName {
-        public static String DATABASE = "database";
+        public static String BAND_MATHS = "band_maths";
+        public static String DATABASE = "db";
         public static String S1_TOPS_SPLIT = "s1_tops_split";
         public static String SUBSET = "subset";
         public static String APPLY_ORBIT_FILE = "apply_orbit_file";
@@ -61,6 +62,15 @@ public class Common {
         public static String INTERFEROGRAM = "interferogram";
         public static String GOLDSTEIN_PHASE_FILTERING = "goldstein_phase_filtering";
         public static String TOPO_PHASE_REMOVAL = "topo_phase_removal";
+        public static String STAMPS_EXPORT = "stamps_export";
+        public static String STAMPS_PREP = "stamps_prep";
+        public static String STAMPS_PREP_WITHOUT_ESD = "stamps_prep_without_esd";
+        public static String STAMPS_STAGE1 = "stage1";
+        public static String STAMPS_STAGE2 = "stage2";
+        public static String STAMPS_STAGE3 = "stage3";
+        public static String STAMPS_STAGE4 = "stage4";
+        public static String STAMPS_STAGE5 = "stage5";
+        public static String STAMPS_STAGE6 = "stage6";
     }
 
     private static String getGPTScriptName() {
@@ -301,6 +311,20 @@ public class Common {
         return files;
     }
 
+    public static String[] getFiles(String operationTaskDir, String extension) throws Exception {
+
+        String[] files = Files.walk(Paths.get(operationTaskDir)).filter(path -> {
+            if (path.toString().endsWith(extension)) {
+                return true;
+            } else {
+                return false;
+            }
+
+        }).map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
+
+        return files;
+    }
+
     public static Graph readGraphFile(String graphFile) throws Exception {
         FileReader fileReader = new FileReader(graphFile);
         Graph graph = GraphIO.read(fileReader);
@@ -326,4 +350,5 @@ public class Common {
 
         return parameters;
     }
+
 }
