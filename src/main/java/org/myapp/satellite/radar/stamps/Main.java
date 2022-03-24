@@ -10,7 +10,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        String resultDir = "", graphDir="", outputDir = "", configDir = "";
+        String resultDir = "", graphDir = "", outputDir = "", configDir = "";
 
         try {
 
@@ -31,13 +31,13 @@ public class Main {
             Common.writeStatus(resultDir, Common.TaskStatus.PROCESSING, "");
 
             if (firstStep <= 1 && lastStep >= 1) {
-                Stage1.process(tasksDir, resultsDir,username, taskId, filesList);
+                Stage1.process(tasksDir, resultsDir, username, taskId, filesList);
             }
             if (firstStep <= 2 && lastStep >= 2) {
                 Stage2.process(tasksDir, resultsDir, username, taskId);
             }
             if (firstStep <= 3 && lastStep >= 3) {
-                Stage3.process(outputDir, graphDir, taskId);
+                Stage3.process(tasksDir, resultsDir, username, taskId);
             }
             if (firstStep <= 4 && lastStep >= 4) {
                 Stage4.process(outputDir, graphDir, taskId);

@@ -3,24 +3,16 @@ package org.myapp.satellite.radar.stamps;
 
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.myapp.utils.ConsoleArgsReader;
 import org.myapp.satellite.radar.common.TOPSARSplitOpEnv;
 import org.myapp.utils.Common;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.PrintWriter;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 
 public class Stage1 {
