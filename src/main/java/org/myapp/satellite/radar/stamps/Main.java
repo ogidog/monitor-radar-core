@@ -43,7 +43,7 @@ public class Main {
                 Stage4.process(outputDir, graphDir, taskId);
             }
             if (firstStep <= 5 && lastStep >= 5) {
-                Stage5.process(outputDir, taskId);
+                Stage5.process(tasksDir, username, taskId);
             }
             if (firstStep <= 6 && lastStep >= 6) {
                 Stage6.process(outputDir, taskId);

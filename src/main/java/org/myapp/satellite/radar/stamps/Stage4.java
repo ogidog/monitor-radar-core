@@ -22,24 +22,10 @@ import java.util.Locale;
 
 public class Stage4 {
 
-    public static void process(String outputDir, String graphDir, String taskId) throws Exception {
+    public static void process(String tasksDir, String resultsDir, String username, String taskId) throws Exception {
 
-        String taskDir = outputDir + File.separator + taskId;
-
-        String topophaseremovalDir = taskDir + File.separator + "topophaseremoval";
-        String[] files = Files.walk(Paths.get(topophaseremovalDir)).filter(path -> {
-            if (path.toString().endsWith(".dim")) {
-                return true;
-            } else {
-                return false;
-            }
-        }).map(path -> path.toAbsolutePath().toString()).toArray(String[]::new);
-
-        String stage4Dir = taskDir + File.separator + "stage4";
-        if (Files.exists(Paths.get(stage4Dir))) {
-            Common.deleteDir(new File(stage4Dir));
-        }
-        new File(stage4Dir).mkdirs();
+        String operationTaskDir = Common.getOperationTaskDir(tasksDir, username, taskId, Common.OperationName.STAMPS_STAGE2);
+        String[] files = Common.getFiles(operationTaskDir,"_topo.dim");
 
         Product product = ProductIO.readProduct(files[0]);
         String masterDate = product.getBandAt(0).getName().split("_")[3];
