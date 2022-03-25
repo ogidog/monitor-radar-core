@@ -50,6 +50,7 @@ public class Common {
         public static String TOPO_PHASE_REMOVAL = "_topo";
         public static String ELEVATION = "_elev";
         public static String STAMPS_EXPORT = "_stamps_exp";
+        public static String BAND_MATHS = "_band_maths";
     }
 
     public static class OperationName {

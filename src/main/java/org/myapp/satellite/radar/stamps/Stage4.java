@@ -25,7 +25,7 @@ public class Stage4 {
     public static void process(String tasksDir, String resultsDir, String username, String taskId) throws Exception {
 
         String operationTaskDir = Common.getOperationTaskDir(tasksDir, username, taskId, Common.OperationName.STAMPS_STAGE2);
-        String[] files = Common.getFiles(operationTaskDir,"_topo.dim");
+        String[] files = Common.getFiles(operationTaskDir, "_topo.dim");
 
         Product product = ProductIO.readProduct(files[0]);
         String masterDate = product.getBandAt(0).getName().split("_")[3];
@@ -39,10 +39,7 @@ public class Stage4 {
         simpleDateFormat.applyPattern("yyyyMMdd");
         masterDate = simpleDateFormat.format(date).toString();
 
-        String graphFile = "bandmaths.xml";
-        FileReader fileReader = new FileReader(graphDir + File.separator + graphFile);
-        Graph graph = GraphIO.read(fileReader);
-        fileReader.close();
+        Graph graph = Common.readGraphFile(Common.getGraphFile(resultsDir, username, taskId, Common.OperationName.BAND_MATHS));
 
         graph.getNode("Read").getConfiguration().getChild("file").setValue(files[0]);
         graph.getNode("Read(2)").getConfiguration().getChild("file").setValue(files[0]);
@@ -52,13 +49,13 @@ public class Stage4 {
                 .setValue(masterDate + ".lon");
         graph.getNode("Write").getConfiguration().getChild("file").setValue(files[0]);
 
-        String fileName = Paths.get(files[0]).getFileName().toString();
-        FileWriter fileWriter = new FileWriter(stage4Dir + File.separator + fileName + ".xml");
+        String targetGraphFile = operationTaskDir + File.separator +  masterDate + Common.OperationPrefix.BAND_MATHS + ".xml";
+        FileWriter fileWriter = new FileWriter(targetGraphFile);
         GraphIO.write(graph, fileWriter);
         fileWriter.flush();
         fileWriter.close();
 
-        Common.runGPTScript(stage4Dir + File.separator + fileName + ".xml","Stage4");
+        Common.runGPTScript(targetGraphFile, Common.OperationName.STAMPS_STAGE4);
 
     }
 }
