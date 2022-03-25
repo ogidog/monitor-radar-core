@@ -46,7 +46,7 @@ public class Main {
                 Stage5.process(tasksDir, username, taskId);
             }
             if (firstStep <= 6 && lastStep >= 6) {
-                Stage6.process(outputDir, taskId);
+                Stage6.process(outputDir,resultsDir,username, taskId);
             }
 
             Common.writeStatus(resultDir, Common.TaskStatus.COMPLETED, "");
