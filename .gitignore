@@ -2,3 +2,4 @@
 /.idea/
 /src/main/java/org/myapp/security/
 /target.data/
+target.dim
