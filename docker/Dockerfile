@@ -1,4 +1,4 @@
-FROM snap
+FROM ubuntu:18.04
 
 # Create shared dirs
 RUN mkdir /mnt/satimg
