@@ -35,13 +35,13 @@ public class Stage3 {
             String content = new String(Files.readAllBytes(path), charset);
             content = content.replaceAll("<NO_DATA_VALUE_USED>true</NO_DATA_VALUE_USED>",
                     "<NO_DATA_VALUE_USED>false</NO_DATA_VALUE_USED>");
-            //Files.write(path, content.getBytes(charset));
+            Files.write(path, content.getBytes(charset));
 
             path = Paths.get(files2[i]);
             content = new String(Files.readAllBytes(path), charset);
             content = content.replaceAll("<NO_DATA_VALUE_USED>true</NO_DATA_VALUE_USED>",
                     "<NO_DATA_VALUE_USED>false</NO_DATA_VALUE_USED>");
-            //Files.write(path, content.getBytes(charset));
+            Files.write(path, content.getBytes(charset));
         }
 
         Graph graph = Common.readGraphFile(Common.getGraphFile(resultsDir, username, taskId, Common.OperationName.STAMPS_EXPORT));
