@@ -18,16 +18,16 @@ import java.util.regex.Pattern;
 
 public class Stage3 {
 
-    public static void process(String tasksDir, String resultsDir, String username, String taskId) throws Exception {
+    public static void process(String tasksDir, String resultsDir, String userId, String taskId) throws Exception {
 
-        String operationTaskDir = Common.getOperationTaskDir(tasksDir, username, taskId, Common.OperationName.STAMPS_STAGE3);
+        String operationTaskDir = Common.getOperationTaskDir(tasksDir, userId, taskId, Common.OperationName.STAMPS_STAGE3);
         if (Files.exists(Paths.get(operationTaskDir))) {
             Common.deleteDir(new File(operationTaskDir));
         }
         new File(operationTaskDir).mkdirs();
 
-        String[] files1 = Common.getFiles(Common.getOperationTaskDir(tasksDir, username, taskId, Common.OperationName.STAMPS_STAGE2), "_cor.dim");
-        String[] files2 = Common.getFiles(Common.getOperationTaskDir(tasksDir, username, taskId, Common.OperationName.STAMPS_STAGE2), "_topo.dim");
+        String[] files1 = Common.getFiles(Common.getOperationTaskDir(tasksDir, userId, taskId, Common.OperationName.STAMPS_STAGE2), "_cor.dim");
+        String[] files2 = Common.getFiles(Common.getOperationTaskDir(tasksDir, userId, taskId, Common.OperationName.STAMPS_STAGE2), "_topo.dim");
 
         for (int i = 0; i < files1.length; i++) {
             Path path = Paths.get(files1[i]);
@@ -44,7 +44,7 @@ public class Stage3 {
             Files.write(path, content.getBytes(charset));
         }
 
-        Graph graph = Common.readGraphFile(Common.getGraphFile(resultsDir, username, taskId, Common.OperationName.STAMPS_EXPORT));
+        Graph graph = Common.readGraphFile(Common.getGraphFile(resultsDir, userId, taskId, Common.OperationName.STAMPS_EXPORT));
 
         Pattern p = Pattern.compile("\\d{8}_\\d{8}");
         for (int i = 0; i < files1.length; i++) {

@@ -19,20 +19,20 @@ import java.util.regex.Pattern;
 
 public class Stage2 {
 
-    public static void process(String tasksDir, String resultsDir, String username, String taskId) throws Exception {
+    public static void process(String tasksDir, String resultsDir, String userId, String taskId) throws Exception {
 
-        HashMap parameters = Common.getParameters(Common.getConfigDir(resultsDir, username, taskId), new String[]{
+        HashMap parameters = Common.getParameters(Common.getConfigDir(resultsDir, userId, taskId), new String[]{
                 Common.OperationName.TOPO_PHASE_REMOVAL,
                 Common.OperationName.INTERFEROGRAM, Common.OperationName.BACK_GEOCODING, Common.OperationName.SUBSET
         });
 
-        String operationTaskDir = Common.getOperationTaskDir(tasksDir, username, taskId, Common.OperationName.STAMPS_STAGE2);
+        String operationTaskDir = Common.getOperationTaskDir(tasksDir, userId, taskId, Common.OperationName.STAMPS_STAGE2);
         if (Files.exists(Paths.get(operationTaskDir))) {
             Common.deleteDir(new File(operationTaskDir));
         }
         new File(operationTaskDir).mkdirs();
 
-        String[] files = Common.getFiles(Common.getOperationTaskDir(tasksDir, username, taskId, Common.OperationName.STAMPS_STAGE1), ".dim");
+        String[] files = Common.getFiles(Common.getOperationTaskDir(tasksDir, userId, taskId, Common.OperationName.STAMPS_STAGE1), ".dim");
         Product[] products = Arrays.stream(files).map(file -> {
             try {
                 return ProductIO.readProduct(file);
@@ -46,9 +46,9 @@ public class Stage2 {
         Sentinel1Utils s1u = new Sentinel1Utils(products[0]);
         int numOfBurst = s1u.getNumOfBursts(s1u.getSubSwath()[0].subSwathName);
         if (numOfBurst > 1) {
-            graph = Common.readGraphFile(Common.getGraphFile(resultsDir, username, taskId, Common.OperationName.STAMPS_PREP));
+            graph = Common.readGraphFile(Common.getGraphFile(resultsDir, userId, taskId, Common.OperationName.STAMPS_PREP));
         } else {
-            graph = Common.readGraphFile(Common.getGraphFile(resultsDir, username, taskId, Common.OperationName.STAMPS_PREP_WITHOUT_ESD));
+            graph = Common.readGraphFile(Common.getGraphFile(resultsDir, userId, taskId, Common.OperationName.STAMPS_PREP_WITHOUT_ESD));
         }
 
         // Subset

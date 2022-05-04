@@ -18,12 +18,12 @@ public class Main {
             String tasksDir = consoleParameters.get("tasksDir").toString();
             String resultsDir = consoleParameters.get("resultsDir").toString();
             String filesList = consoleParameters.get("filesList").toString();
-            String username = consoleParameters.get("username").toString();
+            String userId = consoleParameters.get("userId").toString();
             String taskId = consoleParameters.get("taskId").toString();
             int firstStep = Integer.valueOf(consoleParameters.get("firstStep").toString());
             int lastStep = Integer.valueOf(consoleParameters.get("lastStep").toString());
 
-            resultDir = Common.getResultDir(resultsDir, username, taskId);
+            resultDir = Common.getResultDir(resultsDir, userId, taskId);
 
             if (Common.checkPreviousErrors(resultDir)) {
                 Common.deletePreviousErrors(resultDir);
@@ -31,22 +31,22 @@ public class Main {
             Common.writeStatus(resultDir, Common.TaskStatus.PROCESSING, "");
 
             if (firstStep <= 1 && lastStep >= 1) {
-                Stage1.process(tasksDir, resultsDir, username, taskId, filesList);
+                Stage1.process(tasksDir, resultsDir, userId, taskId, filesList);
             }
             if (firstStep <= 2 && lastStep >= 2) {
-                Stage2.process(tasksDir, resultsDir, username, taskId);
+                Stage2.process(tasksDir, resultsDir, userId, taskId);
             }
             if (firstStep <= 3 && lastStep >= 3) {
-                Stage3.process(tasksDir, resultsDir, username, taskId);
+                Stage3.process(tasksDir, resultsDir, userId, taskId);
             }
             if (firstStep <= 4 && lastStep >= 4) {
-                Stage4.process(tasksDir, resultsDir, username, taskId);
+                Stage4.process(tasksDir, resultsDir, userId, taskId);
             }
             if (firstStep <= 5 && lastStep >= 5) {
-                Stage5.process(tasksDir, username, taskId);
+                Stage5.process(tasksDir, userId, taskId);
             }
             if (firstStep <= 6 && lastStep >= 6) {
-                Stage6.process(tasksDir, resultsDir, username, taskId);
+                Stage6.process(tasksDir, resultsDir, userId, taskId);
             }
 
             Common.writeStatus(resultDir, Common.TaskStatus.COMPLETED, "");

@@ -22,9 +22,9 @@ import java.util.Locale;
 
 public class Stage4 {
 
-    public static void process(String tasksDir, String resultsDir, String username, String taskId) throws Exception {
+    public static void process(String tasksDir, String resultsDir, String userId, String taskId) throws Exception {
 
-        String operationTaskDir = Common.getOperationTaskDir(tasksDir, username, taskId, Common.OperationName.STAMPS_STAGE2);
+        String operationTaskDir = Common.getOperationTaskDir(tasksDir, userId, taskId, Common.OperationName.STAMPS_STAGE2);
         String[] files = Common.getFiles(operationTaskDir, "_topo.dim");
 
         Product product = ProductIO.readProduct(files[0]);
@@ -39,7 +39,7 @@ public class Stage4 {
         simpleDateFormat.applyPattern("yyyyMMdd");
         masterDate = simpleDateFormat.format(date).toString();
 
-        Graph graph = Common.readGraphFile(Common.getGraphFile(resultsDir, username, taskId, Common.OperationName.BAND_MATHS));
+        Graph graph = Common.readGraphFile(Common.getGraphFile(resultsDir, userId, taskId, Common.OperationName.BAND_MATHS));
 
         graph.getNode("Read").getConfiguration().getChild("file").setValue(files[0]);
         graph.getNode("Read(2)").getConfiguration().getChild("file").setValue(files[0]);

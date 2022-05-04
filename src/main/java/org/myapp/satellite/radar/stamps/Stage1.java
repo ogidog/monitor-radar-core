@@ -17,21 +17,21 @@ import java.util.regex.Pattern;
 
 public class Stage1 {
 
-    public static void process(String tasksDir, String resultsDir, String username, String taskId, String filesList) throws Exception {
+    public static void process(String tasksDir, String resultsDir, String userId, String taskId, String filesList) throws Exception {
 
-        HashMap parameters = Common.getParameters(Common.getConfigDir(resultsDir, username, taskId), new String[]{
+        HashMap parameters = Common.getParameters(Common.getConfigDir(resultsDir, userId, taskId), new String[]{
                 Common.OperationName.APPLY_ORBIT_FILE, Common.OperationName.S1_TOPS_SPLIT,
                 Common.OperationName.DATABASE, Common.OperationName.SUBSET
         });
 
-        String operationTaskDir = Common.getOperationTaskDir(tasksDir, username, taskId, Common.OperationName.STAMPS_STAGE1);
+        String operationTaskDir = Common.getOperationTaskDir(tasksDir, userId, taskId, Common.OperationName.STAMPS_STAGE1);
         if (Files.exists(Paths.get(operationTaskDir))) {
             Common.deleteDir(new File(operationTaskDir));
         }
         new File(operationTaskDir).mkdirs();
 
         // Set graph
-        Graph graph = Common.readGraphFile(Common.getGraphFile(resultsDir, username, taskId, Common.OperationName.APPLY_ORBIT_FILE));
+        Graph graph = Common.readGraphFile(Common.getGraphFile(resultsDir, userId, taskId, Common.OperationName.APPLY_ORBIT_FILE));
 
         String[] files = Common.getFiles(filesList);
         TOPSARSplitOpEnv topsarSplitOpEnv = new TOPSARSplitOpEnv();
